@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apex School Management CRM</title>
+  <!-- Google Fonts: Outfit (Headings) & Inter (Body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
+  <!-- Local Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Secure Multi-Role Login Portal Overlay -->
+<div id="login-screen" class="login-overlay">
+  <div class="login-card glass">
+    <div class="login-brand">
+      <div class="sb-brand-logo"><i class="ti ti-school"></i></div>
+      <h2>Apex School CRM</h2>
+      <p>Educational ERP & Management System</p>
+    </div>
+    
+    <div class="login-role-tabs">
+      <button id="tab-btn-admin" class="login-role-tab active" onclick="setLoginRole('admin')">Admin</button>
+      <button id="tab-btn-teacher" class="login-role-tab" onclick="setLoginRole('teacher')">Faculty</button>
+      <button id="tab-btn-student" class="login-role-tab" onclick="setLoginRole('student')">Student</button>
+    </div>
+    
+    <div class="login-form">
+      <div class="form-row" id="login-username-row">
+        <label id="login-username-lbl">Admin Username</label>
+        <input type="text" id="login-username" placeholder="E.g., admin" />
+      </div>
+      <div class="form-row" id="login-password-row">
+        <label id="login-password-lbl">Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+      </div>
+      <div class="form-row" id="login-dob-row" style="display:none">
+        <label>Date of Birth</label>
+        <input type="date" id="login-dob" />
+      </div>
+      <button class="btn btn-primary btn-block" onclick="executeLogin()"><i class="ti ti-login-2"></i> Access Portal</button>
+      <div id="login-error" class="login-error-msg" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <!-- Sidebar Navigation -->
+  <nav id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-brand-logo"><i class="ti ti-school"></i></div>
+      <div class="sb-brand-info">
+        <div class="sb-school" id="sb-school-name">Sunrise Academy</div>
+        <div class="sb-sub" id="sb-school-id-disp">ID: SAC-2024</div>
+      </div>
+    </div>
+    
+    <div class="sb-nav">
+      <div class="sb-item active" data-roles="admin teacher" onclick="nav('dashboard', this)"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+      
+      <div class="sb-section" data-roles="admin teacher">Students</div>
+      <div class="sb-item" data-roles="admin" onclick="nav('admission', this)"><i class="ti ti-user-plus"></i>New Admission</div>
+      <div class="sb-item" data-roles="admin teacher" onclick="nav('directory', this)"><i class="ti ti-users"></i>Student Directory</div>
+      <div class="sb-item" data-roles="admin" onclick="nav('idcards', this)"><i class="ti ti-id-badge"></i>ID Cards</div>
+      <div class="sb-item" data-roles="admin" onclick="nav('admit', this)"><i class="ti ti-certificate"></i>Admit Cards</div>
+      
+      <div class="sb-section" data-roles="student">Student Portal</div>
+      
+      <div class="sb-section" data-roles="admin">Finance</div>
+      <div class="sb-item" data-roles="admin student" onclick="nav('fees', this)"><i class="ti ti-cash"></i>Fee Collection</div>
+      <div class="sb-item" data-roles="admin" onclick="nav('ledger', this)"><i class="ti ti-book-2"></i>Ledger System</div>
+      <div class="sb-item" data-roles="admin" onclick="nav('report', this)"><i class="ti ti-chart-pie"></i>Fee Report</div>
+      <div class="sb-item" data-roles="admin" onclick="nav('payroll', this)"><i class="ti ti-wallet"></i>Staff Payroll</div>
+      
+      <div class="sb-section" data-roles="admin teacher">Communication</div>
+      <div class="sb-item" data-roles="admin" onclick="nav('sms', this)"><i class="ti ti-messages"></i>Send SMS</div>
+      <div class="sb-item" data-roles="admin teacher student" onclick="nav('notice', this)"><i class="ti ti-bell-ringing"></i>Notice Board</div>
+      
+      <div class="sb-section" data-roles="admin teacher">Administration</div>
+      <div class="sb-item" data-roles="admin" onclick="nav('enquiry', this)"><i class="ti ti-address-book"></i>Enquiries</div>
+      <div class="sb-item" data-roles="admin teacher student" onclick="nav('attendance', this)"><i class="ti ti-calendar-user"></i>Student Attendance</div>
+      <div class="sb-item" data-roles="admin" onclick="nav('staffattendance', this)"><i class="ti ti-users-group"></i>Staff Attendance</div>
+      <div class="sb-item" data-roles="admin teacher" onclick="nav('timetable', this)"><i class="ti ti-calendar-time"></i>Timetable</div>
+      
+      <div class="sb-section" data-roles="admin teacher">Academic</div>
+      <div class="sb-item" data-roles="admin teacher" onclick="nav('exam', this)"><i class="ti ti-notebook"></i>Examinations</div>
+      <div class="sb-item" data-roles="admin teacher student" onclick="nav('results', this)"><i class="ti ti-award"></i>Exam Results</div>
+      <div class="sb-item" data-roles="admin teacher" onclick="nav('library', this)"><i class="ti ti-books"></i>Library Logs</div>
+      <div class="sb-item" data-roles="admin teacher" onclick="nav('transport', this)"><i class="ti ti-bus"></i>Transport Routes</div>
+      <div class="sb-item" data-roles="admin" onclick="nav('staff', this)"><i class="ti ti-id"></i>Staff Registry</div>
+      
+      <div class="sb-section" data-roles="admin">Settings</div>
+      <div class="sb-item" data-roles="admin" onclick="nav('settings', this)"><i class="ti ti-settings-automation"></i>Settings</div>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <div id="main">
+    <header id="topbar">
+      <button id="menu-toggle" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
+      <div class="topbar-left">
+        <h1 id="topbar-title">Dashboard</h1>
+      </div>
+      <div class="topbar-actions">
+        <span id="user-display-name" class="badge" style="background-color: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-secondary)">Guest</span>
+        <span class="badge" id="curr-badge">₹ INR</span>
+        <div class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+          <i class="ti ti-sun-moon"></i>
+        </div>
+        <div class="logout-btn" onclick="executeLogout()" title="Sign Out of App" style="cursor:pointer; font-size: 20px; color: var(--color-danger); display: flex; align-items: center; justify-content: center; width:36px; height:36px; border-radius: var(--border-radius-md); border: 1px solid var(--border-primary)">
+          <i class="ti ti-logout-2"></i>
+        </div>
+        <span id="topbar-date" class="date-display"></span>
+      </div>
+    </header>
+
+    <main id="content">
+
+      <!-- DASHBOARD TAB -->
+      <section class="tab active" id="tab-dashboard">
+        <div class="grid-4 metric-container">
+          <div class="stat-card">
+            <div class="stat-icon-wrapper blue"><i class="ti ti-users"></i></div>
+            <div class="stat-content">
+              <div class="stat-num" id="stat-students">0</div>
+              <div class="stat-lbl">Active Students</div>
+            </div>
+            <div class="stat-trend positive"><i class="ti ti-trending-up"></i> 3 new this month</div>
+          </div>
+          <div class="stat-card" data-roles="admin">
+            <div class="stat-icon-wrapper green"><i class="ti ti-currency-rupee"></i></div>
+            <div class="stat-content">
+              <div class="stat-num" id="stat-revenue">₹0</div>
+              <div class="stat-lbl">Monthly Revenue</div>
+            </div>
+            <div class="stat-trend positive"><i class="ti ti-trending-up"></i> +12.4% vs last mo</div>
+          </div>
+          <div class="stat-card" data-roles="admin">
+            <div class="stat-icon-wrapper orange"><i class="ti ti-alert-triangle"></i></div>
+            <div class="stat-content">
+              <div class="stat-num" id="stat-pending">₹0</div>
+              <div class="stat-lbl">Pending Dues</div>
+            </div>
+            <div class="stat-trend negative" id="stat-pending-sub"><i class="ti ti-trending-down"></i> 0 students</div>
+          </div>
+          <div class="stat-card" data-roles="admin student teacher">
+            <div class="stat-icon-wrapper purple"><i class="ti ti-message-dots"></i></div>
+            <div class="stat-content">
+              <div class="stat-num" id="stat-sms">0</div>
+              <div class="stat-lbl">SMS Balance</div>
+            </div>
+            <div class="stat-trend neutral">Credits left: <span id="stat-sms-plan">0</span></div>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-bottom:20px">
+          <!-- Quick Actions Grid -->
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-sparkles"></i> Command Operations</h2>
+              <span class="card-subtitle">One-click administrative pathways</span>
+            </div>
+            <div class="action-grid" id="action-grid-wrapper">
+              <!-- Rendered via JS based on login roles -->
+            </div>
+          </div>
+
+          <!-- Notice Board & Graph -->
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-broadcast"></i> Campus Announcements</h2>
+              <span class="card-subtitle">Active notifications and calendar milestones</span>
+            </div>
+            <div id="notice-board" class="notice-container">
+              <!-- Rendered via JS -->
+            </div>
+            
+            <div class="revenue-analytics-mini" data-roles="admin">
+              <div class="chart-header">
+                <span class="small-title">Monthly Collection Metrics</span>
+                <span class="trend-lbl positive" id="chart-growth-rate">+8.2%</span>
+              </div>
+              <div class="mini-chart-container">
+                <div class="mini-chart" id="mini-chart">
+                  <!-- Custom CSS bars rendered dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card glass" data-roles="admin teacher">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-history"></i> Recent Student Enrollments</h2>
+            <span class="card-subtitle">Latest additions to Sunrise Academy</span>
+          </div>
+          <div class="table-wrap">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th>Enrollment ID</th>
+                  <th>Student Name</th>
+                  <th>Class / Section</th>
+                  <th>Parent / Guardian</th>
+                  <th>Admission Date</th>
+                  <th>Finances</th>
+                </tr>
+              </thead>
+              <tbody id="recent-admissions">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ADMISSION TAB -->
+      <section class="tab" id="tab-admission">
+        <div class="two-col">
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-user-plus"></i> Student Enrollment Registry</h2>
+              <span class="card-subtitle">Complete form carefully to create ledger and profile</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row">
+                <label for="adm-name">Full Student Name *</label>
+                <input id="adm-name" type="text" placeholder="John Doe" required />
+              </div>
+              <div class="form-grid-2">
+                <div class="form-row">
+                  <label for="adm-class">Academic Class</label>
+                  <select id="adm-class">
+                    <option>Class I</option><option>Class II</option><option>Class III</option>
+                    <option>Class IV</option><option>Class V</option><option>Class VI</option>
+                    <option>Class VII</option><option>Class VIII</option><option>Class IX</option>
+                    <option selected>Class X</option><option>Class XI</option><option>Class XII</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label for="adm-section">Class Section</label>
+                  <select id="adm-section">
+                    <option selected>A</option>
+                    <option>B</option>
+                    <option>C</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <label for="adm-dob">Date of Birth</label>
+                <input type="date" id="adm-dob" />
+              </div>
+              <div class="form-row">
+                <label for="adm-parent">Parent / Guardian Name *</label>
+                <input id="adm-parent" type="text" placeholder="Parent / Guardian Name" required />
+              </div>
+              <div class="form-row">
+                <label for="adm-phone">Parent's Phone Number *</label>
+                <input id="adm-phone" type="tel" placeholder="+91 98765 43210" required />
+              </div>
+              <div class="form-row">
+                <label for="adm-address">Residential Address</label>
+                <textarea id="adm-address" rows="2" placeholder="Street Name, Area, City, Pin"></textarea>
+              </div>
+              <div class="form-row">
+                <label for="adm-fee">Annual Tuition Fee (<span class="curr-sym">₹</span>) *</label>
+                <input id="adm-fee" type="number" placeholder="45000" required />
+              </div>
+              <button class="btn btn-primary btn-block" onclick="admitStudent()">
+                <i class="ti ti-circle-check"></i> Enroll Student Record
+              </button>
+            </div>
+          </div>
+          
+          <div class="card glass panel-preview">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-id"></i> Interactive Record Preview</h2>
+              <span class="card-subtitle">Generated profile and system file metadata</span>
+            </div>
+            <div id="adm-preview" class="empty-preview">
+              <div class="empty-preview-content">
+                <i class="ti ti-forms"></i>
+                <p>Fill out the registration form to review student file profile card output in real-time.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DIRECTORY TAB -->
+      <section class="tab" id="tab-directory">
+        <div class="card glass">
+          <div class="card-header search-bar-header">
+            <div class="header-left">
+              <h2 class="section-title"><i class="ti ti-users"></i> Master Student Directory</h2>
+              <span class="card-subtitle">Complete registry of students and statuses</span>
+            </div>
+            <div class="header-actions">
+              <div class="search-input-wrapper">
+                <i class="ti ti-search"></i>
+                <input id="dir-search" placeholder="Search by name, ID..." oninput="filterDirectory()" />
+              </div>
+              <select id="dir-class-filter" onchange="filterDirectory()" class="styled-select">
+                <option value="">All Academic Classes</option>
+                <option>Class I</option><option>Class II</option><option>Class III</option>
+                <option>Class IV</option><option>Class V</option><option>Class VI</option>
+                <option>Class VII</option><option>Class VIII</option><option>Class IX</option>
+                <option>Class X</option><option>Class XI</option><option>Class XII</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="premium-table text-left">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Student Name</th>
+                  <th>Class / Section</th>
+                  <th>Parent Contact</th>
+                  <th>Phone Number</th>
+                  <th>Balance Status</th>
+                  <th>Action Operations</th>
+                </tr>
+              </thead>
+              <tbody id="dir-body">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ID CARDS TAB -->
+      <section class="tab" id="tab-idcards">
+        <div class="two-col">
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-id-badge"></i> Smart ID Card Generator</h2>
+              <span class="card-subtitle">Generate high-fidelity credentials ready to print</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row" id="id-student-sel-wrapper">
+                <label for="id-student-sel">Select Student Profile</label>
+                <select id="id-student-sel" onchange="renderIDCard()" class="styled-select"></select>
+              </div>
+              <div class="form-row">
+                <label for="id-year">Academic Session</label>
+                <input id="id-year" type="text" value="2026-27" />
+              </div>
+              <div class="alert-box-info">
+                <i class="ti ti-info-circle"></i> ID Card auto-refreshes using current configuration and student's seeded profile parameters.
+              </div>
+              <button class="btn btn-primary btn-block" onclick="printCard('id-card-print-target')">
+                <i class="ti ti-printer"></i> Send Card to Print
+              </button>
+            </div>
+          </div>
+          
+          <div class="card glass preview-card-wrapper">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-device-floppy"></i> Physical Card Preview</h2>
+              <span class="card-subtitle">WYSIWYG layout view for printing sheets</span>
+            </div>
+            <div class="card-rendering-canvas" id="id-card-print-target">
+              <div id="id-card-preview"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ADMIT CARDS TAB -->
+      <section class="tab" id="tab-admit">
+        <div class="two-col">
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-certificate"></i> Examination Admit Card Portal</h2>
+              <span class="card-subtitle">Generate official certificates for final board exams</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row" id="admit-stu-sel-wrapper">
+                <label for="admit-stu-sel">Select Registered Student</label>
+                <select id="admit-stu-sel" onchange="renderAdmitCard()" class="styled-select"></select>
+              </div>
+              <div class="form-row">
+                <label for="admit-exam">Target Examination Session</label>
+                <select id="admit-exam" onchange="renderAdmitCard()">
+                  <option selected>Annual Board Examination 2026-27</option>
+                  <option>Half-Yearly Midterms 2026</option>
+                  <option>Pre-Board Academic Exams 2027</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="admit-centre">Assigned Examination Centre</label>
+                <input id="admit-centre" type="text" value="Main Academic Building, Block A" oninput="renderAdmitCard()" />
+              </div>
+              <button class="btn btn-primary btn-block" onclick="printCard('admit-card-print-target')">
+                <i class="ti ti-printer"></i> Print Admit Ticket
+              </button>
+            </div>
+          </div>
+          
+          <div class="card glass preview-card-wrapper">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-device-analytics"></i> Certificate Preview</h2>
+              <span class="card-subtitle">Board examination permit validation card</span>
+            </div>
+            <div class="card-rendering-canvas" id="admit-card-print-target">
+              <div id="admit-card-preview"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEE COLLECTION TAB -->
+      <section class="tab" id="tab-fees">
+        <div class="two-col">
+          <div class="card glass" id="fees-collect-card" data-roles="admin">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-credit-card"></i> Student Fee Collection Portal</h2>
+              <span class="card-subtitle">Log transactions and generate receipts</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row">
+                <label for="fee-stu-sel">Select Target Student</label>
+                <select id="fee-stu-sel" class="styled-select"></select>
+              </div>
+              <div class="form-row">
+                <label for="fee-type">Fee Installment Category</label>
+                <select id="fee-type">
+                  <option selected>Tuition Fee</option>
+                  <option>Exam Fee</option>
+                  <option>Sports &amp; Gym Fee</option>
+                  <option>Library Fine / Fee</option>
+                  <option>Transport Fee</option>
+                  <option>Miscellaneous</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="fee-amount">Amount Deposited (<span class="curr-sym">₹</span>) *</label>
+                <input id="fee-amount" type="number" placeholder="5000" required />
+              </div>
+              <div class="form-row">
+                <label for="fee-mode">Mode of Payment</label>
+                <select id="fee-mode">
+                  <option selected>UPI / Netbanking</option>
+                  <option>Cash Receipt</option>
+                  <option>Bank Draft / Cheque</option>
+                  <option>Credit / Debit Card</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="fee-remarks">Memo / Payment Remarks</label>
+                <input id="fee-remarks" type="text" placeholder="Installment payment for Term 1" />
+              </div>
+              <button class="btn btn-primary btn-block" onclick="collectFee()">
+                <i class="ti ti-receipt"></i> Process Fee &amp; Receipt
+              </button>
+            </div>
+          </div>
+          
+          <div class="card glass" id="fee-receipt-box">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-file-text"></i> Financial Receipt Invoice</h2>
+              <span class="card-subtitle">Real-time payment voucher details</span>
+            </div>
+            <div id="fee-receipt" class="empty-preview">
+              <div class="empty-preview-content">
+                <i class="ti ti-receipt"></i>
+                <p>Log in or select transaction to display the dynamic invoice receipt voucher here.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card glass" style="margin-top:20px">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-history"></i> Fee Transaction Logs</h2>
+            <span class="card-subtitle">Historical records of recent school fees logged</span>
+          </div>
+          <div class="table-wrap">
+            <table class="premium-table text-left">
+              <thead>
+                <tr>
+                  <th>Voucher ID</th>
+                  <th>Student Name</th>
+                  <th>Fee Type</th>
+                  <th>Mode</th>
+                  <th>Transaction Date</th>
+                  <th>Amount</th>
+                  <th data-roles="admin">Action</th>
+                </tr>
+              </thead>
+              <tbody id="fee-log-body">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- LEDGER SYSTEM TAB -->
+      <section class="tab" id="tab-ledger">
+        <div class="card glass" style="margin-bottom:20px">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-edit"></i> Create Ledger Book Entry</h2>
+            <span class="card-subtitle">Insert credit collection or operational debit expenses</span>
+          </div>
+          <div class="ledger-form-grid">
+            <div class="form-row">
+              <label for="led-desc">Transaction Memo / Description *</label>
+              <input id="led-desc" type="text" placeholder="Tuition Collection - December" required />
+            </div>
+            <div class="form-row">
+              <label for="led-amount">Value Amount (<span class="curr-sym">₹</span>) *</label>
+              <input id="led-amount" type="number" placeholder="45000" required />
+            </div>
+            <div class="form-row">
+              <label for="led-type">Accounting Action</label>
+              <select id="led-type" class="styled-select">
+                <option value="Credit" selected>Credit (Income / Inflow)</option>
+                <option value="Debit">Debit (Expense / Outflow)</option>
+              </select>
+            </div>
+            <div class="form-row flex-end-btn">
+              <button class="btn btn-primary btn-block" onclick="addLedgerEntry()">
+                <i class="ti ti-plus"></i> Append Ledger
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card glass">
+          <div class="card-header ledger-header">
+            <div class="header-left">
+              <h2 class="section-title"><i class="ti ti-book-2"></i> Master Accounting Balance Sheet</h2>
+              <span class="card-subtitle">Double-entry audit logs for financial metrics</span>
+            </div>
+            <div class="ledger-running-balance">
+              <span class="balance-lbl">System Cash Balance:</span>
+              <span class="balance-amt positive" id="ledger-balance">₹0</span>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="premium-table text-left">
+              <thead>
+                <tr>
+                  <th>Voucher #</th>
+                  <th>Audit Date</th>
+                  <th>Transaction Description</th>
+                  <th class="text-right">Credit (+)</th>
+                  <th class="text-right">Debit (-)</th>
+                  <th class="text-right">Net Balance</th>
+                  <th>Operations</th>
+                </tr>
+              </thead>
+              <tbody id="ledger-body">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEE REPORTS TAB -->
+      <section class="tab" id="tab-report">
+        <div class="grid-4 metric-container" style="margin-bottom:20px">
+          <div class="stat-card">
+            <div class="stat-num color-green" id="rpt-collected">₹0</div>
+            <div class="stat-lbl">Aggregate Collected</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num color-red" id="rpt-pending">₹0</div>
+            <div class="stat-lbl">Aggregate Outstanding</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num color-indigo" id="rpt-rate">0%</div>
+            <div class="stat-lbl">Collection Ratio</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num color-blue" id="rpt-count">0</div>
+            <div class="stat-lbl">Registered Accounts</div>
+          </div>
+        </div>
+        
+        <div class="card glass">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-chart-dots"></i> Academic Class-Wise Financial Breakdown</h2>
+            <span class="card-subtitle">Collection ratios and pending balances mapped per classroom</span>
+          </div>
+          <div class="table-wrap">
+            <table class="premium-table text-left">
+              <thead>
+                <tr>
+                  <th>Academic Grade</th>
+                  <th>Total Enrolled</th>
+                  <th class="text-right">Total Fee Due</th>
+                  <th class="text-right">Total Fee Collected</th>
+                  <th class="text-right">Pending Balance</th>
+                  <th>Fulfill Status</th>
+                </tr>
+              </thead>
+              <tbody id="rpt-body">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- STAFF PAYROLL TAB -->
+      <section class="tab" id="tab-payroll">
+        <div class="card glass" style="margin-bottom:20px" data-roles="admin">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-wallet"></i> Staff Payroll Settings &amp; Calculators</h2>
+            <span class="card-subtitle">Customize base salaries, benefits, and deductions per employee</span>
+          </div>
+          <div class="ledger-form-grid" style="grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; display: grid; gap: 16px; align-items: flex-end;">
+            <div class="form-row">
+              <label>Select Staff Member</label>
+              <select id="payroll-staff-sel" onchange="loadStaffPayrollForm()" class="styled-select"></select>
+            </div>
+            <div class="form-row">
+              <label>Base Monthly Salary (<span class="curr-sym">₹</span>)</label>
+              <input type="number" id="payroll-base" placeholder="35000" />
+            </div>
+            <div class="form-row">
+              <label>Allowances / Benefits (<span class="curr-sym">₹</span>)</label>
+              <input type="number" id="payroll-allowance" placeholder="3000" />
+            </div>
+            <div class="form-row">
+              <label>Manual Deductions (<span class="curr-sym">₹</span>)</label>
+              <input type="number" id="payroll-deduction" placeholder="0" />
+            </div>
+            <div class="form-row flex-end-btn">
+              <button class="btn btn-primary btn-block" onclick="saveStaffPayrollConfig()">
+                <i class="ti ti-circle-check"></i> Commit Salary
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card glass">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-cash-banknote"></i> Faculty Payroll Sheet</h2>
+            <span class="card-subtitle">Net salary payouts mapped to monthly attendance logs (1 Absence = 1 Day Pay Deduct)</span>
+          </div>
+          <div class="table-wrap">
+            <table class="premium-table text-left">
+              <thead>
+                <tr>
+                  <th>Faculty ID</th>
+                  <th>Staff Name</th>
+                  <th class="text-right">Base Salary</th>
+                  <th class="text-right">Allowances</th>
+                  <th class="text-right">Absences (Deduct)</th>
+                  <th class="text-right">Other Deducts</th>
+                  <th class="text-right">Net Payout</th>
+                  <th>Status</th>
+                  <th>Action Operations</th>
+                </tr>
+              </thead>
+              <tbody id="payroll-body">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SMS PORTAL TAB -->
+      <section class="tab" id="tab-sms">
+        <div class="two-col">
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-messages"></i> SMS Notification Console</h2>
+              <span class="card-subtitle">Broadcast campus notices directly to parents' cellular lines</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row">
+                <label for="sms-to">Recipient Audience / Filter</label>
+                <select id="sms-to" onchange="updateSMSCreditsPreview()">
+                  <option selected>All Parents / Guardians</option>
+                  <option>Class X Parents</option>
+                  <option>Class XII Parents</option>
+                  <option>Defaulters (Outstanding Balance)</option>
+                  <option>Staff Registry List</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="sms-body">Text SMS Message Content *</label>
+                <textarea id="sms-body" rows="5" placeholder="Dear Parent, this is to inform..." oninput="handleSMSCharsCount()"></textarea>
+              </div>
+              <div class="sms-stat-row">
+                <span class="credits-lbl">SMS Balances: <b id="sms-credits">0</b> credits</span>
+                <span class="chars-lbl" id="sms-char">0 / 160 characters (1 SMS)</span>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="sendSMSBroadcast()">
+                <i class="ti ti-send"></i> Broadcast Cellular Message
+              </button>
+            </div>
+          </div>
+          
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-mail-opened"></i> Transmission History Logs</h2>
+              <span class="card-subtitle">Chronological ledger of dispatched text messages</span>
+            </div>
+            <div id="sms-log" class="sms-log-container">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NOTICE BOARD TAB -->
+      <section class="tab" id="tab-notice">
+        <div class="two-col">
+          <div class="card glass" data-roles="admin teacher">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-speakerphone"></i> Author New Campus Announcement</h2>
+              <span class="card-subtitle">Announcements populate notice boards across all profiles</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row">
+                <label for="nt-title">Bulletin Title *</label>
+                <input id="nt-title" type="text" placeholder="E.g., Winter Holiday Break" required />
+              </div>
+              <div class="form-row">
+                <label for="nt-body">Notice Description / Content *</label>
+                <textarea id="nt-body" rows="5" placeholder="Write bulletin notes here..." required></textarea>
+              </div>
+              <div class="form-row">
+                <label for="nt-priority">Announcement Classification</label>
+                <select id="nt-priority">
+                  <option selected>Normal Broadcast</option>
+                  <option>Important Bulletin</option>
+                  <option>Urgent Announcement</option>
+                </select>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="postNoticeBoardBulletin()">
+                <i class="ti ti-upload"></i> Publish Announcement
+              </button>
+            </div>
+          </div>
+          
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-news"></i> Digital Notice Board Panel</h2>
+              <span class="card-subtitle">Active administrative posts &amp; bulletins</span>
+            </div>
+            <div id="notice-list" class="notice-list-scrollable">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ENQUIRIES TAB -->
+      <section class="tab" id="tab-enquiry">
+        <div class="two-col">
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-address-book"></i> Log New Admission Enquiry</h2>
+              <span class="card-subtitle">Log physical walk-ins or callback requests</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row">
+                <label for="enq-name">Candidate Child Name *</label>
+                <input id="enq-name" type="text" placeholder="Child's full name" required />
+              </div>
+              <div class="form-row">
+                <label for="enq-class">Academic Grade Sought</label>
+                <select id="enq-class">
+                  <option>Class I</option><option>Class II</option><option>Class III</option>
+                  <option>Class IV</option><option>Class V</option><option>Class VI</option>
+                  <option>Class VII</option><option>Class VIII</option><option>Class IX</option>
+                  <option selected>Class X</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="enq-parent">Parent / Guardian Name *</label>
+                <input id="enq-parent" type="text" placeholder="Parent name" required />
+              </div>
+              <div class="form-row">
+                <label for="enq-phone">Contact Mobile *</label>
+                <input id="enq-phone" type="tel" placeholder="+91 XXXXX XXXXX" required />
+              </div>
+              <div class="form-row">
+                <label for="enq-source">Enquiry Pipeline Origin</label>
+                <select id="enq-source">
+                  <option selected>Walk-In Office Visit</option>
+                  <option>Direct Phone Callback</option>
+                  <option>Digital Web Portal Form</option>
+                  <option>Referral / Alumnus</option>
+                  <option>Social Media Marketing</option>
+                </select>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="addNewEnquiryRecord()">
+                <i class="ti ti-file-text-ai"></i> Log Pipeline Enquiry
+              </button>
+            </div>
+          </div>
+          
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-users"></i> Prospect Pipeline Registry</h2>
+              <span class="card-subtitle">Active school leads awaiting follow-ups</span>
+            </div>
+            <div class="table-wrap">
+              <table class="premium-table text-left">
+                <thead>
+                  <tr>
+                    <th>Child Name</th>
+                    <th>Grade</th>
+                    <th>Parent Contact</th>
+                    <th>Origin</th>
+                    <th>Pipeline Status</th>
+                    <th>Action Operations</th>
+                  </tr>
+                </thead>
+                <tbody id="enq-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STUDENT ATTENDANCE TAB -->
+      <section class="tab" id="tab-attendance">
+        <div class="card glass">
+          <div class="card-header search-bar-header">
+            <div class="header-left">
+              <h2 class="section-title"><i class="ti ti-calendar-user"></i> Daily Student Attendance</h2>
+              <span class="card-subtitle" id="att-subtitle">Select academic parameters to mark classroom attendances</span>
+            </div>
+            <div class="header-actions" id="student-att-controls-wrapper">
+              <select id="att-class" onchange="loadAttendanceRegister()" class="styled-select">
+                <option selected>Class X</option>
+                <option>Class IX</option>
+                <option>Class VIII</option>
+              </select>
+              <input type="date" id="att-date" onchange="loadAttendanceRegister()" class="styled-date-picker" />
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="premium-table text-left">
+              <thead>
+                <tr id="student-att-table-header">
+                  <th>Roll ID</th>
+                  <th>Student Name</th>
+                  <th class="center-col">Present</th>
+                  <th class="center-col">Absent</th>
+                  <th class="center-col">On Approved Leave</th>
+                </tr>
+              </thead>
+              <tbody id="att-body">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <div class="card-footer-action" data-roles="admin teacher">
+            <button class="btn btn-primary" onclick="saveAttendanceRegister()">
+              <i class="ti ti-checkbox"></i> Commit Daily Attendance Ledger
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STAFF ATTENDANCE TAB -->
+      <section class="tab" id="tab-staffattendance">
+        <div class="card glass">
+          <div class="card-header search-bar-header">
+            <div class="header-left">
+              <h2 class="section-title"><i class="ti ti-calendar-user"></i> Daily Staff Attendance Registry</h2>
+              <span class="card-subtitle">Mark employee attendances to evaluate salaries and payrolls</span>
+            </div>
+            <div class="header-actions">
+              <input type="date" id="staff-att-date" onchange="loadStaffAttendanceRegister()" class="styled-date-picker" />
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="premium-table text-left">
+              <thead>
+                <tr>
+                  <th>Faculty ID</th>
+                  <th>Staff Officer Name</th>
+                  <th>Department / Designation</th>
+                  <th class="center-col">Present</th>
+                  <th class="center-col">Absent</th>
+                  <th class="center-col">On Leave</th>
+                </tr>
+              </thead>
+              <tbody id="staff-att-body">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <div class="card-footer-action">
+            <button class="btn btn-primary" onclick="saveStaffAttendanceRegister()">
+              <i class="ti ti-checkbox"></i> Commit Daily Staff Attendance
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- WEEKLY TIMETABLE TAB -->
+      <section class="tab" id="tab-timetable">
+        <div class="card glass">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-calendar-time"></i> Weekly Curriculum Schedule (Class X-A)</h2>
+            <span class="card-subtitle">Mapped classroom periods and instructor lines</span>
+          </div>
+          <div class="table-wrap">
+            <table class="premium-table grid-timetable text-left">
+              <thead>
+                <tr>
+                  <th>Academic Time</th>
+                  <th>Monday</th>
+                  <th>Tuesday</th>
+                  <th>Wednesday</th>
+                  <th>Thursday</th>
+                  <th>Friday</th>
+                  <th>Saturday</th>
+                </tr>
+              </thead>
+              <tbody id="tt-body">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXAMINATIONS SCHEDULE TAB -->
+      <section class="tab" id="tab-exam">
+        <div class="card glass">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-notebook"></i> Academic Examination Calendars</h2>
+            <span class="card-subtitle">Upcoming board tests, timings, and location parameters</span>
+          </div>
+          <div class="table-wrap">
+            <table class="premium-table text-left">
+              <thead>
+                <tr>
+                  <th>Subject Course</th>
+                  <th>Assigned Date</th>
+                  <th>Assigned Slot</th>
+                  <th>Timing Limit</th>
+                  <th>Max Weights</th>
+                  <th>Hall Location</th>
+                </tr>
+              </thead>
+              <tbody id="exam-body">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXAM RESULTS TAB -->
+      <section class="tab" id="tab-results">
+        <div class="card glass">
+          <div class="card-header search-bar-header">
+            <div class="header-left">
+              <h2 class="section-title"><i class="ti ti-award"></i> Master Student Gradebook</h2>
+              <span class="card-subtitle">Log, review, and print individual academic scores</span>
+            </div>
+            <div class="header-actions" id="results-stu-wrapper">
+              <select id="res-stu" class="styled-select" style="min-width: 250px;"></select>
+              <button class="btn btn-primary" onclick="loadStudentResults()">
+                <i class="ti ti-file-text"></i> Load Gradebook Report
+              </button>
+            </div>
+          </div>
+          <div id="results-table" class="gradebook-report-card">
+            <div class="empty-preview">
+              <div class="empty-preview-content">
+                <i class="ti ti-award"></i>
+                <p>Select a student profile from the selector above to compile and render their exam result registry.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LIBRARY REGISTER TAB -->
+      <section class="tab" id="tab-library">
+        <div class="two-col">
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-books"></i> Central Library Circulation Log</h2>
+              <span class="card-subtitle">Audit records of lent books and issue statuses</span>
+            </div>
+            <div class="table-wrap">
+              <table class="premium-table text-left">
+                <thead>
+                  <tr>
+                    <th>Book ID</th>
+                    <th>Book Title</th>
+                    <th>Assigned Patron</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th data-roles="admin teacher">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="lib-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="card glass" data-roles="admin teacher">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-plus"></i> Issue / Register Book Assets</h2>
+              <span class="card-subtitle">Lend catalog books to registered school accounts</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row">
+                <label>Book Catalog ID *</label>
+                <input type="text" id="lib-book-id" placeholder="E.g., LIB-304" />
+              </div>
+              <div class="form-row">
+                <label>Book Title *</label>
+                <input type="text" id="lib-book-title" placeholder="Concepts of Physics" />
+              </div>
+              <div class="form-row">
+                <label>Author *</label>
+                <input type="text" id="lib-book-author" placeholder="Dr. H.C. Verma" />
+              </div>
+              <div class="form-row">
+                <label>Class Grade Level Access</label>
+                <select id="lib-book-class">
+                  <option>Class I</option><option>Class II</option><option>Class III</option>
+                  <option>Class IV</option><option>Class V</option><option>Class VI</option>
+                  <option>Class VII</option><option>Class VIII</option><option>Class IX</option>
+                  <option selected>Class X</option><option>Class XI</option><option>Class XII</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Lend to Patron Name *</label>
+                <input type="text" id="lib-book-patron" placeholder="Aarav Sharma (SAC-001)" />
+              </div>
+              <div class="form-row">
+                <label>Due Date for Return</label>
+                <input type="date" id="lib-book-due" />
+              </div>
+              <button class="btn btn-primary btn-block" onclick="addLibraryBookLog()">
+                <i class="ti ti-plus"></i> Process Lending Book
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRANSPORT ROUTES TAB -->
+      <section class="tab" id="tab-transport">
+        <div class="two-col">
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-bus"></i> Campus Transit Routes Database</h2>
+              <span class="card-subtitle">Active transit lines, assigned drivers, and stop waypoints</span>
+            </div>
+            <div class="table-wrap">
+              <table class="premium-table text-left">
+                <thead>
+                  <tr>
+                    <th>Transit Route</th>
+                    <th>Driver Name</th>
+                    <th>Vehicle</th>
+                    <th>Key Stops</th>
+                    <th>Status</th>
+                    <th data-roles="admin teacher">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="trans-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="card glass" data-roles="admin teacher">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-plus"></i> Create New Transit Route</h2>
+              <span class="card-subtitle">Establish active routes and drivers</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row">
+                <label>Transit Route Label *</label>
+                <input type="text" id="trans-route-name" placeholder="Route 5 - West Delhi" />
+              </div>
+              <div class="form-row">
+                <label>Driver / Captain Name *</label>
+                <input type="text" id="trans-driver" placeholder="Harish Kumar" />
+              </div>
+              <div class="form-row">
+                <label>Vehicle License Plate *</label>
+                <input type="text" id="trans-vehicle" placeholder="DL-1P-1234 (Bus)" />
+              </div>
+              <div class="form-row">
+                <label>Waypoints stops (Comma-separated) *</label>
+                <input type="text" id="trans-stops" placeholder="Rajouri Garden, Janakpuri, Vikaspuri" />
+              </div>
+              <button class="btn btn-primary btn-block" onclick="addTransportRoute()">
+                <i class="ti ti-plus"></i> Establish Transit Route
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STAFF REGISTRY TAB -->
+      <section class="tab" id="tab-staff">
+        <div class="two-col">
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-users-group"></i> Academic &amp; Admin Staff Registry</h2>
+              <span class="card-subtitle">Master records of faculty officers and passwords</span>
+            </div>
+            <div class="table-wrap">
+              <table class="premium-table text-left">
+                <thead>
+                  <tr>
+                    <th>Faculty ID</th>
+                    <th>Staff Name</th>
+                    <th>Department / Role</th>
+                    <th>Password</th>
+                    <th>Contact Info</th>
+                    <th>Operations</th>
+                  </tr>
+                </thead>
+                <tbody id="staff-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-briefcase"></i> Add Staff Officer</h2>
+              <span class="card-subtitle">Configure faculty accounts and set portal passwords</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row">
+                <label>Full Employee Name *</label>
+                <input type="text" id="staff-name" placeholder="Dr. S. K. Mitra" />
+              </div>
+              <div class="form-row">
+                <label>Department Role Designation *</label>
+                <input type="text" id="staff-role" placeholder="Senior Faculty" />
+              </div>
+              <div class="form-row">
+                <label>Core Subjects Mapped</label>
+                <input type="text" id="staff-sub" placeholder="Economics, Civics" />
+              </div>
+              <div class="form-row">
+                <label>Helpline Contact Mobile *</label>
+                <input type="tel" id="staff-phone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+              <div class="form-grid-2">
+                <div class="form-row">
+                  <label>Staff Portal Password *</label>
+                  <input type="text" id="staff-password" value="teacher123" />
+                </div>
+                <div class="form-row">
+                  <label>Assigned Salary (<span class="curr-sym">₹</span>) *</label>
+                  <input type="number" id="staff-base-salary" value="40000" />
+                </div>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="addStaffRecord()">
+                <i class="ti ti-circle-plus"></i> Register Faculty Record
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SYSTEM SETTINGS TAB -->
+      <section class="tab" id="tab-settings">
+        <div class="two-col">
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-settings-2"></i> System Administration Panel</h2>
+              <span class="card-subtitle">Customize organizational attributes global parameters</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row">
+                <label for="set-name">School/Academy Name *</label>
+                <input id="set-name" type="text" value="Sunrise Academy" oninput="applySettingsConfig()" required />
+              </div>
+              <div class="form-row">
+                <label for="set-address">Official Mailing Address</label>
+                <input id="set-address" type="text" value="12 Education Lane, New Delhi – 110001" oninput="applySettingsConfig()" />
+              </div>
+              <div class="form-row">
+                <label for="set-phone">Official Support Helpline</label>
+                <input id="set-phone" type="text" value="+91 11 2345 6789" oninput="applySettingsConfig()" />
+              </div>
+              <div class="form-row">
+                <label for="set-prefix">Student ID Code Prefix *</label>
+                <input id="set-prefix" type="text" value="SAC" oninput="applySettingsConfig()" required />
+              </div>
+              <div class="form-row">
+                <label for="set-currency">Default Ledger Currency</label>
+                <select id="set-currency" onchange="applySettingsConfig()" class="styled-select">
+                  <option value="₹">₹ INR — Indian Rupee</option>
+                  <option value="$">$ USD — US Dollar</option>
+                  <option value="£">£ GBP — British Pound</option>
+                  <option value="€">€ EUR — Euro</option>
+                  <option value="AED">AED — UAE Dirham</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="set-latefee">Late Fee Penalty Surcharge (%)</label>
+                <input id="set-latefee" type="number" value="2" oninput="applySettingsConfig()" />
+              </div>
+              <div class="form-row">
+                <label for="set-receipt-note">Financial Invoice Disclaimer Note</label>
+                <input id="set-receipt-note" type="text" value="Thank you for your payment. Fee once paid is non-refundable." oninput="applySettingsConfig()" />
+              </div>
+              <button class="btn btn-primary btn-block" onclick="saveSettingsConfig()">
+                <i class="ti ti-device-floppy"></i> Commit Core Configurations
+              </button>
+            </div>
+          </div>
+          
+          <div class="card glass">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-eye"></i> Live Configuration Preview</h2>
+              <span class="card-subtitle">Simulated layout mapping current system variables</span>
+            </div>
+            <div class="live-settings-box">
+              <div class="live-settings-card">
+                <h3 id="prev-name" class="org-name-preview">Sunrise Academy</h3>
+                <p id="prev-address" class="org-address-preview">12 Education Lane, New Delhi – 110001</p>
+                <p id="prev-phone" class="org-phone-preview">Tel: +91 11 2345 6789</p>
+                
+                <div class="preview-metrics-list">
+                  <div class="metric-line">
+                    <span class="metric-key">Next Account Enrollment ID:</span>
+                    <span class="metric-val" id="prev-next-id">SAC-008</span>
+                  </div>
+                  <div class="metric-line">
+                    <span class="metric-key">System Currency Symbol:</span>
+                    <span class="metric-val" id="prev-curr">₹</span>
+                  </div>
+                  <div class="metric-line">
+                    <span class="metric-key">Late Penalty Surcharge:</span>
+                    <span class="metric-val" id="prev-latefee">2%</span>
+                  </div>
+                </div>
+                
+                <div class="receipt-note-wrapper">
+                  <span class="note-lbl">Invoice Voucher footer disclaimer note:</span>
+                  <p id="prev-receipt-note" class="note-txt">Thank you for your payment. Fee once paid is non-refundable.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- DYNAMIC ACCESS CONFIGURATOR PANEL -->
+        <div class="card glass" style="margin-top: 20px;">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-shield-lock"></i> Faculty Access &amp; Permissions Configurator</h2>
+            <span class="card-subtitle">Select which tabs and tools are active and visible in the Teacher / Faculty menu portals</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; margin-top: 10px;">
+            <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer;">
+              <input type="checkbox" id="perm-directory" checked style="width:16px; height:16px; cursor:pointer;" /> Student Directory
+            </label>
+            <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer;">
+              <input type="checkbox" id="perm-notice" checked style="width:16px; height:16px; cursor:pointer;" /> Notice Board
+            </label>
+            <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer;">
+              <input type="checkbox" id="perm-attendance" checked style="width:16px; height:16px; cursor:pointer;" /> Student Attendance
+            </label>
+            <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer;">
+              <input type="checkbox" id="perm-timetable" checked style="width:16px; height:16px; cursor:pointer;" /> Timetable Mappings
+            </label>
+            <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer;">
+              <input type="checkbox" id="perm-exam" checked style="width:16px; height:16px; cursor:pointer;" /> Exam Calendars
+            </label>
+            <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer;">
+              <input type="checkbox" id="perm-results" checked style="width:16px; height:16px; cursor:pointer;" /> Exam Results
+            </label>
+            <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer;">
+              <input type="checkbox" id="perm-library" checked style="width:16px; height:16px; cursor:pointer;" /> Library Logs
+            </label>
+            <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer;">
+              <input type="checkbox" id="perm-transport" checked style="width:16px; height:16px; cursor:pointer;" /> Transport Routes
+            </label>
+          </div>
+          <button class="btn btn-primary" onclick="saveFacultyPermissions()"><i class="ti ti-device-floppy"></i> Save Access Permissions</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Global Dynamic Toast Notification System -->
+<div id="toast-wrapper"></div>
+
+<!-- Local Script File -->
+<script src="app.js"></script>
+</body>
+</html>
