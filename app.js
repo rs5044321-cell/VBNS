@@ -601,6 +601,7 @@ function nav(tabId, sidebarElement) {
       renderAdmitCard();
       break;
     case 'fees':
+      populateStudentSelectors('fee-stu-sel');
       // Lock student fees collections forms to read-only receipts lists
       lockStudentFeesCollectTab();
       renderFeeCollectionModule();
