@@ -3,7 +3,7 @@
 // Centralized State Container
 let State = {
   config: {
-    schoolName: 'Sunrise Academy',
+    schoolName: 'VBNS',
     address: '12 Education Lane, New Delhi – 110001',
     phone: '+91 11 2345 6789',
     prefix: 'SAC',
@@ -91,6 +91,11 @@ function seedDatabase() {
       if (parsed.students && parsed.students.length > 0) {
         State = { ...State, ...parsed };
         
+        // Force update school name if still the old default
+        if (State.config.schoolName === 'Sunrise Academy') {
+          State.config.schoolName = 'VBNS';
+        }
+        
         // SELF-CORRECTION: Populate operational blocks if missing on existing localStorage instances
         if (!State.staffPasswords || Object.keys(State.staffPasswords).length === 0) {
           State.staffPasswords = {};
@@ -156,8 +161,8 @@ function seedDatabase() {
   ];
 
   State.smsLog = [
-    { to: 'All Parents (247 Recipients)', msg: 'Dear Parent, this is to inform that the mid-term evaluations reports are now published in the central portal. — Sunrise Academy', date: '2026-05-15', time: '10:15 AM', credits: 247 },
-    { to: 'Defaulters (Outstanding Balance)', msg: 'Dear Parent, a gentle reminder that your child\'s outstanding annual fee installment is overdue. Please ignore if paid. — Sunrise Academy', date: '2026-05-20', time: '11:45 AM', credits: 3 }
+    { to: 'All Parents (247 Recipients)', msg: 'Dear Parent, this is to inform that the mid-term evaluations reports are now published in the central portal. — VBNS', date: '2026-05-15', time: '10:15 AM', credits: 247 },
+    { to: 'Defaulters (Outstanding Balance)', msg: 'Dear Parent, a gentle reminder that your child\'s outstanding annual fee installment is overdue. Please ignore if paid. — VBNS', date: '2026-05-20', time: '11:45 AM', credits: 3 }
   ];
 
   State.notices = [
@@ -2634,7 +2639,7 @@ function renderSettingsValues() {
 function applySettingsConfig() {
   const nameInput = document.getElementById('set-name');
   if (nameInput) {
-    State.config.schoolName = nameInput.value.trim() || 'Sunrise Academy';
+    State.config.schoolName = nameInput.value.trim() || 'VBNS';
     State.config.address = document.getElementById('set-address').value.trim() || 'Address';
     State.config.phone = document.getElementById('set-phone').value.trim() || 'Phone';
     State.config.prefix = document.getElementById('set-prefix').value.trim() || 'SAC';
