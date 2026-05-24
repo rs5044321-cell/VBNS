@@ -112,6 +112,11 @@ function seedDatabase() {
         if (!State.config.teacherAccess) {
           State.config.teacherAccess = ['dashboard', 'directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
         }
+        State.staff.forEach(st => {
+          if (!st.access) {
+            st.access = ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
+          }
+        });
         if (!State.staffAttendance) {
           State.staffAttendance = {};
         }
@@ -175,6 +180,7 @@ function seedDatabase() {
   State.staff.forEach(st => {
     State.staffPasswords[st.id] = 'teacher123';
     State.payrollConfig[st.id] = { base: st.role.includes('Senior') ? 45000 : 35000, allowance: 3000, deductions: 0, status: 'Unpaid' };
+    st.access = ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
   });
 
   saveState();
@@ -268,10 +274,11 @@ function setLoginRole(role) {
     document.getElementById('login-username').placeholder = 'E.g., TCH-001';
   } else if (role === 'student') {
     userRow.style.display = 'block';
-    passRow.style.display = 'none';
-    dobRow.style.display = 'block';
-    userLbl.textContent = 'Registered Student Name or ID';
-    document.getElementById('login-username').placeholder = 'E.g., Aarav Sharma or SAC-001';
+    passRow.style.display = 'block';
+    dobRow.style.display = 'none';
+    userLbl.textContent = 'Registered Student ID';
+    document.getElementById('login-username').placeholder = 'E.g., SAC-001';
+    document.getElementById('login-password').placeholder = 'E.g., Aarav2010-03-15';
   }
 }
 
@@ -303,11 +310,13 @@ function executeLogin() {
       authenticatedUser = staffObj;
     }
   } else if (activeLoginRole === 'student') {
-    // Highly Forgiving Student Matching: Match Student ID (e.g. SAC-001) OR Name (case-insensitive trim) and DOB
-    const stuObj = State.students.find(s => 
-      (s.id.toUpperCase() === username.toUpperCase() || s.name.toLowerCase() === username.toLowerCase()) && 
-      s.dob === dobVal
-    );
+    // Forgiving Student login: ID = Student ID, Password = first name + DOB (e.g. Aarav2010-03-15)
+    const stuObj = State.students.find(s => {
+      if (s.id.toUpperCase() !== username.toUpperCase()) return false;
+      const firstName = s.name.trim().split(' ')[0];
+      const expectedPassword = `${firstName}${s.dob}`;
+      return passVal.trim().toLowerCase() === expectedPassword.toLowerCase();
+    });
     if (stuObj) {
       authenticatedUser = stuObj;
     }
@@ -402,6 +411,52 @@ function applySessionAccessLayout() {
     uBadge.textContent = `${user.name} (${role.toUpperCase()})`;
   }
 
+  // DYNAMIC SIDEBAR VISIBILITY FILTERS (Locks specific items dynamically per user!)
+  const studentClearance = ['fees', 'notice', 'attendance', 'results'];
+  
+  let allowedTabs = [];
+  if (role === 'admin') {
+    allowedTabs = ['dashboard', 'admission', 'directory', 'idcards', 'admit', 'fees', 'ledger', 'report', 'payroll', 'sms', 'notice', 'enquiry', 'attendance', 'staffattendance', 'timetable', 'exam', 'results', 'library', 'transport', 'staff', 'settings'];
+  } else if (role === 'student') {
+    allowedTabs = studentClearance;
+  } else if (role === 'teacher') {
+    allowedTabs = ['dashboard', ...(user.access || ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'])];
+  }
+
+  // Filter all sidebar navigation items dynamically
+  document.querySelectorAll('.sb-item').forEach(item => {
+    const action = item.getAttribute('onclick');
+    if (action) {
+      const match = action.match(/nav\('([^']+)'/);
+      if (match) {
+        const tabId = match[1];
+        if (allowedTabs.includes(tabId)) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      }
+    }
+  });
+
+  // Filter sidebar section headers dynamically
+  document.querySelectorAll('.sb-section').forEach(section => {
+    const secRoles = section.getAttribute('data-roles');
+    if (secRoles && secRoles.includes(role)) {
+      if (role === 'student') {
+        if (secRoles === 'student') {
+          section.style.display = 'block';
+        } else {
+          section.style.display = 'none';
+        }
+      } else {
+        section.style.display = 'block';
+      }
+    } else {
+      section.style.display = 'none';
+    }
+  });
+
   // Draw dashboard operational triggers
   renderQuickActionsPanel();
 }
@@ -415,12 +470,15 @@ function nav(tabId, sidebarElement) {
   // Student view limits: Students can ONLY access Fees, Notice Board, Student Attendance, and Exam Results
   const studentClearance = ['fees', 'notice', 'attendance', 'results'];
   
-  // Dynamic Faculty view limits: Controlled dynamically by Admin Access configurations!
+  // Dynamic Faculty view limits: Controlled dynamically per logged-in staff member!
   let teacherClearance = ['dashboard'];
-  if (State.config.teacherAccess) {
-    teacherClearance = ['dashboard', ...State.config.teacherAccess];
-  } else {
-    teacherClearance = ['dashboard', 'directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
+  if (currentRole === 'teacher') {
+    const activeStaff = State.auth.currentUser;
+    if (activeStaff && activeStaff.access) {
+      teacherClearance = ['dashboard', ...activeStaff.access];
+    } else {
+      teacherClearance = ['dashboard', 'directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
+    }
   }
 
   const accessAllowances = {
@@ -720,10 +778,13 @@ function renderQuickActionsPanel() {
 
   const currentRole = State.auth.currentRole || 'student';
   
-  // Get active teacher access configurations dynamically
+  // Get active teacher access configurations dynamically per logged-in staff member!
   let teacherActions = ['notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
-  if (State.config.teacherAccess) {
-    teacherActions = State.config.teacherAccess;
+  if (currentRole === 'teacher') {
+    const activeStaff = State.auth.currentUser;
+    if (activeStaff && activeStaff.access) {
+      teacherActions = activeStaff.access;
+    }
   }
 
   const allActions = [
@@ -2514,21 +2575,68 @@ function renderStaffRegistry() {
 
   tbody.innerHTML = State.staff.map(st => {
     const pw = State.staffPasswords[st.id] || 'teacher123';
+    const accessStr = st.access ? st.access.join(', ') : 'Default Academic';
     return `
       <tr>
         <td><b>${st.id}</b></td>
-        <td>${st.name}</td>
+        <td>
+          <div style="font-weight:600; color:var(--text-primary)">${st.name}</div>
+          <small style="color:var(--text-tertiary); font-size:10px; display:block; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${accessStr}">${accessStr}</small>
+        </td>
         <td><span class="pill pill-blue">${st.role}</span></td>
         <td>
           <input type="text" value="${pw}" style="width:110px; padding:4px 8px; font-size:11px" onchange="updateStaffPassword('${st.id}', this.value)" />
         </td>
         <td>${st.contact}</td>
         <td>
-          <button class="btn btn-sm btn-danger" onclick="removeStaffRecord('${st.id}')" title="Delete employee"><i class="ti ti-trash"></i> Delete</button>
+          <div style="display:flex; gap:6px">
+            <button class="btn btn-sm" style="background-color: var(--accent-light); color: var(--accent);" onclick="editStaffRecord('${st.id}')" title="Edit permissions"><i class="ti ti-edit"></i> Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="removeStaffRecord('${st.id}')" title="Delete employee"><i class="ti ti-trash"></i> Delete</button>
+          </div>
         </td>
       </tr>
     `;
   }).join('');
+}
+
+let editingStaffId = null;
+
+function editStaffRecord(staffId) {
+  const st = State.staff.find(x => x.id === staffId);
+  if (!st) return;
+
+  editingStaffId = staffId;
+  
+  // Set form header
+  document.getElementById('staff-form-header').innerHTML = `<i class="ti ti-edit"></i> Edit Staff: ${st.name} (${st.id})`;
+  
+  // Fill inputs
+  document.getElementById('staff-name').value = st.name;
+  document.getElementById('staff-role').value = st.role;
+  document.getElementById('staff-sub').value = st.sub;
+  document.getElementById('staff-phone').value = st.contact;
+  document.getElementById('staff-password').value = State.staffPasswords[st.id] || 'teacher123';
+  
+  const payroll = State.payrollConfig[st.id] || { base: 40000 };
+  document.getElementById('staff-base-salary').value = payroll.base;
+
+  // Set checkboxes
+  const permsList = ['admission', 'directory', 'idcards', 'admit', 'fees', 'ledger', 'report', 'payroll', 'sms', 'notice', 'enquiry', 'attendance', 'staffattendance', 'timetable', 'exam', 'results', 'library', 'transport', 'staff', 'settings'];
+  const access = st.access || ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
+  
+  permsList.forEach(perm => {
+    const box = document.getElementById(`staff-perm-${perm}`);
+    if (box) {
+      box.checked = access.includes(perm);
+    }
+  });
+
+  // Change register button text
+  const btn = document.getElementById('staff-submit-btn');
+  btn.innerHTML = `<i class="ti ti-device-floppy"></i> Save Staff Changes`;
+  
+  // Scroll to form or show toast
+  showToast('Edit Mode Enabled', `Loaded details for ${st.name}.`, 'ti-edit');
 }
 
 function addStaffRecord() {
@@ -2551,36 +2659,84 @@ function addStaffRecord() {
     return;
   }
 
-  const staffPrefix = 'TCH-';
-  const nextNum = State.staff.length + 1;
-  const staffId = `${staffPrefix}${String(nextNum).padStart(3, '0')}`;
+  const permsList = ['admission', 'directory', 'idcards', 'admit', 'fees', 'ledger', 'report', 'payroll', 'sms', 'notice', 'enquiry', 'attendance', 'staffattendance', 'timetable', 'exam', 'results', 'library', 'transport', 'staff', 'settings'];
+  const access = [];
+  permsList.forEach(perm => {
+    const box = document.getElementById(`staff-perm-${perm}`);
+    if (box && box.checked) {
+      access.push(perm);
+    }
+  });
 
-  const newStaff = {
-    id: staffId,
-    name,
-    role,
-    sub,
-    contact,
-    status: 'On Duty'
-  };
+  if (editingStaffId) {
+    // Edit existing staff member
+    const st = State.staff.find(x => x.id === editingStaffId);
+    if (st) {
+      st.name = name;
+      st.role = role;
+      st.sub = sub;
+      st.contact = contact;
+      st.access = access;
+      
+      State.staffPasswords[editingStaffId] = password;
+      if (State.payrollConfig[editingStaffId]) {
+        State.payrollConfig[editingStaffId].base = baseSalary;
+      }
+      
+      showToast('Staff Updated', `Changes committed for ${st.name}.`, 'ti-circle-check');
+      
+      // Reset form edit mode
+      editingStaffId = null;
+      document.getElementById('staff-form-header').innerHTML = `<i class="ti ti-briefcase"></i> Add Staff Officer`;
+      document.getElementById('staff-submit-btn').innerHTML = `<i class="ti ti-circle-plus"></i> Register Faculty Record`;
+    }
+  } else {
+    // Create new staff member
+    const staffPrefix = 'TCH-';
+    const nextNum = State.staff.length + 1;
+    const staffId = `${staffPrefix}${String(nextNum).padStart(3, '0')}`;
 
-  State.staff.push(newStaff);
-  State.staffPasswords[staffId] = password;
-  State.payrollConfig[staffId] = {
-    base: baseSalary,
-    allowance: 3000,
-    deductions: 0,
-    status: 'Unpaid'
-  };
+    const newStaff = {
+      id: staffId,
+      name,
+      role,
+      sub,
+      contact,
+      status: 'On Duty',
+      access: access
+    };
+
+    State.staff.push(newStaff);
+    State.staffPasswords[staffId] = password;
+    State.payrollConfig[staffId] = {
+      base: baseSalary,
+      allowance: 3000,
+      deductions: 0,
+      status: 'Unpaid'
+    };
+
+    showToast('Staff Registered', `Faculty profile for ${name} created. ID: ${staffId}`, 'ti-briefcase');
+  }
 
   saveState();
   renderStaffRegistry();
-  showToast('Staff Registered', `Faculty profile for ${name} created. ID: ${staffId}`, 'ti-briefcase');
 
+  // Reset inputs
   nameEl.value = '';
   roleEl.value = '';
   subEl.value = '';
   phoneEl.value = '';
+  pwEl.value = 'teacher123';
+  salEl.value = '40000';
+  
+  // Clear checkboxes
+  permsList.forEach(perm => {
+    const box = document.getElementById(`staff-perm-${perm}`);
+    if (box) {
+      const defaultChecked = ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'].includes(perm);
+      box.checked = defaultChecked;
+    }
+  });
 }
 
 function removeStaffRecord(staffId) {

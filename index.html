@@ -1147,7 +1147,7 @@
           
           <div class="card glass">
             <div class="card-header">
-              <h2 class="section-title"><i class="ti ti-briefcase"></i> Add Staff Officer</h2>
+              <h2 class="section-title" id="staff-form-header"><i class="ti ti-briefcase"></i> Add Staff Officer</h2>
               <span class="card-subtitle">Configure faculty accounts and set portal passwords</span>
             </div>
             <div class="form-container">
@@ -1177,7 +1177,72 @@
                   <input type="number" id="staff-base-salary" value="40000" />
                 </div>
               </div>
-              <button class="btn btn-primary btn-block" onclick="addStaffRecord()">
+              <div class="form-row">
+                <label>Portal Feature Permissions (Check to Enable Access)</label>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 6px; padding: 10px; border: 1px solid var(--border-primary); border-radius: var(--border-radius-md); background: var(--bg-tertiary); max-height: 200px; overflow-y: auto;">
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-admission" style="width:16px; height:16px; cursor:pointer;" /> New Admission
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-directory" checked style="width:16px; height:16px; cursor:pointer;" /> Student Directory
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-idcards" style="width:16px; height:16px; cursor:pointer;" /> ID Cards
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-admit" style="width:16px; height:16px; cursor:pointer;" /> Admit Cards
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-fees" style="width:16px; height:16px; cursor:pointer;" /> Fee Collection
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-ledger" style="width:16px; height:16px; cursor:pointer;" /> Ledger System
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-report" style="width:16px; height:16px; cursor:pointer;" /> Fee Report
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-payroll" style="width:16px; height:16px; cursor:pointer;" /> Staff Payroll
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-sms" style="width:16px; height:16px; cursor:pointer;" /> Send SMS
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-notice" checked style="width:16px; height:16px; cursor:pointer;" /> Notice Board
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-enquiry" style="width:16px; height:16px; cursor:pointer;" /> Enquiries
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-attendance" checked style="width:16px; height:16px; cursor:pointer;" /> Student Attendance
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-staffattendance" style="width:16px; height:16px; cursor:pointer;" /> Staff Attendance
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-timetable" checked style="width:16px; height:16px; cursor:pointer;" /> Timetable Mappings
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-exam" checked style="width:16px; height:16px; cursor:pointer;" /> Exam Calendars
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-results" checked style="width:16px; height:16px; cursor:pointer;" /> Exam Results
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-library" checked style="width:16px; height:16px; cursor:pointer;" /> Library Logs
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-transport" checked style="width:16px; height:16px; cursor:pointer;" /> Transport Routes
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-staff" style="width:16px; height:16px; cursor:pointer;" /> Staff Registry
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="staff-perm-settings" style="width:16px; height:16px; cursor:pointer;" /> Settings
+                  </label>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-block" id="staff-submit-btn" onclick="addStaffRecord()">
                 <i class="ti ti-circle-plus"></i> Register Faculty Record
               </button>
             </div>
