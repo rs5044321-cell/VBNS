@@ -823,11 +823,11 @@ function renderQuickActionsPanel() {
   const currentRole = State.auth.currentRole || 'student';
   
   // Get active teacher access configurations dynamically per logged-in staff member!
-  let teacherActions = ['notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
+  let teacherActions = ['homework', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
   if (currentRole === 'teacher') {
     const activeStaff = State.auth.currentUser;
     if (activeStaff && activeStaff.access) {
-      teacherActions = activeStaff.access;
+      teacherActions = ['homework', ...activeStaff.access];
     }
   }
 
@@ -847,6 +847,7 @@ function renderQuickActionsPanel() {
     { id: 'timetable', icon: 'ti-calendar-time', label: 'Timetable', roles: ['admin', 'teacher'] },
     { id: 'exam', icon: 'ti-notebook', label: 'Exam Dates', roles: ['admin', 'teacher'] },
     { id: 'results', icon: 'ti-award', label: 'Results', roles: ['admin', 'teacher', 'student'] },
+    { id: 'homework', icon: 'ti-pencil', label: 'Homework Board', roles: ['admin', 'teacher', 'student'] },
     { id: 'library', icon: 'ti-books', label: 'Library List', roles: ['admin', 'teacher'] },
     { id: 'transport', icon: 'ti-bus', label: 'Bus Routes', roles: ['admin', 'teacher'] },
     { id: 'staff', icon: 'ti-id', label: 'Staff registry', roles: ['admin'] },
