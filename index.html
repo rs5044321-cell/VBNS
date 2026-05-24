@@ -984,7 +984,7 @@
               <span class="card-subtitle">Log, review, and print individual academic scores</span>
             </div>
             <div class="header-actions" id="results-stu-wrapper">
-              <select id="res-stu" class="styled-select" style="min-width: 250px;"></select>
+              <select id="res-stu" class="styled-select" onchange="loadStudentResults()" style="min-width: 250px;"></select>
               <button class="btn btn-primary" onclick="loadStudentResults()">
                 <i class="ti ti-file-text"></i> Load Gradebook Report
               </button>
