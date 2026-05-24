@@ -451,7 +451,7 @@ function applySessionAccessLayout() {
   
   let allowedTabs = [];
   if (role === 'admin') {
-    allowedTabs = ['dashboard', 'admission', 'directory', 'idcards', 'admit', 'fees', 'ledger', 'report', 'payroll', 'sms', 'notice', 'enquiry', 'attendance', 'staffattendance', 'timetable', 'exam', 'results', 'library', 'transport', 'staff', 'settings', 'audit'];
+    allowedTabs = ['dashboard', 'admission', 'directory', 'idcards', 'admit', 'fees', 'ledger', 'report', 'payroll', 'sms', 'notice', 'enquiry', 'attendance', 'staffattendance', 'timetable', 'exam', 'results', 'homework', 'library', 'transport', 'staff', 'settings', 'audit'];
   } else if (role === 'student') {
     allowedTabs = studentClearance;
   } else if (role === 'teacher') {
