@@ -71,12 +71,12 @@ let State = {
     { route: 'Route 4 - North Campus', driver: 'Satish Yadav', vehicle: 'DL-1PD-3456 (Bus)', stops: 'Model Town, GTB Nagar, Civil Lines', count: 28, status: 'Operational' }
   ],
   staff: [
-    { id: 'TCH-001', name: 'Dr. Rajeev Sharma', role: 'Senior Faculty', sub: 'Mathematics, Statistics', contact: '+91 98110 22334', status: 'On Duty' },
-    { id: 'TCH-002', name: 'Mrs. Ananya Sen', role: 'Faculty Specialist', sub: 'Physics, Chemistry', contact: '+91 98110 55667', status: 'On Duty' },
-    { id: 'TCH-003', name: 'Mr. Vivek Paul', role: 'Faculty Officer', sub: 'English Literature', contact: '+91 98110 88990', status: 'On Duty' },
-    { id: 'TCH-004', name: 'Miss Priya Roy', role: 'Faculty Executive', sub: 'History, Civics', contact: '+91 98110 11223', status: 'On Duty' },
-    { id: 'ADM-001', name: 'Mrs. Harpreet Kaur', role: 'Head Librarian', sub: 'Library Resource Director', contact: '+91 98110 44556', status: 'On Leave' },
-    { id: 'ADM-002', name: 'Mr. Ramesh Negi', role: 'Physical Trainer', sub: 'Sports & Gymnasium Coordinator', contact: '+91 98110 77889', status: 'On Duty' }
+    { id: 'TCH-001', name: 'Dr. Rajeev Sharma', role: 'Senior Faculty', sub: 'Mathematics, Statistics', contact: '+91 98110 22334', status: 'On Duty', assignedClass: 'Class X' },
+    { id: 'TCH-002', name: 'Mrs. Ananya Sen', role: 'Faculty Specialist', sub: 'Physics, Chemistry', contact: '+91 98110 55667', status: 'On Duty', assignedClass: 'Class IX' },
+    { id: 'TCH-003', name: 'Mr. Vivek Paul', role: 'Faculty Officer', sub: 'English Literature', contact: '+91 98110 88990', status: 'On Duty', assignedClass: 'Class VIII' },
+    { id: 'TCH-004', name: 'Miss Priya Roy', role: 'Faculty Executive', sub: 'History, Civics', contact: '+91 98110 11223', status: 'On Duty', assignedClass: '' },
+    { id: 'ADM-001', name: 'Mrs. Harpreet Kaur', role: 'Head Librarian', sub: 'Library Resource Director', contact: '+91 98110 44556', status: 'On Leave', assignedClass: '' },
+    { id: 'ADM-002', name: 'Mr. Ramesh Negi', role: 'Physical Trainer', sub: 'Sports & Gymnasium Coordinator', contact: '+91 98110 77889', status: 'On Duty', assignedClass: '' }
   ]
 };
 
@@ -116,9 +116,27 @@ function seedDatabase() {
           if (!st.access) {
             st.access = ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
           }
+          if (st.assignedClass === undefined) {
+            if (st.id === 'TCH-001') st.assignedClass = 'Class X';
+            else if (st.id === 'TCH-002') st.assignedClass = 'Class IX';
+            else if (st.id === 'TCH-003') st.assignedClass = 'Class VIII';
+            else st.assignedClass = '';
+          }
         });
         if (!State.staffAttendance) {
           State.staffAttendance = {};
+        }
+        if (!State.homework) {
+          State.homework = [
+            { id: 'HW-001', cls: 'Class X', subject: 'Mathematics', title: 'Quadratic Equations Practice', desc: 'Solve questions 1 to 15 from exercise 4.2 in the textbook. Show all workings clearly.', dueDate: '2026-05-28', createdDate: '2026-05-24', by: 'Dr. Rajeev Sharma' },
+            { id: 'HW-002', cls: 'Class X', subject: 'Science', title: 'Chemical Reactions Report', desc: 'Write a 2-page report on redox reactions with real-life examples and chemical formulas.', dueDate: '2026-05-29', createdDate: '2026-05-24', by: 'Mrs. Ananya Sen' },
+            { id: 'HW-003', cls: 'Class IX', subject: 'English', title: 'Grammar Exercises', desc: 'Complete active/passive voice worksheets distributed in class.', dueDate: '2026-05-27', createdDate: '2026-05-24', by: 'Mr. Vivek Paul' }
+          ];
+        }
+        if (!State.auditLog) {
+          State.auditLog = [
+            { timestamp: new Date().toLocaleString('en-IN'), actor: 'System Initializer', action: 'System Seed', category: 'system', details: 'Initialized VBNS CRM system state registers' }
+          ];
         }
         
         saveState();
@@ -181,7 +199,21 @@ function seedDatabase() {
     State.staffPasswords[st.id] = 'teacher123';
     State.payrollConfig[st.id] = { base: st.role.includes('Senior') ? 45000 : 35000, allowance: 3000, deductions: 0, status: 'Unpaid' };
     st.access = ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
+    if (st.id === 'TCH-001') st.assignedClass = 'Class X';
+    else if (st.id === 'TCH-002') st.assignedClass = 'Class IX';
+    else if (st.id === 'TCH-003') st.assignedClass = 'Class VIII';
+    else st.assignedClass = '';
   });
+
+  State.homework = [
+    { id: 'HW-001', cls: 'Class X', subject: 'Mathematics', title: 'Quadratic Equations Practice', desc: 'Solve questions 1 to 15 from exercise 4.2 in the textbook. Show all workings clearly.', dueDate: '2026-05-28', createdDate: '2026-05-24', by: 'Dr. Rajeev Sharma' },
+    { id: 'HW-002', cls: 'Class X', subject: 'Science', title: 'Chemical Reactions Report', desc: 'Write a 2-page report on redox reactions with real-life examples and chemical formulas.', dueDate: '2026-05-29', createdDate: '2026-05-24', by: 'Mrs. Ananya Sen' },
+    { id: 'HW-003', cls: 'Class IX', subject: 'English', title: 'Grammar Exercises', desc: 'Complete active/passive voice worksheets distributed in class.', dueDate: '2026-05-27', createdDate: '2026-05-24', by: 'Mr. Vivek Paul' }
+  ];
+
+  State.auditLog = [
+    { timestamp: new Date().toLocaleString('en-IN'), actor: 'System Initializer', action: 'System Seed', category: 'system', details: 'Initialized VBNS CRM system state registers' }
+  ];
 
   saveState();
 }
@@ -331,6 +363,9 @@ function executeLogin() {
     sessionStorage.setItem('apex_auth_role', activeLoginRole);
     sessionStorage.setItem('apex_auth_user', JSON.stringify(authenticatedUser));
 
+    // Audit successful login
+    logActivity(authenticatedUser.name, 'User Login', 'security', `Successfully authorized as ${activeLoginRole.toUpperCase()}`);
+
     applySessionAccessLayout();
     
     // Navigate to default tab based on role
@@ -412,16 +447,19 @@ function applySessionAccessLayout() {
   }
 
   // DYNAMIC SIDEBAR VISIBILITY FILTERS (Locks specific items dynamically per user!)
-  const studentClearance = ['fees', 'notice', 'attendance', 'results'];
+  const studentClearance = ['fees', 'notice', 'attendance', 'results', 'exam', 'idcards', 'admit', 'homework'];
   
   let allowedTabs = [];
   if (role === 'admin') {
-    allowedTabs = ['dashboard', 'admission', 'directory', 'idcards', 'admit', 'fees', 'ledger', 'report', 'payroll', 'sms', 'notice', 'enquiry', 'attendance', 'staffattendance', 'timetable', 'exam', 'results', 'library', 'transport', 'staff', 'settings'];
+    allowedTabs = ['dashboard', 'admission', 'directory', 'idcards', 'admit', 'fees', 'ledger', 'report', 'payroll', 'sms', 'notice', 'enquiry', 'attendance', 'staffattendance', 'timetable', 'exam', 'results', 'library', 'transport', 'staff', 'settings', 'audit'];
   } else if (role === 'student') {
     allowedTabs = studentClearance;
   } else if (role === 'teacher') {
-    allowedTabs = ['dashboard', ...(user.access || ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'])];
+    allowedTabs = ['dashboard', 'homework', ...(user.access || ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'])];
   }
+
+  // Update profile avatar visibility
+  updateSidebarAvatar();
 
   // Filter all sidebar navigation items dynamically
   document.querySelectorAll('.sb-item').forEach(item => {
@@ -467,22 +505,22 @@ function applySessionAccessLayout() {
 function nav(tabId, sidebarElement) {
   const currentRole = State.auth.currentRole || 'student';
   
-  // Student view limits: Students can ONLY access Fees, Notice Board, Student Attendance, and Exam Results
-  const studentClearance = ['fees', 'notice', 'attendance', 'results'];
+  // Student view limits: Students can access Fees, Notice Board, Student Attendance, Exam Results, Exam Schedule, ID Cards, Admit Cards, and Homework
+  const studentClearance = ['fees', 'notice', 'attendance', 'results', 'exam', 'idcards', 'admit', 'homework'];
   
   // Dynamic Faculty view limits: Controlled dynamically per logged-in staff member!
-  let teacherClearance = ['dashboard'];
+  let teacherClearance = ['dashboard', 'homework'];
   if (currentRole === 'teacher') {
     const activeStaff = State.auth.currentUser;
     if (activeStaff && activeStaff.access) {
-      teacherClearance = ['dashboard', ...activeStaff.access];
+      teacherClearance = ['dashboard', 'homework', ...activeStaff.access];
     } else {
-      teacherClearance = ['dashboard', 'directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
+      teacherClearance = ['dashboard', 'homework', 'directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
     }
   }
 
   const accessAllowances = {
-    admin: ['dashboard', 'admission', 'directory', 'idcards', 'admit', 'fees', 'ledger', 'report', 'payroll', 'sms', 'notice', 'enquiry', 'attendance', 'staffattendance', 'timetable', 'exam', 'results', 'library', 'transport', 'staff', 'settings'],
+    admin: ['dashboard', 'admission', 'directory', 'idcards', 'admit', 'fees', 'ledger', 'report', 'payroll', 'sms', 'notice', 'enquiry', 'attendance', 'staffattendance', 'timetable', 'exam', 'results', 'library', 'transport', 'staff', 'settings', 'homework', 'audit'],
     teacher: teacherClearance,
     student: studentClearance
   };
@@ -615,6 +653,12 @@ function nav(tabId, sidebarElement) {
       break;
     case 'settings':
       renderSettingsValues();
+      break;
+    case 'homework':
+      renderHomeworkBoard();
+      break;
+    case 'audit':
+      renderAuditPanel();
       break;
   }
 }
@@ -888,6 +932,7 @@ function admitStudent() {
     balance: calculateActiveCashBalance()
   });
 
+  logActivity('Super Admin', 'Student Admission', 'enrollment', `Enrolled new student file for ${name} (${nextId})`);
   saveState();
 
   // Create Beautiful Profile Panel Output Preview
@@ -936,7 +981,24 @@ function renderDirectoryList() {
   const classFilter = document.getElementById('dir-class-filter').value;
   const currentRole = State.auth.currentRole;
 
-  const filtered = State.students.filter(s => {
+  let students = State.students;
+  if (currentRole === 'teacher') {
+    const activeTeacher = State.auth.currentUser;
+    if (activeTeacher && activeTeacher.assignedClass) {
+      students = State.students.filter(s => s.cls === activeTeacher.assignedClass);
+      
+      const dirFilter = document.getElementById('dir-class-filter');
+      if (dirFilter) {
+        dirFilter.value = activeTeacher.assignedClass;
+        dirFilter.disabled = true;
+      }
+    }
+  } else {
+    const dirFilter = document.getElementById('dir-class-filter');
+    if (dirFilter) dirFilter.disabled = false;
+  }
+
+  const filtered = students.filter(s => {
     const matchesSearch = s.name.toLowerCase().includes(searchVal) || s.id.toLowerCase().includes(searchVal) || s.phone.includes(searchVal);
     const matchesClass = !classFilter || s.cls === classFilter;
     return matchesSearch && matchesClass;
@@ -1015,6 +1077,7 @@ function removeStudent(studentId) {
   // Remove corresponding results
   delete State.results[studentId];
 
+  logActivity('Super Admin', 'Student Deletion', 'enrollment', `Permanently deleted student record: ${name} (${studentId})`);
   saveState();
   renderDirectoryList();
   
@@ -1190,6 +1253,7 @@ function collectFee() {
     balance: calculateActiveCashBalance() + amount
   });
 
+  logActivity('Super Admin', 'Fee Collection', 'finance', `Collected fee ${receiptNum} of ${formatCurrency(amount)} from student ${student.id} (${student.name}) for ${feeType}`);
   saveState();
 
   // Draw Receipt Layout Card WYSIWYG
@@ -1441,6 +1505,7 @@ function removeFeeLog(receiptNum) {
   }
 
   State.feeLog.splice(logIndex, 1);
+  logActivity('Super Admin', 'Fee Reversal', 'finance', `Cancelled fee receipt ${receiptNum} of ${formatCurrency(log.amount)} for student ${log.studentId} (${log.name})`);
   saveState();
 
   renderFeeCollectionLogsTable();
@@ -1517,6 +1582,7 @@ function addLedgerEntry() {
   };
 
   State.ledger.push(newEntry);
+  logActivity('Super Admin', 'Ledger Row Appended', 'finance', `Voucher ${voucherNum}: ${desc} (+${newEntry.credit}/-${newEntry.debit})`);
   saveState();
   renderLedgerSystem();
 
@@ -1534,7 +1600,9 @@ function removeLedgerEntry(voucherNum) {
   const ledgerIndex = State.ledger.findIndex(v => v.voucher === voucherNum);
   if (ledgerIndex === -1) return;
 
+  const entry = State.ledger[ledgerIndex];
   State.ledger.splice(ledgerIndex, 1);
+  logActivity('Super Admin', 'Ledger Row Deleted', 'finance', `Deleted ledger entry voucher: ${voucherNum} (${entry.desc})`);
   saveState();
   renderLedgerSystem();
 
@@ -1904,6 +1972,7 @@ function postNoticeBoardBulletin() {
     by: user.name || 'System Admin'
   });
 
+  logActivity(user.name || 'System Admin', 'Notice Published', 'system', `Published campus bulletin announcement: ${title}`);
   saveState();
   renderNoticeList();
 
@@ -1914,8 +1983,13 @@ function postNoticeBoardBulletin() {
 }
 
 function removeNotice(realIndex) {
+  const nt = State.notices[realIndex];
+  if (!nt) return;
+  
   if (!confirm('Are you absolutely sure you want to delete this bulletin notice?')) return;
 
+  const actor = State.auth.currentUser ? State.auth.currentUser.name : 'System Admin';
+  logActivity(actor, 'Notice Removed', 'system', `Removed campus bulletin notice: ${nt.title}`);
   State.notices.splice(realIndex, 1);
   saveState();
   renderNoticeList();
@@ -2100,6 +2174,23 @@ function loadAttendanceRegister() {
     <th class="center-col">Absent</th>
     <th class="center-col">On Approved Leave</th>
   `;
+
+  if (currentRole === 'teacher') {
+    const activeTeacher = State.auth.currentUser;
+    if (activeTeacher && activeTeacher.assignedClass) {
+      let exists = Array.from(gradeSelect.options).some(opt => opt.value === activeTeacher.assignedClass);
+      if (!exists) {
+        const opt = document.createElement('option');
+        opt.value = activeTeacher.assignedClass;
+        opt.textContent = activeTeacher.assignedClass;
+        gradeSelect.appendChild(opt);
+      }
+      gradeSelect.value = activeTeacher.assignedClass;
+      gradeSelect.disabled = true;
+    }
+  } else {
+    gradeSelect.disabled = false;
+  }
 
   const grade = gradeSelect.value;
   const dateStr = dateInput.value;
@@ -2576,11 +2667,12 @@ function renderStaffRegistry() {
   tbody.innerHTML = State.staff.map(st => {
     const pw = State.staffPasswords[st.id] || 'teacher123';
     const accessStr = st.access ? st.access.join(', ') : 'Default Academic';
+    const assignedClassStr = st.assignedClass ? `<span class="pill pill-green" style="font-size: 10px; padding: 2px 6px;">${st.assignedClass}</span>` : `<span class="pill pill-amber" style="font-size: 10px; padding: 2px 6px;">None</span>`;
     return `
       <tr>
         <td><b>${st.id}</b></td>
         <td>
-          <div style="font-weight:600; color:var(--text-primary)">${st.name}</div>
+          <div style="font-weight:600; color:var(--text-primary); display:flex; align-items:center; gap:8px">${st.name} ${assignedClassStr}</div>
           <small style="color:var(--text-tertiary); font-size:10px; display:block; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${accessStr}">${accessStr}</small>
         </td>
         <td><span class="pill pill-blue">${st.role}</span></td>
@@ -2616,6 +2708,7 @@ function editStaffRecord(staffId) {
   document.getElementById('staff-sub').value = st.sub;
   document.getElementById('staff-phone').value = st.contact;
   document.getElementById('staff-password').value = State.staffPasswords[st.id] || 'teacher123';
+  document.getElementById('staff-assigned-class').value = st.assignedClass || '';
   
   const payroll = State.payrollConfig[st.id] || { base: 40000 };
   document.getElementById('staff-base-salary').value = payroll.base;
@@ -2646,6 +2739,7 @@ function addStaffRecord() {
   const phoneEl = document.getElementById('staff-phone');
   const pwEl = document.getElementById('staff-password');
   const salEl = document.getElementById('staff-base-salary');
+  const classEl = document.getElementById('staff-assigned-class');
 
   const name = nameEl.value.trim();
   const role = roleEl.value.trim();
@@ -2653,6 +2747,7 @@ function addStaffRecord() {
   const contact = phoneEl.value.trim();
   const password = pwEl.value.trim();
   const baseSalary = parseFloat(salEl.value) || 30000;
+  const assignedClass = classEl.value;
 
   if (!name || !role || !contact || !password) {
     showToast('Validation Error', 'Fill name, role, contact, and password fields.', 'ti-alert-circle');
@@ -2677,12 +2772,14 @@ function addStaffRecord() {
       st.sub = sub;
       st.contact = contact;
       st.access = access;
+      st.assignedClass = assignedClass;
       
       State.staffPasswords[editingStaffId] = password;
       if (State.payrollConfig[editingStaffId]) {
         State.payrollConfig[editingStaffId].base = baseSalary;
       }
       
+      logActivity('Super Admin', 'Staff Profile Update', 'security', `Modified details and permissions for faculty member ${editingStaffId} (${name})`);
       showToast('Staff Updated', `Changes committed for ${st.name}.`, 'ti-circle-check');
       
       // Reset form edit mode
@@ -2703,7 +2800,8 @@ function addStaffRecord() {
       sub,
       contact,
       status: 'On Duty',
-      access: access
+      access: access,
+      assignedClass: assignedClass
     };
 
     State.staff.push(newStaff);
@@ -2715,6 +2813,7 @@ function addStaffRecord() {
       status: 'Unpaid'
     };
 
+    logActivity('Super Admin', 'Staff Registered', 'security', `Created new faculty registry for ${name} (${staffId})`);
     showToast('Staff Registered', `Faculty profile for ${name} created. ID: ${staffId}`, 'ti-briefcase');
   }
 
@@ -2728,6 +2827,7 @@ function addStaffRecord() {
   phoneEl.value = '';
   pwEl.value = 'teacher123';
   salEl.value = '40000';
+  classEl.value = 'Class X';
   
   // Clear checkboxes
   permsList.forEach(perm => {
@@ -2752,6 +2852,7 @@ function removeStaffRecord(staffId) {
   delete State.staffPasswords[staffId];
   delete State.payrollConfig[staffId];
 
+  logActivity('Super Admin', 'Staff Member Removed', 'security', `Removed staff member ${st.name} (${staffId})`);
   saveState();
   renderStaffRegistry();
   showToast('Staff Deleted', `Faculty profile for ${st.name} removed.`, 'ti-trash');
@@ -2764,6 +2865,7 @@ function updateStaffPassword(staffId, newPassword) {
     return;
   }
   State.staffPasswords[staffId] = newPassword.trim();
+  logActivity('Super Admin', 'Staff Password Updated', 'security', `Updated credentials for staff member ${staffId}`);
   saveState();
   showToast('Password Updated', `Access credentials for ${staffId} updated successfully.`, 'ti-circle-key-filled');
 }
@@ -2831,6 +2933,7 @@ function applySettingsConfig() {
 
 function saveSettingsConfig() {
   applySettingsConfig();
+  logActivity('Super Admin', 'System Settings Saved', 'system', 'Modified global school organizational variables and currency options');
   saveState();
   showToast('Settings Configured', 'Global attributes committed to the active database.', 'ti-settings-filled');
 }
@@ -2848,6 +2951,7 @@ function saveFacultyPermissions() {
   });
 
   State.config.teacherAccess = teacherAccess;
+  logActivity('Super Admin', 'Faculty Sidebar Permissions Saved', 'security', `Updated master dashboard clearance filters to: [${teacherAccess.join(', ')}]`);
   saveState();
   
   showToast('Access Permissions Saved', 'Faculty dashboard tab locks updated instantly.', 'ti-shield-lock');
@@ -2864,4 +2968,338 @@ function saveFacultyPermissions() {
 function formatCurrency(amount) {
   const symbol = State.config.currency || '₹';
   return `${symbol}${amount.toLocaleString('en-IN')}`;
+}
+
+/* -------------------------------------------------------------
+   VBNS educational CRM - NEW UPGRADES MODULES IMPLEMENTATIONS
+   ------------------------------------------------------------- */
+
+// Student profile picture uploader display updater
+function updateSidebarAvatar() {
+  const role = State.auth.currentRole;
+  const user = State.auth.currentUser;
+  const logo = document.getElementById('sb-brand-logo');
+  const avatarWrap = document.getElementById('sb-student-avatar-wrapper');
+  const avatarImg = document.getElementById('sb-student-avatar-img');
+
+  if (!logo || !avatarWrap) return;
+
+  if (role === 'student' && user) {
+    logo.style.display = 'none';
+    avatarWrap.style.display = 'block';
+
+    const sRecord = State.students.find(s => s.id === user.id);
+    if (sRecord && sRecord.avatar) {
+      avatarImg.src = sRecord.avatar;
+    } else {
+      const initials = user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      avatarImg.src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="%236366f1"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="%23ffffff" font-family="sans-serif" font-weight="bold" font-size="14">${initials}</text></svg>`;
+    }
+  } else {
+    logo.style.display = 'flex';
+    avatarWrap.style.display = 'none';
+  }
+}
+
+function triggerAvatarUpload() {
+  if (State.auth.currentRole !== 'student') return;
+  const fileInput = document.getElementById('student-avatar-file-input');
+  if (fileInput) fileInput.click();
+}
+
+function uploadStudentAvatar(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.size > 1024 * 1024) {
+    showToast('File Too Large', 'Please select an image smaller than 1MB.', 'ti-alert-octagon');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result;
+    const student = State.auth.currentUser;
+    
+    const sRecord = State.students.find(s => s.id === student.id);
+    if (sRecord) {
+      sRecord.avatar = base64;
+      student.avatar = base64;
+      
+      sessionStorage.setItem('apex_auth_user', JSON.stringify(student));
+      
+      saveState();
+      updateSidebarAvatar();
+      logActivity(student.name, 'Profile Picture', 'academic', `Updated profile picture avatar for student ${student.id}`);
+      showToast('Profile Updated', 'Your profile picture has been successfully uploaded.', 'ti-camera');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+// Lock Dropdowns and apply Faculty Roster Isolation
+function populateStudentSelectors(selectId) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+
+  const currentRole = State.auth.currentRole;
+  let students = State.students;
+
+  if (currentRole === 'teacher') {
+    const activeTeacher = State.auth.currentUser;
+    if (activeTeacher && activeTeacher.assignedClass) {
+      students = State.students.filter(s => s.cls === activeTeacher.assignedClass);
+    }
+  }
+
+  const currentVal = sel.value;
+  sel.innerHTML = students.map(s => `
+    <option value="${s.id}">${s.id} — ${s.name} (${s.cls})</option>
+  `).join('');
+
+  if (currentVal && Array.from(sel.options).some(o => o.value === currentVal)) {
+    sel.value = currentVal;
+  }
+}
+
+// -------------------------------------------------------------
+// DYNAMIC HOMEWORK BOARD MODULE
+// -------------------------------------------------------------
+function postHomeworkAssignment() {
+  const classEl = document.getElementById('hw-class');
+  const subjectEl = document.getElementById('hw-subject');
+  const titleEl = document.getElementById('hw-title');
+  const dueEl = document.getElementById('hw-due');
+  const descEl = document.getElementById('hw-desc');
+
+  const cls = classEl.value;
+  const subject = subjectEl.value.trim();
+  const title = titleEl.value.trim();
+  const due = dueEl.value;
+  const desc = descEl.value.trim();
+
+  if (!subject || !title || !due || !desc) {
+    showToast('Validation Error', 'Please satisfy all required fields.', 'ti-alert-circle');
+    return;
+  }
+
+  const hwId = `HW-${String(State.homework.length + 1).padStart(3, '0')}`;
+  const createdDate = new Date().toISOString().split('T')[0];
+  const actor = State.auth.currentUser ? State.auth.currentUser.name : 'System Admin';
+
+  const newHw = {
+    id: hwId,
+    cls,
+    subject,
+    title,
+    dueDate: due,
+    desc,
+    createdDate,
+    by: actor
+  };
+
+  State.homework.push(newHw);
+  saveState();
+  
+  logActivity(actor, 'Homework Posted', 'academic', `Posted homework ${hwId} for ${cls} (${subject}: ${title})`);
+  showToast('Homework Posted', `Homework assignment ${hwId} successfully published.`, 'ti-notebook');
+
+  subjectEl.value = '';
+  titleEl.value = '';
+  dueEl.value = '';
+  descEl.value = '';
+
+  renderHomeworkBoard();
+}
+
+function renderHomeworkBoard() {
+  const container = document.getElementById('homework-list');
+  if (!container) return;
+
+  const currentRole = State.auth.currentRole;
+  const currentUser = State.auth.currentUser;
+
+  let list = State.homework || [];
+
+  if (currentRole === 'student') {
+    list = list.filter(hw => hw.cls === currentUser.cls);
+    
+    const subtitle = document.getElementById('homework-list-subtitle');
+    if (subtitle) {
+      subtitle.innerHTML = `<i class="ti ti-id"></i> Private Homework Board for <b>${currentUser.name} (${currentUser.cls})</b>`;
+    }
+  } else {
+    const subtitle = document.getElementById('homework-list-subtitle');
+    if (subtitle) {
+      subtitle.textContent = "Active classroom tasks and exercises";
+    }
+  }
+
+  const sortedList = [...list].reverse();
+
+  if (sortedList.length === 0) {
+    container.innerHTML = `
+      <div class="empty-preview" style="padding: 32px 0;">
+        <i class="ti ti-notebook-off" style="font-size: 32px; display: block; margin-bottom: 8px; color: var(--text-tertiary);"></i>
+        <p>No active homework assignments recorded.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = sortedList.map(hw => {
+    const deleteBtn = (currentRole === 'admin' || currentRole === 'teacher') ?
+      `<button class="btn btn-sm btn-danger" style="padding: 2px 6px; font-size:10px;" onclick="removeHomeworkAssignment('${hw.id}')"><i class="ti ti-trash"></i> Delete</button>` : '';
+
+    return `
+      <div class="homework-card">
+        <div class="hw-meta-row">
+          <span>${hw.subject} — ${hw.cls}</span>
+          <span>Posted: ${hw.createdDate}</span>
+        </div>
+        <div class="hw-title">${hw.title}</div>
+        <div class="hw-desc">${hw.desc}</div>
+        <div class="hw-footer-row">
+          <span class="hw-pill-due"><i class="ti ti-calendar-event"></i> Due: ${hw.dueDate}</span>
+          <div style="display:flex; align-items:center; gap:8px">
+            <small style="color:var(--text-tertiary); font-size:11px">By ${hw.by}</small>
+            ${deleteBtn}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function removeHomeworkAssignment(hwId) {
+  if (!confirm(`Are you absolutely sure you want to delete homework assignment ${hwId}?`)) return;
+
+  const index = State.homework.findIndex(hw => hw.id === hwId);
+  if (index === -1) return;
+
+  const hw = State.homework[index];
+  const actor = State.auth.currentUser ? State.auth.currentUser.name : 'System Admin';
+
+  State.homework.splice(index, 1);
+  saveState();
+
+  logActivity(actor, 'Homework Deleted', 'academic', `Deleted homework assignment ${hwId} for ${hw.cls}`);
+  showToast('Homework Deleted', `Assignment ${hwId} removed.`, 'ti-trash');
+
+  renderHomeworkBoard();
+  
+  if (document.getElementById('tab-audit').classList.contains('active')) {
+    renderAuditPanel();
+  }
+}
+
+// -------------------------------------------------------------
+// CHRONOLOGICAL AUDIT LOGGER ENGINE
+// -------------------------------------------------------------
+function logActivity(actor, action, category, details) {
+  if (!State.auditLog) State.auditLog = [];
+  
+  const entry = {
+    timestamp: new Date().toLocaleString('en-IN'),
+    actor,
+    action,
+    category, 
+    details
+  };
+
+  State.auditLog.unshift(entry);
+
+  if (State.auditLog.length > 100) {
+    State.auditLog.pop();
+  }
+
+  saveState();
+}
+
+// -------------------------------------------------------------
+// ADMIN SECURITY & AUDIT PORTAL RENDERER
+// -------------------------------------------------------------
+function renderAuditPanel() {
+  const logBody = document.getElementById('audit-log-body');
+  const credentialsBody = document.getElementById('audit-credentials-body');
+  const homeworkBody = document.getElementById('audit-homework-body');
+
+  if (!logBody || !credentialsBody || !homeworkBody) return;
+
+  // 1. Render System activity logs
+  const logs = State.auditLog || [];
+  if (logs.length === 0) {
+    logBody.innerHTML = `<tr><td colspan="4" class="center-col" style="color:var(--text-tertiary)">No activities logged yet.</td></tr>`;
+  } else {
+    logBody.innerHTML = logs.map(l => {
+      let badgeClass = 'system';
+      if (l.category === 'enrollment') badgeClass = 'enrollment';
+      else if (l.category === 'finance') badgeClass = 'finance';
+      else if (l.category === 'security') badgeClass = 'security';
+      else if (l.category === 'academic') badgeClass = 'academic';
+
+      return `
+        <tr>
+          <td><small style="color:var(--text-tertiary)">${l.timestamp}</small></td>
+          <td><b>${l.actor}</b></td>
+          <td><span class="audit-badge ${badgeClass}">${l.action}</span></td>
+          <td>${l.details}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // 2. Render Credentials List
+  let credentialRows = [];
+  
+  // Faculty credentials
+  State.staff.forEach(st => {
+    const pw = State.staffPasswords[st.id] || 'teacher123';
+    credentialRows.push({
+      id: st.id,
+      name: st.name,
+      role: st.role,
+      password: pw
+    });
+  });
+
+  // Student credentials
+  State.students.forEach(s => {
+    const firstName = s.name.trim().split(' ')[0];
+    const expectedPassword = `${firstName}${s.dob}`;
+    credentialRows.push({
+      id: s.id,
+      name: s.name,
+      role: 'Student / Parent',
+      password: expectedPassword
+    });
+  });
+
+  credentialsBody.innerHTML = credentialRows.map(row => `
+    <tr>
+      <td><b>${row.id}</b></td>
+      <td>${row.name}</td>
+      <td><span class="pill ${row.role.includes('Student') ? 'pill-green' : 'pill-blue'}">${row.role}</span></td>
+      <td><span class="password-text-toggle">${row.password}</span></td>
+    </tr>
+  `).join('');
+
+  // 3. Render Homework history
+  const homeworks = State.homework || [];
+  if (homeworks.length === 0) {
+    homeworkBody.innerHTML = `<tr><td colspan="6" class="center-col" style="color:var(--text-tertiary)">No homework records.</td></tr>`;
+  } else {
+    homeworkBody.innerHTML = homeworks.map(hw => `
+      <tr>
+        <td><b>${hw.id}</b></td>
+        <td>${hw.cls}</td>
+        <td>${hw.subject}</td>
+        <td>${hw.by}</td>
+        <td><span style="color:var(--color-danger); font-weight:600">${hw.dueDate}</span></td>
+        <td>
+          <button class="btn btn-sm btn-danger" onclick="removeHomeworkAssignment('${hw.id}')"><i class="ti ti-trash"></i> Delete</button>
+        </td>
+      </tr>
+    `).join('');
+  }
 }
