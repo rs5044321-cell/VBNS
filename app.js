@@ -1,4 +1,4 @@
-/* Apex School Management CRM - Premium Core Application Logic */
+/* VBNS - Premium Core Application Logic */
 
 // Centralized State Container
 let State = {
@@ -478,7 +478,7 @@ function nav(tabId, sidebarElement) {
   };
   
   const titleEl = document.getElementById('topbar-title');
-  if (titleEl) titleEl.textContent = titles[tabId] || 'Apex School CRM';
+  if (titleEl) titleEl.textContent = titles[tabId] || 'VBNS';
 
   const sb = document.getElementById('sidebar');
   if (sb) sb.classList.remove('open');
