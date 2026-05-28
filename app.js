@@ -251,6 +251,25 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const sdt = document.getElementById('staff-att-date');
   if (sdt) sdt.value = new Date().toISOString().split('T')[0];
+
+  // QoL improvements: Bind Enter key to executeLogin() in the login fields
+  const loginUsernameInput = document.getElementById('login-username');
+  const loginPasswordInput = document.getElementById('login-password');
+  
+  if (loginUsernameInput) {
+    loginUsernameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        executeLogin();
+      }
+    });
+  }
+  if (loginPasswordInput) {
+    loginPasswordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        executeLogin();
+      }
+    });
+  }
 });
 
 // Real-Time Date & Time Indicator
