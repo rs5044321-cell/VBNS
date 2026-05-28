@@ -2143,6 +2143,7 @@ function removeEnquiry(realIndex) {
   saveState();
   renderEnquiryRegister();
   showToast('Enquiry Deleted', 'Lead prospect removed from CRM pipelines.', 'ti-trash');
+}
 // -------------------------------------------------------------
 // ATTENDANCE STATS CALCULATION UTILITIES
 // -------------------------------------------------------------
