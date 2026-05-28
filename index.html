@@ -66,10 +66,10 @@
   <!-- Nav Bar -->
   <nav class="public-nav">
     <div class="nav-container">
-        <div class="nav-brand" onclick="scrollToSection('hero')">
+      <div class="nav-brand" onclick="scrollToSection('hero')">
         <div class="nav-logo"><img src="logo.jpg" alt="VBNS Logo" /></div>
         <div class="nav-brand-text">
-          <span class="nav-school-name">Vandey Bharti</span>
+          <span class="nav-school-name">Vandey Bharti National School</span>
           <span class="nav-school-tag">National School</span>
         </div>
       </div>
@@ -80,9 +80,9 @@
       
       <ul class="nav-links">
         <li><a href="#hero" class="nav-link active" onclick="navigatePublic('hero', event)">Home</a></li>
-        <li><a href="#about" class="nav-link" onclick="navigatePublic('about', event)">About Us</a></li>
+        <li><a href="#why-choose-us" class="nav-link" onclick="navigatePublic('why-choose-us', event)">Why Choose Us</a></li>
         <li><a href="#academics" class="nav-link" onclick="navigatePublic('academics', event)">Academics</a></li>
-        <li><a href="#campus-life" class="nav-link" onclick="navigatePublic('campus-life', event)">Campus Life</a></li>
+        <li><a href="#campus-gallery" class="nav-link" onclick="navigatePublic('campus-gallery', event)">Campus Gallery</a></li>
         <li><a href="#notices" class="nav-link" onclick="navigatePublic('notices', event)">Notices</a></li>
         <li><a href="#admissions" class="nav-link" onclick="navigatePublic('admissions', event)">Admissions</a></li>
         <li><a href="#contact" class="nav-link" onclick="navigatePublic('contact', event)">Contact</a></li>
@@ -94,181 +94,177 @@
   <!-- Hero Section -->
   <header id="hero" class="public-hero">
     <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <span class="hero-badge"><i class="ti ti-school"></i> Admissions Open for Session 2026-27</span>
-      <h1 class="hero-title animate-title">Nurturing Minds,<br><span class="gradient-text">Shaping Future Leaders.</span></h1>
-      <p class="hero-subtitle">Welcome to Vandey Bharti National School. A sanctuary of academic excellence, holistic development, and innovative learning in the heart of New Delhi.</p>
-      <div class="hero-ctas">
-        <a href="#admissions" class="btn btn-primary btn-lg" onclick="navigatePublic('admissions', event)">Apply Now <i class="ti ti-arrow-right"></i></a>
-        <button class="btn btn-secondary btn-lg" onclick="openLoginOverlay()">Access Portal <i class="ti ti-device-laptop"></i></button>
+    <div class="hero-container">
+      <div class="hero-split-layout">
+        <!-- Hero Left Column -->
+        <div class="hero-left">
+          <span class="hero-badge"><i class="ti ti-school"></i> Admissions Open 2026-27</span>
+          <h1 class="hero-title animate-title">Nurturing Minds,<br><span class="gradient-text">Shaping Future Leaders.</span></h1>
+          <p class="hero-subtitle">Welcome to Vandey Bharti National School. A sanctuary of academic rigor, character development, and future-focused education. Our campus integrates world-class curriculum with advanced learning tools to prepare students for international success.</p>
+          <div class="hero-ctas">
+            <a href="#admissions" class="btn btn-primary btn-lg" onclick="navigatePublic('admissions', event)">Explore Admissions <i class="ti ti-arrow-right"></i></a>
+            <button class="btn btn-secondary btn-lg" onclick="openLoginOverlay()">Access Portal <i class="ti ti-device-laptop"></i></button>
+          </div>
+        </div>
+        <!-- Hero Right Column -->
+        <div class="hero-right">
+          <div class="hero-image-wrapper-card">
+            <div class="hero-image-glow-behind"></div>
+            <div class="hero-image-card glassmorphic">
+              <img src="school_hero.png" alt="Vandey Bharti National School Campus" class="hero-preview-img" />
+              <div class="hero-image-badge">
+                <div class="badge-icon"><i class="ti ti-award"></i></div>
+                <div class="badge-text">
+                  <h5>Ranked #1</h5>
+                  <p>In Academic Excellence</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="hero-scroll-down" onclick="scrollToSection('about')">
-      <span>Discover More</span>
-      <i class="ti ti-chevron-down"></i>
     </div>
   </header>
 
-  <!-- Statistics Grid -->
-  <section class="public-stats-section">
-    <div class="stats-grid">
-      <div class="pub-stat-card">
-        <div class="pub-stat-icon purple"><i class="ti ti-books"></i></div>
-        <div class="pub-stat-info">
-          <h3>98%</h3>
-          <p>Board Success Rate</p>
-        </div>
-      </div>
-      <div class="pub-stat-card">
-        <div class="pub-stat-icon blue"><i class="ti ti-users"></i></div>
-        <div class="pub-stat-info">
-          <h3>1:12</h3>
-          <p>Teacher-Student Ratio</p>
-        </div>
-      </div>
-      <div class="pub-stat-card">
-        <div class="pub-stat-icon green"><i class="ti ti-award"></i></div>
-        <div class="pub-stat-info">
-          <h3>25+</h3>
-          <p>Sports & Arts Programs</p>
-        </div>
-      </div>
-      <div class="pub-stat-card">
-        <div class="pub-stat-icon orange"><i class="ti ti-bus"></i></div>
-        <div class="pub-stat-info">
-          <h3>100%</h3>
-          <p>GPS Tracked Safe Transit</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- About Us Section -->
-  <section id="about" class="public-section">
-    <div class="container two-col-layout">
-      <div class="section-image-wrapper">
-        <div class="decorative-box-glow"></div>
-        <div class="about-hero-img-container">
-          <img src="logo.jpg" alt="VBNS Campus" class="about-hero-img" />
-        </div>
-      </div>
-      <div class="section-text-wrapper">
-        <span class="section-tag">WHO WE ARE</span>
-        <h2 class="pub-section-title">A Legacy of Educational Integrity & Excellence</h2>
-        <p class="pub-section-p">Established with a vision to revolutionize primary and secondary education, Vandey Bharti National School combines rigorous academic methodologies with cutting-edge student administration tools. We believe that true education goes beyond textbooks—it lies in fostering curiosity, building character, and developing modern global citizens.</p>
-        
-        <div class="about-features">
-          <div class="about-feat-item">
-            <div class="about-feat-icon"><i class="ti ti-sparkles"></i></div>
-            <div>
-              <h4>Holistic Academic Pedagogy</h4>
-              <p>Aligned with top national boards, preparing students for university success and global opportunities.</p>
-            </div>
-          </div>
-          <div class="about-feat-item">
-            <div class="about-feat-icon"><i class="ti ti-shield-check"></i></div>
-            <div>
-              <h4>Advanced Campus Security</h4>
-              <p>Featuring standard attendance alerts, comprehensive digital libraries, and smart transport registries.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Academics Section -->
-  <section id="academics" class="public-section alt-bg">
+  <!-- Why Choose Us? Section -->
+  <section id="why-choose-us" class="public-section why-choose-section">
     <div class="container">
       <div class="text-center-header">
-        <span class="section-tag">ACADEMIC EXCELLENCE</span>
-        <h2 class="pub-section-title">Our Curriculum & Grades</h2>
-        <p class="pub-section-p centered">We offer comprehensive academic pathways from Primary School to Senior Secondary Board Examinations, maintaining world-class standards.</p>
+        <span class="section-tag">OUR CORE STRENGTHS</span>
+        <h2 class="pub-section-title">Why Choose Us?</h2>
+        <p class="pub-section-p centered">We provide a premium educational framework designed to foster scientific curiosity, personal integrity, and academic success.</p>
       </div>
       
-      <div class="academics-grid">
-        <div class="academic-card glass">
-          <div class="academic-card-icon green"><i class="ti ti-palette"></i></div>
-          <h3>Primary (Grades I - V)</h3>
-          <p>Fostering basic literacy, numeracy, creative expression, and curiosity through highly interactive play-based learning activities.</p>
+      <div class="why-choose-grid">
+        <div class="why-card glass">
+          <div class="why-icon-box purple"><i class="ti ti-books"></i></div>
+          <h4>Excellent Board Results</h4>
+          <p>Consistently achieving a 98%+ pass rate in board examinations with top ranks nationwide.</p>
         </div>
-        <div class="academic-card glass">
-          <div class="academic-card-icon blue"><i class="ti ti-calculator"></i></div>
-          <h3>Middle School (Grades VI - VIII)</h3>
-          <p>Transitioning into robust conceptual knowledge in mathematics, natural sciences, language boards, and computer literacy.</p>
+        <div class="why-card glass">
+          <div class="why-icon-box blue"><i class="ti ti-users"></i></div>
+          <h4>Optimal Class Size</h4>
+          <p>A personalized 1:12 teacher-student ratio ensures that every child receives undivided mentorship.</p>
         </div>
-        <div class="academic-card glass">
-          <div class="academic-card-icon purple"><i class="ti ti-device-laptop"></i></div>
-          <h3>Senior Secondary (Grades IX - XII)</h3>
-          <p>Advanced specializations in Science, Commerce, and Humanities. Aligned with Board Examinations and college-prep pathways.</p>
+        <div class="why-card glass">
+          <div class="why-icon-box green"><i class="ti ti-award"></i></div>
+          <h4>Holistic Development</h4>
+          <p>25+ dynamic sports leagues, debate societies, arts programs, and musical ensembles.</p>
+        </div>
+        <div class="why-card glass">
+          <div class="why-icon-box gold"><i class="ti ti-shield-check"></i></div>
+          <h4>Secure Campus & GPS</h4>
+          <p>State-of-the-art security, physical surveillance, and safe GPS-tracked school transit fleets.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Campus Life Section -->
-  <section id="campus-life" class="public-section">
+  <!-- Our Academic Programs Section -->
+  <section id="academics" class="public-section academics-section-alt">
     <div class="container">
       <div class="text-center-header">
-        <span class="section-tag">CAMPUS HIGHLIGHTS</span>
-        <h2 class="pub-section-title">Life at Vandey Bharti</h2>
-        <p class="pub-section-p centered">A quick tour of the vibrant activities, advanced resources, and infrastructure available to our student community.</p>
+        <span class="section-tag">ACADEMIC PATHWAYS</span>
+        <h2 class="pub-section-title text-dark">Our Academic Programs</h2>
+        <p class="pub-section-p centered text-muted">A comprehensive, future-ready curriculum designed for every growth phase.</p>
       </div>
-
-      <div class="campus-grid">
-        <div class="campus-card">
-          <div class="campus-card-img-wrapper">
-            <div style="background: linear-gradient(135deg, #6366f1, #a855f7); width:100%; height:180px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:32px;"><i class="ti ti-books"></i></div>
-          </div>
-          <div class="campus-card-content">
-            <h4>Modern Resource Library</h4>
-            <p>Home to over 10,000 volumes, subscription journals, and an integrated circulation logger managed via the ERP.</p>
-          </div>
+      
+      <div class="academics-grid-premium">
+        <!-- Card 1 -->
+        <div class="academic-card-premium card-light">
+          <div class="academic-card-icon-premium green"><i class="ti ti-palette"></i></div>
+          <h3>Primary School</h3>
+          <span class="grade-span">Grades I - V</span>
+          <p>Fostering basic literacy, analytical skills, creative thinking, and curiosity through highly engaging, interactive, play-based learning activities.</p>
         </div>
-
-        <div class="campus-card">
-          <div class="campus-card-img-wrapper">
-            <div style="background: linear-gradient(135deg, #10b981, #06b6d4); width:100%; height:180px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:32px;"><i class="ti ti-flask"></i></div>
-          </div>
-          <div class="campus-card-content">
-            <h4>Hi-Tech Science Labs</h4>
-            <p>Advanced physics, chemistry, and computer labs designed to facilitate practical discoveries and scientific inquiry.</p>
-          </div>
+        <!-- Card 2 -->
+        <div class="academic-card-premium card-light">
+          <div class="academic-card-icon-premium blue"><i class="ti ti-calculator"></i></div>
+          <h3>Middle School</h3>
+          <span class="grade-span">Grades VI - VIII</span>
+          <p>Transitioning into robust conceptual knowledge in mathematics, natural sciences, language boards, and early computer coding principles.</p>
         </div>
-
-        <div class="campus-card">
-          <div class="campus-card-img-wrapper">
-            <div style="background: linear-gradient(135deg, #f59e0b, #ef4444); width:100%; height:180px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:32px;"><i class="ti ti-bus"></i></div>
-          </div>
-          <div class="campus-card-content">
-            <h4>Safe & Tracked Transport</h4>
-            <p>Dedicated transit fleet covering key routes in NCR. Outfitted with GPS devices and audited daily in the portal.</p>
-          </div>
+        <!-- Card 3 -->
+        <div class="academic-card-premium card-light">
+          <div class="academic-card-icon-premium gold"><i class="ti ti-device-laptop"></i></div>
+          <h3>Senior Secondary</h3>
+          <span class="grade-span">Grades IX - XII</span>
+          <p>Advanced study pathways in Science, Commerce, and Humanities. Fully aligned with National Board Examinations and university-prep goals.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Notices Section (Dynamically Synced!) -->
-  <section id="notices" class="public-section alt-bg">
+  <!-- Campus Gallery Section -->
+  <section id="campus-gallery" class="public-section gallery-section">
+    <div class="container">
+      <div class="text-center-header">
+        <span class="section-tag">OUR INFRASTRUCTURE</span>
+        <h2 class="pub-section-title">Campus Gallery</h2>
+        <p class="pub-section-p centered">Take a tour of our modern state-of-the-art facilities designed for premium student growth.</p>
+      </div>
+      
+      <div class="gallery-grid-six">
+        <!-- Item 1 -->
+        <div class="gallery-item-card glass">
+          <div class="gallery-icon-top purple"><i class="ti ti-slideshow"></i></div>
+          <h5>Smart Classrooms</h5>
+          <p>Equipped with 4K touch displays, interactive projection boards, and acoustic audio systems.</p>
+        </div>
+        <!-- Item 2 -->
+        <div class="gallery-item-card glass">
+          <div class="gallery-icon-top green"><i class="ti ti-flask"></i></div>
+          <h5>Science Laboratory</h5>
+          <p>Advanced experimental physics, chemistry, and biology setups matching top global guidelines.</p>
+        </div>
+        <!-- Item 3 -->
+        <div class="gallery-item-card glass">
+          <div class="gallery-icon-top blue"><i class="ti ti-cpu"></i></div>
+          <h5>Computing Facility</h5>
+          <p>High-performance computer labs with access to software coding, web dev tools, and AI modules.</p>
+        </div>
+        <!-- Item 4 -->
+        <div class="gallery-item-card glass">
+          <div class="gallery-icon-top orange"><i class="ti ti-run"></i></div>
+          <h5>Sports Assembly</h5>
+          <p>Professional multi-sport turf field, athletic tracks, indoor basketball courts, and swimming pools.</p>
+        </div>
+        <!-- Item 5 -->
+        <div class="gallery-item-card glass">
+          <div class="gallery-icon-top red"><i class="ti ti-music"></i></div>
+          <h5>Music & Performing Arts</h5>
+          <p>Dedicated studios for acoustic instrumentation, classical singing, and modern theatrical practice.</p>
+        </div>
+        <!-- Item 6 -->
+        <div class="gallery-item-card glass">
+          <div class="gallery-icon-top teal"><i class="ti ti-brush"></i></div>
+          <h5>Art & Design Gallery</h5>
+          <p>Creative spaces for painting, ceramic molding, graphic sculpting, and portfolio displays.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notices Section -->
+  <section id="notices" class="public-section notice-section-alt">
     <div class="container two-col-layout">
       <div class="section-text-wrapper">
         <span class="section-tag">CAMPUS BULLETIN</span>
         <h2 class="pub-section-title">Official Announcements</h2>
-        <p class="pub-section-p">Keep up-to-date with active bulletins, administrative schedules, holiday details, and milestones directly published by the school administration board.</p>
-        <div class="alert-box-info" style="margin-top: 20px;">
+        <p class="pub-section-p">Keep up-to-date with active bulletins, exam schedules, holidays, and administrative announcements published directly by the school board registry.</p>
+        <div class="alert-box-info-teal">
           <i class="ti ti-info-circle"></i> Notices are mirrored in real-time from our central ERP CRM portal database.
         </div>
       </div>
       <div class="section-notices-wrapper">
-        <div class="public-notice-board card glass">
-          <div class="card-header">
+        <div class="public-notice-board card-glassmorphic">
+          <div class="card-header-teal">
             <h3 class="section-title"><i class="ti ti-broadcast"></i> Dynamic Bulletin Notice Board</h3>
             <span class="card-subtitle">Latest postings for Parents & Students</span>
           </div>
           <div id="public-notices-feed" class="public-notices-feed-container">
             <div class="loading-placeholder">
-              <i class="ti ti-loader animate-spin"></i> Loading notices...
+              <i class="ti ti-loader animate-spin"></i> Loading active notices...
             </div>
           </div>
         </div>
@@ -276,74 +272,74 @@
     </div>
   </section>
 
-  <!-- Admissions Section (Interactive Enquiry Form!) -->
-  <section id="admissions" class="public-section">
+  <!-- Admissions Section -->
+  <section id="admissions" class="public-section admission-section-premium">
     <div class="container two-col-layout">
       <div class="section-image-wrapper text-side">
-        <span class="section-tag">APPLICATIONS FOR 2026-27</span>
+        <span class="section-tag">APPLICATIONS OPEN 2026-27</span>
         <h2 class="pub-section-title">Join Our Learning Community</h2>
-        <p class="pub-section-p">Admissions to Vandey Bharti National School are open for the upcoming academic session. We offer a streamlined admission process designed to understand your child's potential.</p>
+        <p class="pub-section-p">We seek students who are eager to learn, grow, and innovate. Our admission pathway is optimized to discover and nurture your child's innate potential.</p>
         
-        <div class="admission-steps">
-          <div class="step-item">
-            <div class="step-badge">1</div>
-            <div>
+        <div class="admission-steps-premium">
+          <div class="step-item-premium">
+            <div class="step-badge-premium">1</div>
+            <div class="step-text-premium">
               <h5>Submit Online Enquiry</h5>
-              <p>Fill out the enquiry form on this page to initiate the request in our school registrar system.</p>
+              <p>Fill out the enquiry form on this page to register details in our database instantly.</p>
             </div>
           </div>
-          <div class="step-item">
-            <div class="step-badge">2</div>
-            <div>
-              <h5>Counseling & Campus Tour</h5>
-              <p>Our counseling team will contact you to schedule an interaction and campus orientation.</p>
+          <div class="step-item-premium">
+            <div class="step-badge-premium">2</div>
+            <div class="step-text-premium">
+              <h5>Counseling Interaction</h5>
+              <p>Our academic advisors will contact you to schedule a friendly conversation and campus tour.</p>
             </div>
           </div>
-          <div class="step-item">
-            <div class="step-badge">3</div>
-            <div>
-              <h5>Documentation & Enrollment</h5>
-              <p>Submit essential transcripts, complete fee installment payments, and receive student ID codes.</p>
+          <div class="step-item-premium">
+            <div class="step-badge-premium">3</div>
+            <div class="step-text-premium">
+              <h5>Admission Confirmation</h5>
+              <p>Submit documentation, complete enrollment fee structures, and receive your student ID code.</p>
             </div>
           </div>
         </div>
       </div>
       
       <div class="section-form-wrapper">
-        <div class="public-form-card card glass">
-          <div class="card-header">
+        <div class="public-form-card card-glassmorphic">
+          <div class="card-header-teal">
             <h3 class="section-title"><i class="ti ti-address-book"></i> Admission Enquiry Form</h3>
-            <span class="card-subtitle">Submit details to be registered directly in the school system</span>
+            <span class="card-subtitle">Details are logged directly into the CRM Enquiry pipeline</span>
           </div>
-          <form id="public-enquiry-form" onsubmit="submitPublicEnquiry(event)" class="form-container">
-            <div class="form-row">
+          <form id="public-enquiry-form" onsubmit="submitPublicEnquiry(event)" class="form-container-teal">
+            <div class="form-row-teal">
               <label for="pub-enq-child">Full Child/Candidate Name *</label>
               <input id="pub-enq-child" type="text" placeholder="E.g., Aarav Verma" required />
             </div>
-            <div class="form-row">
+            <div class="form-row-teal">
               <label for="pub-enq-parent">Parent / Guardian Full Name *</label>
               <input id="pub-enq-parent" type="text" placeholder="E.g., Deepak Verma" required />
             </div>
-            <div class="form-grid-2">
-              <div class="form-row">
+            <div class="form-grid-2-teal">
+              <div class="form-row-teal">
                 <label for="pub-enq-class">Academic Class Sought *</label>
-                <select id="pub-enq-class" class="styled-select" required>
+                <select id="pub-enq-class" class="styled-select-teal" required>
                   <option>Class I</option><option>Class II</option><option>Class III</option>
                   <option>Class IV</option><option>Class V</option><option>Class VI</option>
                   <option>Class VII</option><option>Class VIII</option><option>Class IX</option>
                   <option selected>Class X</option><option>Class XI</option><option>Class XII</option>
                 </select>
               </div>
-              <div class="form-row">
+              <div class="form-row-teal">
                 <label for="pub-enq-phone">Contact Phone Number *</label>
                 <input id="pub-enq-phone" type="tel" placeholder="E.g., 9812345000" required />
               </div>
             </div>
-            <div class="form-row">
+            <div class="form-row-teal">
               <label for="pub-enq-address">Residential Address</label>
               <textarea id="pub-enq-address" rows="3" placeholder="E.g., 14 MG Road, Sector 3, New Delhi"></textarea>
             </div>
-            <button type="submit" class="btn btn-primary btn-block btn-lg">
+            <button type="submit" class="btn btn-primary btn-block btn-lg btn-teal-gold">
               Submit Admission Enquiry <i class="ti ti-circle-check"></i>
             </button>
           </form>
@@ -353,50 +349,80 @@
   </section>
 
   <!-- Contact Us Section -->
-  <section id="contact" class="public-section alt-bg">
+  <section id="contact" class="public-section contact-section-alt">
     <div class="container">
       <div class="text-center-header">
         <span class="section-tag">GET IN TOUCH</span>
-        <h2 class="pub-section-title">Contact Our Campus</h2>
-        <p class="pub-section-p centered">Have any questions? Reach out to our front desk or administrative office directly.</p>
+        <h2 class="pub-section-title text-dark">Contact Our Campus</h2>
+        <p class="pub-section-p centered text-muted">Have any queries? Reach out to our front desk or administrative offices directly.</p>
       </div>
       
-      <div class="contact-grid">
-        <div class="contact-card card glass">
-          <i class="ti ti-map-pin"></i>
-          <h4>School Address</h4>
-          <p>12 Education Lane, New Delhi – 110001</p>
+      <div class="contact-grid-premium">
+        <div class="contact-card-premium glass">
+          <div class="contact-icon"><i class="ti ti-map-pin"></i></div>
+          <h4>School Campus</h4>
+          <p>Vandey Bharti National School Lane,<br>New Delhi – 110001, India</p>
         </div>
-        <div class="contact-card card glass">
-          <i class="ti ti-phone"></i>
-          <h4>Phone Numbers</h4>
+        <div class="contact-card-premium glass">
+          <div class="contact-icon"><i class="ti ti-phone"></i></div>
+          <h4>Call & Telephony</h4>
           <p>+91 11 2345 6789<br>+91 98110 22334</p>
         </div>
-        <div class="contact-card card glass">
-          <i class="ti ti-mail"></i>
-          <h4>Email & Web</h4>
-          <p>info@vbnsacademy.edu<br>www.vbnsacademy.edu</p>
+        <div class="contact-card-premium glass">
+          <div class="contact-icon"><i class="ti ti-mail"></i></div>
+          <h4>Email Inquiries</h4>
+          <p>admissions@vbnsacademy.edu<br>info@vbnsacademy.edu</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Public Footer -->
-  <footer class="public-footer">
-    <div class="footer-container">
-      <div class="footer-brand">
-        <img src="logo.jpg" alt="VBNS Logo" />
-        <div>
-          <h4>Vandey Bharti National School</h4>
-          <p>Nurturing Minds, Shaping Future Leaders.</p>
+  <footer class="public-footer-teal">
+    <div class="footer-container-teal">
+      <div class="footer-split-teal">
+        <!-- Brand -->
+        <div class="footer-left-teal">
+          <div class="footer-logo-title">
+            <img src="logo.jpg" alt="VBNS Logo" />
+            <h4>Vandey Bharti National School</h4>
+          </div>
+          <p class="footer-desc">A legacy of premium educational excellence, shaping creative thinkers and global leaders of tomorrow. Equipped with modern labs, comprehensive sports academies, and safe digital systems.</p>
+        </div>
+        <!-- Quick Links -->
+        <div class="footer-center-teal">
+          <h5>Quick Navigation</h5>
+          <ul class="footer-menu-links">
+            <li><a href="#hero" onclick="navigatePublic('hero', event)">Home</a></li>
+            <li><a href="#why-choose-us" onclick="navigatePublic('why-choose-us', event)">Why Choose Us</a></li>
+            <li><a href="#academics" onclick="navigatePublic('academics', event)">Academics</a></li>
+            <li><a href="#campus-gallery" onclick="navigatePublic('campus-gallery', event)">Campus Gallery</a></li>
+            <li><a href="#admissions" onclick="navigatePublic('admissions', event)">Admissions Form</a></li>
+          </ul>
+        </div>
+        <!-- Address & Contact -->
+        <div class="footer-right-teal">
+          <h5>Contact Information</h5>
+          <p><i class="ti ti-map-pin"></i> 12 Education Lane, New Delhi - 110001</p>
+          <p><i class="ti ti-phone"></i> +91 11 2345 6789</p>
+          <p><i class="ti ti-mail"></i> info@vbnsacademy.edu</p>
+          <div class="footer-social-icons">
+            <a href="#"><i class="ti ti-brand-facebook"></i></a>
+            <a href="#"><i class="ti ti-brand-twitter"></i></a>
+            <a href="#"><i class="ti ti-brand-instagram"></i></a>
+            <a href="#"><i class="ti ti-brand-youtube"></i></a>
+          </div>
         </div>
       </div>
-      <div class="footer-links">
-        <a href="#" onclick="resetDatabaseToDefault(event)"><i class="ti ti-rotate-clockwise"></i> Reset ERP State</a>
-        <span>|</span>
-        <a href="#hero" onclick="navigatePublic('hero', event)">Top <i class="ti ti-arrow-narrow-up"></i></a>
+      
+      <div class="footer-copyright-teal">
+        <div class="footer-copyright-left">
+          <p>&copy; 2026 Vandey Bharti National School. All Rights Reserved.</p>
+        </div>
+        <div class="footer-copyright-right">
+          <a href="#" onclick="resetDatabaseToDefault(event)"><i class="ti ti-rotate-clockwise"></i> Reset ERP State</a>
+        </div>
       </div>
-      <p class="footer-copyright">&copy; 2026 Vandey Bharti National School. All Rights Reserved. Powered by VBNS Educational ERP.</p>
     </div>
   </footer>
 </div>
