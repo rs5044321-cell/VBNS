@@ -2064,6 +2064,23 @@ html {
   scroll-behavior: smooth;
 }
 
+html, body {
+  /* Default for public landing page scrolling */
+  overflow-y: auto !important;
+  height: auto !important;
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+html.crm-active,
+body.crm-active {
+  /* Lock scrolling when logged into CRM workspace */
+  overflow: hidden !important;
+  height: 100% !important;
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
 #public-website {
   background-color: #ffffff;
   color: #1e293b;
@@ -3250,4 +3267,75 @@ html {
     gap: 12px;
     text-align: center;
   }
+}
+
+/* Bright light-green & white login modal overrides */
+.login-overlay {
+  background-color: rgba(244, 249, 246, 0.88) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1.5px solid rgba(46, 125, 105, 0.2) !important;
+  box-shadow: 0 20px 50px rgba(46, 125, 105, 0.1) !important;
+}
+
+.login-brand h2 {
+  color: #2e7d69 !important;
+}
+
+.login-brand p {
+  color: #475569 !important;
+}
+
+.login-role-tab {
+  background-color: rgba(46, 125, 105, 0.05) !important;
+  color: #475569 !important;
+  border: 1px solid rgba(46, 125, 105, 0.1) !important;
+}
+
+.login-role-tab.active {
+  background: #2e7d69 !important;
+  color: #ffffff !important;
+  border-color: #2e7d69 !important;
+}
+
+.login-form .form-row label {
+  color: #475569 !important;
+}
+
+.login-form .form-row input {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(46, 125, 105, 0.2) !important;
+  color: #1e293b !important;
+}
+
+.login-form .form-row input:focus {
+  border-color: #2e7d69 !important;
+  box-shadow: 0 0 8px rgba(46, 125, 105, 0.2) !important;
+}
+
+.login-form .btn-primary {
+  background: linear-gradient(135deg, #2e7d69 0%, #1e5245 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(46, 125, 105, 0.3) !important;
+}
+
+.login-form .btn-primary:hover {
+  background: linear-gradient(135deg, #3b9c83 0%, #1e5245 100%) !important;
+  transform: translateY(-1px) !important;
+}
+
+.login-close-btn {
+  background-color: rgba(46, 125, 105, 0.05) !important;
+  color: #2e7d69 !important;
+  border: 1px solid rgba(46, 125, 105, 0.15) !important;
+}
+
+.login-close-btn:hover {
+  background-color: #2e7d69 !important;
+  color: #ffffff !important;
 }
