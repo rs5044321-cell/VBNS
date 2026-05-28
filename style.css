@@ -2014,19 +2014,18 @@ textarea {
 /* =============================================================
    INTEGRATION LAYOUT & BODY SCROLL OVERRIDES
    ============================================================= */
-body {
+html, body {
   /* Default for public landing page scrolling */
   overflow-y: auto !important;
   height: auto !important;
 }
 
+html.crm-active,
 body.crm-active {
   /* Lock scrolling when logged into CRM workspace */
   overflow: hidden !important;
   height: 100% !important;
-}
-
-/* Hide CRM App by default on landing */
+}/* Hide CRM App by default on landing */
 #app {
   display: none;
 }

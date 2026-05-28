@@ -3,7 +3,7 @@
 // Centralized State Container
 let State = {
   config: {
-    schoolName: 'Vandey Bharti National Intermediate College',
+    schoolName: 'Vandey Bharti National School',
     address: '12 Education Lane, New Delhi – 110001',
     phone: '+91 11 2345 6789',
     prefix: 'SAC',
@@ -112,7 +112,7 @@ function seedDatabase() {
         
         // Force update school name if still the old default
         if (State.config.schoolName === 'Sunrise Academy' || State.config.schoolName === 'VBNS') {
-          State.config.schoolName = 'Vandey Bharti National Intermediate College';
+          State.config.schoolName = 'Vandey Bharti National School';
         }
         
         // SELF-CORRECTION: Populate operational blocks if missing on existing localStorage instances
@@ -450,6 +450,7 @@ function executeLogout() {
   const screen = document.getElementById('login-screen');
   if (screen) screen.classList.add('hidden');
 
+  document.documentElement.classList.remove('crm-active');
   document.body.classList.remove('crm-active');
 
   showToast('Logged Out', 'Successfully signed out of the central database.', 'ti-logout');
@@ -483,6 +484,7 @@ function validateSessionHandler() {
   const screen = document.getElementById('login-screen');
   if (screen) screen.classList.add('hidden');
 
+  document.documentElement.classList.remove('crm-active');
   document.body.classList.remove('crm-active');
 
   // Load notices dynamically onto public landing page notice board
@@ -506,6 +508,7 @@ function applySessionAccessLayout() {
   const pubWeb = document.getElementById('public-website');
   if (pubWeb) pubWeb.style.display = 'none';
 
+  document.documentElement.classList.add('crm-active');
   document.body.classList.add('crm-active');
 
   // Update topbar badges
@@ -3839,3 +3842,4 @@ function importSchoolDatabase(event) {
   };
   reader.readAsText(file);
 }
+
