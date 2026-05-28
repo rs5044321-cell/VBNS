@@ -3652,15 +3652,36 @@ function closeLoginOverlay() {
   }
 }
 
-// Submit the public Admission Enquiry Form
+// Submit the public Admission Enquiry Form (Admissions & Contact Forms Sync)
 function submitPublicEnquiry(event) {
   event.preventDefault();
   
-  const nameEl = document.getElementById('pub-enq-child');
-  const parentEl = document.getElementById('pub-enq-parent');
-  const classEl = document.getElementById('pub-enq-class');
-  const phoneEl = document.getElementById('pub-enq-phone');
-  const addressEl = document.getElementById('pub-enq-address');
+  const formId = event.target.id;
+  let nameId = 'pub-enq-child';
+  let parentId = 'pub-enq-parent';
+  let classId = 'pub-enq-class';
+  let phoneId = 'pub-enq-phone';
+  let addressId = 'pub-enq-address';
+
+  if (formId === 'public-admissions-form') {
+    nameId = 'pub-adm-child';
+    parentId = 'pub-adm-parent';
+    classId = 'pub-adm-class';
+    phoneId = 'pub-adm-phone';
+    addressId = 'pub-adm-address';
+  } else if (formId === 'public-contact-form') {
+    nameId = 'pub-con-child';
+    parentId = 'pub-con-parent';
+    classId = 'pub-con-class';
+    phoneId = 'pub-con-phone';
+    addressId = 'pub-con-message';
+  }
+
+  const nameEl = document.getElementById(nameId);
+  const parentEl = document.getElementById(parentId);
+  const classEl = document.getElementById(classId);
+  const phoneEl = document.getElementById(phoneId);
+  const addressEl = document.getElementById(addressId);
 
   if (!nameEl || !parentEl || !classEl || !phoneEl) return;
 
@@ -3681,7 +3702,7 @@ function submitPublicEnquiry(event) {
     cls: cls,
     parent: parent,
     phone: phone,
-    source: 'Digital Web Portal Form',
+    source: formId === 'public-admissions-form' ? 'Digital Admissions Page Form' : 'Digital Contact Page Form',
     status: 'Interested'
   });
 
@@ -3739,11 +3760,13 @@ function renderPublicNotices() {
   }).join('');
 }
 
-// Navigation scroll logic for public headers
-function navigatePublic(sectionId, event) {
-  // Allow native browser smooth scrolling to work naturally!
+// 6-Page SPA Routing Engine for public sections
+function navigatePublic(pageId, event) {
+  if (event) event.preventDefault();
   
-  // Highlight active link
+  if (pageId === 'hero') pageId = 'home';
+
+  // Highlight active link in navigation
   document.querySelectorAll('.public-nav .nav-link').forEach(link => {
     link.classList.remove('active');
   });
@@ -3751,29 +3774,79 @@ function navigatePublic(sectionId, event) {
   if (event && event.currentTarget) {
     event.currentTarget.classList.add('active');
   } else {
-    const activeLink = document.querySelector(`.public-nav a[href="#${sectionId}"]`);
+    // Find active nav link programmatically
+    const activeLink = document.querySelector(`.public-nav a[href="#${pageId}"]`) || document.querySelector(`.public-nav a[onclick*="'${pageId}'"]`);
     if (activeLink) activeLink.classList.add('active');
   }
 
-  // Close public mobile menu if open
+  // Close public mobile hamburger menu drawer if open
   const navLinks = document.querySelector('.public-nav .nav-links');
   if (navLinks) navLinks.classList.remove('mobile-open');
-}
 
-// Scroll viewport smoothly to section coordinate
-function scrollToSection(id) {
-  const el = document.getElementById(id);
-  if (el) {
-    const navHeight = 75;
-    const topOffset = el.offsetTop - navHeight;
-    window.scrollTo({
-      top: topOffset,
-      behavior: 'smooth'
-    });
+  // Switch displayed sub-page views
+  document.querySelectorAll('.pub-page').forEach(page => {
+    page.style.display = 'none';
+  });
+
+  const activePage = document.getElementById(`pub-page-${pageId}`);
+  if (activePage) {
+    activePage.style.display = 'block';
+    
+    // Smooth cross-fade transition
+    activePage.style.opacity = '0';
+    setTimeout(() => {
+      activePage.style.transition = 'opacity 0.4s ease';
+      activePage.style.opacity = '1';
+    }, 50);
   }
+
+  // Scroll smoothly back to top so it simulates full page navigation
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
 }
 
-// Toggle public mobile layout links drawer
+// Scroll viewport smoothly to section coordinate (compatibility mapper)
+function scrollToSection(id) {
+  if (id === 'hero') id = 'home';
+  navigatePublic(id);
+}
+
+// Filter gallery masonry items by category
+function filterGallery(category) {
+  // Reset all buttons style
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+    btn.style.background = 'transparent';
+    btn.style.color = 'var(--accent)';
+    btn.style.borderColor = 'var(--accent)';
+  });
+
+  // Highlight current button
+  const currentBtn = event ? event.target : null;
+  if (currentBtn) {
+    currentBtn.classList.add('active');
+    currentBtn.style.background = 'var(--accent)';
+    currentBtn.style.color = '#ffffff';
+  }
+
+  // Filter grid items
+  document.querySelectorAll('.g-item').forEach(item => {
+    if (category === 'all' || item.classList.contains(category)) {
+      item.style.display = 'flex';
+      item.style.opacity = '0';
+      setTimeout(() => {
+        item.style.transition = 'opacity 0.3s ease';
+        item.style.opacity = '1';
+      }, 50);
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+// Toggle public mobile layout links hamburger drawer
 function togglePublicMobileMenu() {
   const navLinks = document.querySelector('.public-nav .nav-links');
   if (navLinks) {

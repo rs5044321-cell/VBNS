@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vandey Bharti National School</title>
-  <!-- Google Fonts: Outfit (Headings) & Inter (Body) -->
+  <!-- SEO Metadata -->
+  <title>School in Shyamdeurwa Maharajganj | Vandey Bharti Intermediate College</title>
+  <meta name="description" content="Top school in Shyamdeurwa, Maharajganj offering Playway to Class 10 education with discipline, smart learning, and overall development. Admissions open. Contact today.">
+  <!-- Google Fonts: Poppins (Headings) & Open Sans (Body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
   <!-- Local Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=4.0">
+  <link rel="stylesheet" href="style.css?v=5.0">
 </head>
 <body>
 
@@ -59,18 +61,24 @@
   </div>
 </div>
 
-<!-- ========================================== -->
-<!-- PUBLIC SCHOOL WEBSITE CONTAINER (NEW)      -->
-<!-- ========================================== -->
 <div id="public-website">
-  <!-- Nav Bar -->
+  <!-- Top Sticky Announcement Banner -->
+  <div class="top-announcement-banner">
+    <div class="banner-content">
+      <span class="banner-badge"><i class="ti ti-bell-ringing"></i> NOTICE</span>
+      <span class="banner-text"><b>Admissions Open for 2026 Session!</b> Limited seats available for Playway to Class 10.</span>
+      <a href="#admissions" class="banner-link-btn" onclick="navigatePublic('admissions', event)">Apply Today <i class="ti ti-arrow-right"></i></a>
+    </div>
+  </div>
+
+  <!-- Sticky Global Navigation Bar -->
   <nav class="public-nav">
     <div class="nav-container">
-      <div class="nav-brand" onclick="scrollToSection('hero')">
+      <div class="nav-brand" onclick="navigatePublic('home', event)">
         <div class="nav-logo"><img src="logo.jpg" alt="VBNS Logo" /></div>
         <div class="nav-brand-text">
-          <span class="nav-school-name">Vandey Bharti National School</span>
-          <span class="nav-school-tag">National School</span>
+          <span class="nav-school-name">Vandey Bharti National Intermediate College</span>
+          <span class="nav-school-tag">PW – Class 10 • Shyamdeurwa, Maharajganj</span>
         </div>
       </div>
       
@@ -79,352 +87,811 @@
       </div>
       
       <ul class="nav-links">
-        <li><a href="#hero" class="nav-link active" onclick="navigatePublic('hero', event)">Home</a></li>
-        <li><a href="#why-choose-us" class="nav-link" onclick="navigatePublic('why-choose-us', event)">Why Choose Us</a></li>
+        <li><a href="#home" class="nav-link active" onclick="navigatePublic('home', event)">Home</a></li>
+        <li><a href="#about" class="nav-link" onclick="navigatePublic('about', event)">About</a></li>
         <li><a href="#academics" class="nav-link" onclick="navigatePublic('academics', event)">Academics</a></li>
-        <li><a href="#campus-gallery" class="nav-link" onclick="navigatePublic('campus-gallery', event)">Campus Gallery</a></li>
-        <li><a href="#notices" class="nav-link" onclick="navigatePublic('notices', event)">Notices</a></li>
         <li><a href="#admissions" class="nav-link" onclick="navigatePublic('admissions', event)">Admissions</a></li>
+        <li><a href="#gallery" class="nav-link" onclick="navigatePublic('gallery', event)">Gallery</a></li>
         <li><a href="#contact" class="nav-link" onclick="navigatePublic('contact', event)">Contact</a></li>
-        <li><button class="btn btn-primary portal-access-btn" onclick="openLoginOverlay()">Portal Access <i class="ti ti-key"></i></button></li>
+        <li><button class="btn btn-primary portal-access-btn" onclick="openLoginOverlay()">Admissions Open <i class="ti ti-key"></i></button></li>
       </ul>
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <header id="hero" class="public-hero">
-    <div class="hero-overlay"></div>
-    <div class="hero-container">
-      <div class="hero-split-layout">
-        <!-- Hero Left Column -->
-        <div class="hero-left">
-          <span class="hero-badge"><i class="ti ti-school"></i> Admissions Open 2026-27</span>
-          <h1 class="hero-title animate-title">Nurturing Minds,<br><span class="gradient-text">Shaping Future Leaders.</span></h1>
-          <p class="hero-subtitle">Welcome to Vandey Bharti National School. A sanctuary of academic rigor, character development, and future-focused education. Our campus integrates world-class curriculum with advanced learning tools to prepare students for international success.</p>
-          <div class="hero-ctas">
-            <a href="#admissions" class="btn btn-primary btn-lg" onclick="navigatePublic('admissions', event)">Explore Admissions <i class="ti ti-arrow-right"></i></a>
-            <button class="btn btn-secondary btn-lg" onclick="openLoginOverlay()">Access Portal <i class="ti ti-device-laptop"></i></button>
-          </div>
-        </div>
-        <!-- Hero Right Column -->
-        <div class="hero-right">
-          <div class="hero-image-wrapper-card">
-            <div class="hero-image-glow-behind"></div>
-            <div class="hero-image-card glassmorphic">
-              <img src="school_hero.png" alt="Vandey Bharti National School Campus" class="hero-preview-img" />
-              <div class="hero-image-badge">
-                <div class="badge-icon"><i class="ti ti-award"></i></div>
-                <div class="badge-text">
-                  <h5>Ranked #1</h5>
-                  <p>In Academic Excellence</p>
+  <!-- ======================================================= -->
+  <!-- SPA DYNAMIC PAGES CONTAINER                             -->
+  <!-- ======================================================= -->
+  <div id="pub-page-container">
+
+    <!-- 🏠 1. HOMEPAGE VIEW -->
+    <div id="pub-page-home" class="pub-page">
+      <!-- Hero Section (Above the Fold) -->
+      <header class="public-hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-container">
+          <div class="hero-split-layout">
+            <div class="hero-left">
+              <span class="hero-badge"><i class="ti ti-school"></i> Admissions Open 2026 Session</span>
+              <h1 class="hero-title">Vandey Bharti National Intermediate College</h1>
+              <h2 class="hero-subtitle-h2">Best School in Maharajganj for Playway to Class 10 Education</h2>
+              <h3 class="hero-subtitle-h3">Admissions Open for 2026 Session</h3>
+              <p class="hero-description">Vandey Bharti National Intermediate College is a trusted school in Maharajganj offering quality education from Playway to Class 10. We focus on strong academic foundation, discipline, and overall development to help every child succeed.</p>
+              
+              <div class="hero-badges-strip">
+                <span><i class="ti ti-shield-check"></i> Safe Campus</span>
+                <span><i class="ti ti-users"></i> Experienced Teachers</span>
+                <span><i class="ti ti-device-laptop"></i> Smart Learning</span>
+              </div>
+              
+              <div class="hero-ctas">
+                <a href="#admissions" class="btn btn-primary btn-lg" onclick="navigatePublic('admissions', event)">Enroll Your Child Today <i class="ti ti-arrow-right"></i></a>
+                <a href="#contact" class="btn btn-secondary btn-lg" onclick="navigatePublic('contact', event)">Visit Our Campus <i class="ti ti-map-pin"></i></a>
+              </div>
+              
+              <div class="hero-trust-strip">
+                <div class="stars"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
+                <span class="trust-text">“Trusted by Parents in Shyamdeurwa Maharajganj”</span>
+              </div>
+            </div>
+            
+            <div class="hero-right">
+              <div class="hero-image-wrapper-card">
+                <div class="hero-image-glow-behind"></div>
+                <div class="hero-image-card">
+                  <img src="school_hero.png" alt="Vandey Bharti Intermediate College Campus" class="hero-preview-img" />
+                  <div class="hero-image-badge">
+                    <div class="badge-icon"><i class="ti ti-award"></i></div>
+                    <div class="badge-text">
+                      <h5>Best Choice</h5>
+                      <p>Top Rated School</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </header>
+      </header>
 
-  <!-- Why Choose Us? Section -->
-  <section id="why-choose-us" class="public-section why-choose-section">
-    <div class="container">
-      <div class="text-center-header">
-        <span class="section-tag">OUR CORE STRENGTHS</span>
-        <h2 class="pub-section-title">Why Choose Us?</h2>
-        <p class="pub-section-p centered">We provide a premium educational framework designed to foster scientific curiosity, personal integrity, and academic success.</p>
-      </div>
-      
-      <div class="why-choose-grid">
-        <div class="why-card glass">
-          <div class="why-icon-box purple"><i class="ti ti-books"></i></div>
-          <h4>Excellent Board Results</h4>
-          <p>Consistently achieving a 98%+ pass rate in board examinations with top ranks nationwide.</p>
+      <!-- Quick Highlights Grid -->
+      <section class="public-section highlights-section">
+        <div class="container">
+          <div class="why-choose-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="why-card highlight-card">
+              <div class="why-icon-box purple"><i class="ti ti-books"></i></div>
+              <h4>Quality Education</h4>
+              <p>Strong academic frameworks designed to foster core conceptual understanding.</p>
+            </div>
+            <div class="why-card highlight-card">
+              <div class="why-icon-box green"><i class="ti ti-shield-lock"></i></div>
+              <h4>Safe & Secure Campus</h4>
+              <p>Comprehensive physical safety parameters and physical monitoring standards.</p>
+            </div>
+            <div class="why-card highlight-card">
+              <div class="why-icon-box blue"><i class="ti ti-user-check"></i></div>
+              <h4>Experienced Faculty</h4>
+              <p>Highly qualified, passionate subject mentors guiding students' pathway.</p>
+            </div>
+            <div class="why-card highlight-card">
+              <div class="why-icon-box gold"><i class="ti ti-mood-smile"></i></div>
+              <h4>Overall Development</h4>
+              <p>Fostering discipline, co-curricular skills, moral guidelines and sports.</p>
+            </div>
+          </div>
         </div>
-        <div class="why-card glass">
-          <div class="why-icon-box blue"><i class="ti ti-users"></i></div>
-          <h4>Optimal Class Size</h4>
-          <p>A personalized 1:12 teacher-student ratio ensures that every child receives undivided mentorship.</p>
-        </div>
-        <div class="why-card glass">
-          <div class="why-icon-box green"><i class="ti ti-award"></i></div>
-          <h4>Holistic Development</h4>
-          <p>25+ dynamic sports leagues, debate societies, arts programs, and musical ensembles.</p>
-        </div>
-        <div class="why-card glass">
-          <div class="why-icon-box gold"><i class="ti ti-shield-check"></i></div>
-          <h4>Secure Campus & GPS</h4>
-          <p>State-of-the-art security, physical surveillance, and safe GPS-tracked school transit fleets.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- Our Academic Programs Section -->
-  <section id="academics" class="public-section academics-section-alt">
-    <div class="container">
-      <div class="text-center-header">
-        <span class="section-tag">ACADEMIC PATHWAYS</span>
-        <h2 class="pub-section-title text-dark">Our Academic Programs</h2>
-        <p class="pub-section-p centered text-muted">A comprehensive, future-ready curriculum designed for every growth phase.</p>
-      </div>
-      
-      <div class="academics-grid-premium">
-        <!-- Card 1 -->
-        <div class="academic-card-premium card-light">
-          <div class="academic-card-icon-premium green"><i class="ti ti-palette"></i></div>
-          <h3>Primary School</h3>
-          <span class="grade-span">Grades I - V</span>
-          <p>Fostering basic literacy, analytical skills, creative thinking, and curiosity through highly engaging, interactive, play-based learning activities.</p>
-        </div>
-        <!-- Card 2 -->
-        <div class="academic-card-premium card-light">
-          <div class="academic-card-icon-premium blue"><i class="ti ti-calculator"></i></div>
-          <h3>Middle School</h3>
-          <span class="grade-span">Grades VI - VIII</span>
-          <p>Transitioning into robust conceptual knowledge in mathematics, natural sciences, language boards, and early computer coding principles.</p>
-        </div>
-        <!-- Card 3 -->
-        <div class="academic-card-premium card-light">
-          <div class="academic-card-icon-premium gold"><i class="ti ti-device-laptop"></i></div>
-          <h3>Senior Secondary</h3>
-          <span class="grade-span">Grades IX - XII</span>
-          <p>Advanced study pathways in Science, Commerce, and Humanities. Fully aligned with National Board Examinations and university-prep goals.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Campus Gallery Section -->
-  <section id="campus-gallery" class="public-section gallery-section">
-    <div class="container">
-      <div class="text-center-header">
-        <span class="section-tag">OUR INFRASTRUCTURE</span>
-        <h2 class="pub-section-title">Campus Gallery</h2>
-        <p class="pub-section-p centered">Take a tour of our modern state-of-the-art facilities designed for premium student growth.</p>
-      </div>
-      
-      <div class="gallery-grid-six">
-        <!-- Item 1 -->
-        <div class="gallery-item-card glass">
-          <div class="gallery-icon-top purple"><i class="ti ti-slideshow"></i></div>
-          <h5>Smart Classrooms</h5>
-          <p>Equipped with 4K touch displays, interactive projection boards, and acoustic audio systems.</p>
-        </div>
-        <!-- Item 2 -->
-        <div class="gallery-item-card glass">
-          <div class="gallery-icon-top green"><i class="ti ti-flask"></i></div>
-          <h5>Science Laboratory</h5>
-          <p>Advanced experimental physics, chemistry, and biology setups matching top global guidelines.</p>
-        </div>
-        <!-- Item 3 -->
-        <div class="gallery-item-card glass">
-          <div class="gallery-icon-top blue"><i class="ti ti-cpu"></i></div>
-          <h5>Computing Facility</h5>
-          <p>High-performance computer labs with access to software coding, web dev tools, and AI modules.</p>
-        </div>
-        <!-- Item 4 -->
-        <div class="gallery-item-card glass">
-          <div class="gallery-icon-top orange"><i class="ti ti-run"></i></div>
-          <h5>Sports Assembly</h5>
-          <p>Professional multi-sport turf field, athletic tracks, indoor basketball courts, and swimming pools.</p>
-        </div>
-        <!-- Item 5 -->
-        <div class="gallery-item-card glass">
-          <div class="gallery-icon-top red"><i class="ti ti-music"></i></div>
-          <h5>Music & Performing Arts</h5>
-          <p>Dedicated studios for acoustic instrumentation, classical singing, and modern theatrical practice.</p>
-        </div>
-        <!-- Item 6 -->
-        <div class="gallery-item-card glass">
-          <div class="gallery-icon-top teal"><i class="ti ti-brush"></i></div>
-          <h5>Art & Design Gallery</h5>
-          <p>Creative spaces for painting, ceramic molding, graphic sculpting, and portfolio displays.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Notices Section -->
-  <section id="notices" class="public-section notice-section-alt">
-    <div class="container two-col-layout">
-      <div class="section-text-wrapper">
-        <span class="section-tag">CAMPUS BULLETIN</span>
-        <h2 class="pub-section-title">Official Announcements</h2>
-        <p class="pub-section-p">Keep up-to-date with active bulletins, exam schedules, holidays, and administrative announcements published directly by the school board registry.</p>
-        <div class="alert-box-info-teal">
-          <i class="ti ti-info-circle"></i> Notices are mirrored in real-time from our central ERP CRM portal database.
-        </div>
-      </div>
-      <div class="section-notices-wrapper">
-        <div class="public-notice-board card-glassmorphic">
-          <div class="card-header-teal">
-            <h3 class="section-title"><i class="ti ti-broadcast"></i> Dynamic Bulletin Notice Board</h3>
-            <span class="card-subtitle">Latest postings for Parents & Students</span>
-          </div>
-          <div id="public-notices-feed" class="public-notices-feed-container">
-            <div class="loading-placeholder">
-              <i class="ti ti-loader animate-spin"></i> Loading active notices...
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Admissions Section -->
-  <section id="admissions" class="public-section admission-section-premium">
-    <div class="container two-col-layout">
-      <div class="section-image-wrapper text-side">
-        <span class="section-tag">APPLICATIONS OPEN 2026-27</span>
-        <h2 class="pub-section-title">Join Our Learning Community</h2>
-        <p class="pub-section-p">We seek students who are eager to learn, grow, and innovate. Our admission pathway is optimized to discover and nurture your child's innate potential.</p>
-        
-        <div class="admission-steps-premium">
-          <div class="step-item-premium">
-            <div class="step-badge-premium">1</div>
-            <div class="step-text-premium">
-              <h5>Submit Online Enquiry</h5>
-              <p>Fill out the enquiry form on this page to register details in our database instantly.</p>
-            </div>
-          </div>
-          <div class="step-item-premium">
-            <div class="step-badge-premium">2</div>
-            <div class="step-text-premium">
-              <h5>Counseling Interaction</h5>
-              <p>Our academic advisors will contact you to schedule a friendly conversation and campus tour.</p>
-            </div>
-          </div>
-          <div class="step-item-premium">
-            <div class="step-badge-premium">3</div>
-            <div class="step-text-premium">
-              <h5>Admission Confirmation</h5>
-              <p>Submit documentation, complete enrollment fee structures, and receive your student ID code.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="section-form-wrapper">
-        <div class="public-form-card card-glassmorphic">
-          <div class="card-header-teal">
-            <h3 class="section-title"><i class="ti ti-address-book"></i> Admission Enquiry Form</h3>
-            <span class="card-subtitle">Details are logged directly into the CRM Enquiry pipeline</span>
-          </div>
-          <form id="public-enquiry-form" onsubmit="submitPublicEnquiry(event)" class="form-container-teal">
-            <div class="form-row-teal">
-              <label for="pub-enq-child">Full Child/Candidate Name *</label>
-              <input id="pub-enq-child" type="text" placeholder="E.g., Aarav Verma" required />
-            </div>
-            <div class="form-row-teal">
-              <label for="pub-enq-parent">Parent / Guardian Full Name *</label>
-              <input id="pub-enq-parent" type="text" placeholder="E.g., Deepak Verma" required />
-            </div>
-            <div class="form-grid-2-teal">
-              <div class="form-row-teal">
-                <label for="pub-enq-class">Academic Class Sought *</label>
-                <select id="pub-enq-class" class="styled-select-teal" required>
-                  <option>Class I</option><option>Class II</option><option>Class III</option>
-                  <option>Class IV</option><option>Class V</option><option>Class VI</option>
-                  <option>Class VII</option><option>Class VIII</option><option>Class IX</option>
-                  <option selected>Class X</option><option>Class XI</option><option>Class XII</option>
-                </select>
-              </div>
-              <div class="form-row-teal">
-                <label for="pub-enq-phone">Contact Phone Number *</label>
-                <input id="pub-enq-phone" type="tel" placeholder="E.g., 9812345000" required />
+      <!-- Why Choose Us? Section -->
+      <section class="public-section why-choose-section">
+        <div class="container">
+          <div class="two-col-layout" style="align-items: center;">
+            <div class="section-image-side">
+              <div class="img-frame-navy" style="position: relative; border-radius: 20px; overflow: hidden; border: 4px solid var(--accent); box-shadow: 0 20px 40px rgba(11,60,93,0.12);">
+                <img src="school_hero.png" alt="Learning Environment" style="width: 100%; display: block; filter: contrast(1.05);" />
               </div>
             </div>
-            <div class="form-row-teal">
-              <label for="pub-enq-address">Residential Address</label>
-              <textarea id="pub-enq-address" rows="3" placeholder="E.g., 14 MG Road, Sector 3, New Delhi"></textarea>
+            <div class="section-text-side">
+              <div class="text-left-header" style="margin-bottom: 24px;">
+                <span class="section-tag">A TRUSTED CHOICE FOR PARENTS</span>
+                <h2 class="pub-section-title">Why Choose Our School</h2>
+              </div>
+              <ul class="trust-benefits-list" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 16px; margin-bottom: 30px;">
+                <li style="display: flex; gap: 12px; font-size: 14.5px; color: var(--text-secondary);"><i class="ti ti-checkbox" style="color: var(--accent); font-size: 20px; flex-shrink:0;"></i> <span><b>Safe and secure campus</b> for peace of mind</span></li>
+                <li style="display: flex; gap: 12px; font-size: 14.5px; color: var(--text-secondary);"><i class="ti ti-checkbox" style="color: var(--accent); font-size: 20px; flex-shrink:0;"></i> <span><b>Experienced teachers</b> focused on result oriented mentoring</span></li>
+                <li style="display: flex; gap: 12px; font-size: 14.5px; color: var(--text-secondary);"><i class="ti ti-checkbox" style="color: var(--accent); font-size: 20px; flex-shrink:0;"></i> <span><b>Focus on discipline and values</b> molding overall personality</span></li>
+                <li style="display: flex; gap: 12px; font-size: 14.5px; color: var(--text-secondary);"><i class="ti ti-checkbox" style="color: var(--accent); font-size: 20px; flex-shrink:0;"></i> <span><b>Individual attention to students</b> through optimal class ratios</span></li>
+                <li style="display: flex; gap: 12px; font-size: 14.5px; color: var(--text-secondary);"><i class="ti ti-checkbox" style="color: var(--accent); font-size: 20px; flex-shrink:0;"></i> <span><b>Affordable and quality education</b> serving all local families</span></li>
+              </ul>
+              <a href="#admissions" class="btn btn-primary btn-lg" onclick="navigatePublic('admissions', event)">Apply Now <i class="ti ti-circle-check"></i></a>
             </div>
-            <button type="submit" class="btn btn-primary btn-block btn-lg btn-teal-gold">
-              Submit Admission Enquiry <i class="ti ti-circle-check"></i>
-            </button>
-          </form>
+          </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- Contact Us Section -->
-  <section id="contact" class="public-section contact-section-alt">
-    <div class="container">
-      <div class="text-center-header">
-        <span class="section-tag">GET IN TOUCH</span>
-        <h2 class="pub-section-title text-dark">Contact Our Campus</h2>
-        <p class="pub-section-p centered text-muted">Have any queries? Reach out to our front desk or administrative offices directly.</p>
-      </div>
-      
-      <div class="contact-grid-premium">
-        <div class="contact-card-premium glass">
-          <div class="contact-icon"><i class="ti ti-map-pin"></i></div>
-          <h4>School Campus</h4>
-          <p>Vandey Bharti National School Lane,<br>New Delhi – 110001, India</p>
+      <!-- Our Academic Programs Preview -->
+      <section class="public-section academics-section-alt">
+        <div class="container">
+          <div class="text-center-header">
+            <span class="section-tag">LEARNING FOR EVERY STAGE</span>
+            <h2 class="pub-section-title">Our Academic Programs</h2>
+          </div>
+          
+          <div class="academics-grid-premium">
+            <div class="academic-card-premium">
+              <div class="academic-card-icon-premium green"><i class="ti ti-palette"></i></div>
+              <h3>Playway to KG</h3>
+              <span class="grade-span">Early Childhood</span>
+              <p>Fun-based learning with activities to nurture curiosity and primary cognitive growth.</p>
+              <a href="#academics" class="learn-more-link" onclick="navigatePublic('academics', event)" style="margin-top:20px; display: inline-flex; align-items:center; gap: 4px; color: var(--accent); font-weight:700; text-decoration:none;">Learn More <i class="ti ti-arrow-right"></i></a>
+            </div>
+            
+            <div class="academic-card-premium">
+              <div class="academic-card-icon-premium blue"><i class="ti ti-books"></i></div>
+              <h3>Class 1 to 5</h3>
+              <span class="grade-span">Primary Education</span>
+              <p>Strong focus on basics and English communication boards to establish foundational literacy.</p>
+              <a href="#academics" class="learn-more-link" onclick="navigatePublic('academics', event)" style="margin-top:20px; display: inline-flex; align-items:center; gap: 4px; color: var(--accent); font-weight:700; text-decoration:none;">Learn More <i class="ti ti-arrow-right"></i></a>
+            </div>
+            
+            <div class="academic-card-premium">
+              <div class="academic-card-icon-premium gold"><i class="ti ti-calculator"></i></div>
+              <h3>Class 6 to 10</h3>
+              <span class="grade-span">Secondary Education</span>
+              <p>Concept clarity, exam preparation and strategic scientific reasoning guides.</p>
+              <a href="#academics" class="learn-more-link" onclick="navigatePublic('academics', event)" style="margin-top:20px; display: inline-flex; align-items:center; gap: 4px; color: var(--accent); font-weight:700; text-decoration:none;">Learn More <i class="ti ti-arrow-right"></i></a>
+            </div>
+          </div>
         </div>
-        <div class="contact-card-premium glass">
-          <div class="contact-icon"><i class="ti ti-phone"></i></div>
-          <h4>Call & Telephony</h4>
-          <p>+91 11 2345 6789<br>+91 98110 22334</p>
-        </div>
-        <div class="contact-card-premium glass">
-          <div class="contact-icon"><i class="ti ti-mail"></i></div>
-          <h4>Email Inquiries</h4>
-          <p>admissions@vbnsacademy.edu<br>info@vbnsacademy.edu</p>
-        </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- Public Footer -->
-  <footer class="public-footer-teal">
+      <!-- Campus Gallery (Preview Grid) -->
+      <section class="public-section gallery-section">
+        <div class="container">
+          <div class="text-center-header">
+            <span class="section-tag">INFRASTRUCTURE OUTLINE</span>
+            <h2 class="pub-section-title">Campus Gallery Preview</h2>
+          </div>
+          
+          <div class="gallery-grid-six" style="margin-bottom: 40px;">
+            <div class="gallery-item-card">
+              <div class="gallery-icon-top purple"><i class="ti ti-slideshow"></i></div>
+              <h5>Clean Classrooms</h5>
+              <p>Equipped with modern visual aids, ergonomic desks and spacious arrangements.</p>
+            </div>
+            <div class="gallery-item-card">
+              <div class="gallery-icon-top green"><i class="ti ti-flask"></i></div>
+              <h5>Science Laboratory</h5>
+              <p>Advanced experimental set-ups matching primary CBSE/Board educational criteria.</p>
+            </div>
+            <div class="gallery-item-card">
+              <div class="gallery-icon-top blue"><i class="ti ti-cpu"></i></div>
+              <h5>Computing Facility</h5>
+              <p>High performance computer systems for software training and digital literacy boards.</p>
+            </div>
+            <div class="gallery-item-card">
+              <div class="gallery-icon-top orange"><i class="ti ti-run"></i></div>
+              <h5>Sports Assembly</h5>
+              <p>Well-maintained play zones, athletics arenas and physical education frameworks.</p>
+            </div>
+            <div class="gallery-item-card">
+              <div class="gallery-icon-top red"><i class="ti ti-music"></i></div>
+              <h5>Music & Performing Arts</h5>
+              <p>Dedicated zones to build creative expression, instrumentals and vocals.</p>
+            </div>
+            <div class="gallery-item-card">
+              <div class="gallery-icon-top teal"><i class="ti ti-brush"></i></div>
+              <h5>Art & Craft Arena</h5>
+              <p>Fostering design parameters, drawing expertise and handcraft portfolio builds.</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center;">
+            <a href="#gallery" class="btn btn-outline btn-lg" onclick="navigatePublic('gallery', event)" style="border: 2px solid var(--accent); color: var(--accent);">View Full Gallery <i class="ti ti-photo-circle"></i></a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials -->
+      <section class="public-section notice-section-alt" style="border-bottom: 1px solid rgba(11,60,93,0.08);">
+        <div class="container">
+          <div class="text-center-header">
+            <span class="section-tag">TESTIMONIALS</span>
+            <h2 class="pub-section-title">What Parents Say</h2>
+          </div>
+          
+          <div class="academics-grid-premium">
+            <div class="academic-card-premium" style="align-items: center; text-align: center; background: #ffffff;">
+              <div class="stars" style="color: var(--color-warning); margin-bottom: 16px;"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
+              <p style="font-style: italic; font-size: 13.5px; color: var(--text-secondary);">“Best school in महाराजगंज! My child Aarav was weak in basics, but the dedicated teachers gave him individual attention. Now he communicates in English fluently.”</p>
+              <h5 style="margin-top: 20px; font-weight:700; color: var(--accent);">Deepak Verma</h5>
+              <span style="font-size: 11px; color: var(--text-tertiary);">Parent, Shyamdeurwa</span>
+            </div>
+            
+            <div class="academic-card-premium" style="align-items: center; text-align: center; background: #ffffff;">
+              <div class="stars" style="color: var(--color-warning); margin-bottom: 16px;"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
+              <p style="font-style: italic; font-size: 13.5px; color: var(--text-secondary);">“Very safe and disciplined campus. School administration is extremely transparent, and the fees structure is highly affordable for everyone.”</p>
+              <h5 style="margin-top: 20px; font-weight:700; color: var(--accent);">Suresh Mehta</h5>
+              <span style="font-size: 11px; color: var(--text-tertiary);">Parent, Maharajganj</span>
+            </div>
+            
+            <div class="academic-card-premium" style="align-items: center; text-align: center; background: #ffffff;">
+              <div class="stars" style="color: var(--color-warning); margin-bottom: 16px;"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
+              <p style="font-style: italic; font-size: 13.5px; color: var(--text-secondary);">“I highly recommend Vandey Bharti National Intermediate College. The focus on values, morals, and discipline alongside top class academics is outstanding.”</p>
+              <h5 style="margin-top: 20px; font-weight:700; color: var(--accent);">Pooja Singh</h5>
+              <span style="font-size: 11px; color: var(--text-tertiary);">Parent, Shyamdeurwa</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dynamic Notice Board Preview -->
+      <section class="public-section notice-section-alt">
+        <div class="container two-col-layout">
+          <div class="section-text-wrapper">
+            <span class="section-tag">CAMPUS BULLETIN</span>
+            <h2 class="pub-section-title">Official Announcements</h2>
+            <p class="pub-section-p">Keep up-to-date with active bulletins, exam schedules, holidays, and administrative announcements published directly by the school board registry.</p>
+            <div class="alert-box-info-teal" style="background: rgba(11,60,93,0.05); color: var(--accent); border-color: rgba(11,60,93,0.2);">
+              <i class="ti ti-info-circle"></i> Notices are mirrored in real-time from our central ERP CRM portal database.
+            </div>
+          </div>
+          <div class="section-notices-wrapper">
+            <div class="public-notice-board card-glassmorphic" style="border-color: rgba(11,60,93,0.15);">
+              <div class="card-header-teal" style="background: rgba(11,60,93,0.03); border-bottom-color: rgba(11,60,93,0.1);">
+                <h3 class="section-title" style="color: var(--accent);"><i class="ti ti-broadcast"></i> Dynamic Bulletin Notice Board</h3>
+                <span class="card-subtitle">Latest postings for Parents & Students</span>
+              </div>
+              <div id="public-notices-feed" class="public-notices-feed-container">
+                <div class="loading-placeholder">
+                  <i class="ti ti-loader animate-spin"></i> Loading active notices...
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- High Conversion Admissions CTA Banner -->
+      <section class="public-section admission-section-premium" style="background: linear-gradient(135deg, var(--accent) 0%, #051c2d 100%); color: #ffffff;">
+        <div class="container text-center-header" style="max-width: 800px; margin-bottom: 0;">
+          <span class="section-tag" style="color: var(--color-warning);">LIMITED SEATS AVAILABLE</span>
+          <h2 class="pub-section-title" style="color: #ffffff; font-size: 34px;">Admissions Open Now</h2>
+          <h3 style="font-size: 20px; font-weight:500; color: rgba(255,255,255,0.85); margin-bottom: 24px;">Secure your child’s future with the right education.</h3>
+          
+          <div class="hero-ctas" style="justify-content: center; display: flex; gap: 16px;">
+            <a href="#admissions" class="btn btn-lg" onclick="navigatePublic('admissions', event)" style="background: var(--color-warning); color: #0B3C5D; font-weight:700;">Apply Now <i class="ti ti-edit"></i></a>
+            <a href="tel:+919811022334" class="btn btn-lg" style="background: transparent; border: 2px solid #ffffff; color: #ffffff;">Call Now <i class="ti ti-phone"></i></a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- 🏫 2. ABOUT US VIEW -->
+    <div id="pub-page-about" class="pub-page" style="display:none">
+      <header class="public-hero" style="min-height: 40vh; padding-top: 110px;">
+        <div class="hero-overlay"></div>
+        <div class="hero-container" style="padding: 20px 24px; text-align: center;">
+          <h1 class="hero-title" style="font-size: 42px;">About Vandey Bharti National Intermediate College</h1>
+          <h3 class="hero-subtitle-h3" style="font-size: 20px; color: var(--accent);">“Building Future with Values”</h3>
+        </div>
+      </header>
+
+      <section class="public-section why-choose-section">
+        <div class="container">
+          <div class="why-choose-grid" style="grid-template-columns: repeat(2, 1fr); gap: 32px;">
+            <div class="why-card highlight-card" style="padding: 40px; align-items: flex-start;">
+              <div class="why-icon-box purple" style="width: 54px; height: 54px; font-size:24px;"><i class="ti ti-target-arrow"></i></div>
+              <h2 class="pub-section-title" style="font-size: 22px; margin-top: 10px;">Our Mission</h2>
+              <h3 style="font-size: 15px; color: var(--accent); font-weight:600; margin-bottom: 12px;">Providing Quality Education with Values</h3>
+              <p style="font-size: 14px; line-height: 1.65; color: var(--text-secondary);">Our mission is to provide quality education that builds strong knowledge, discipline, and character in every student. We aim to nurture moral grounds and academic excellence.</p>
+            </div>
+            
+            <div class="why-card highlight-card" style="padding: 40px; align-items: flex-start;">
+              <div class="why-icon-box gold" style="width: 54px; height: 54px; font-size:24px;"><i class="ti ti-eye"></i></div>
+              <h2 class="pub-section-title" style="font-size: 22px; margin-top: 10px;">Our Vision</h2>
+              <h3 style="font-size: 15px; color: var(--accent); font-weight:600; margin-bottom: 12px;">Creating Future-Ready Students</h3>
+              <p style="font-size: 14px; line-height: 1.65; color: var(--text-secondary);">We aim to prepare students who are confident, responsible, and ready for future challenges. Our curriculum aligns scientific reasoning with dynamic skills to build young leaders.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="public-section academics-section-alt">
+        <div class="container">
+          <div class="two-col-layout" style="align-items: center; gap: 50px;">
+            <div class="section-text-side">
+              <span class="section-tag">TRUSTED BY PARENTS IN MAHARAJGANJ</span>
+              <h2 class="pub-section-title" style="font-size:32px;">Our Experience</h2>
+              <h3 style="font-size:18px; color: var(--accent); font-weight:600; margin-bottom: 16px;">Years of Dedicated Academic Excellence</h3>
+              <p class="pub-section-p" style="margin-bottom: 20px;">With years of teaching experience, we have helped many students build strong academic foundations. Our alumni are successfully pursuing high-end pathways nationwide, establishing Vandey Bharti as a top-ranked institute in Maharajganj.</p>
+              
+              <div class="hero-badges-strip" style="margin-bottom: 24px;">
+                <span><i class="ti ti-calendar-event"></i> Session 2026-27</span>
+                <span><i class="ti ti-trophy"></i> Best Board Results</span>
+              </div>
+            </div>
+            <div class="section-image-side">
+              <div class="why-card highlight-card" style="padding: 40px; border-left: 6px solid var(--accent);">
+                <div class="why-icon-box green" style="width: 54px; height: 54px; font-size:24px;"><i class="ti ti-users-group"></i></div>
+                <h2 class="pub-section-title" style="font-size: 22px; margin-top: 10px;">Our Strength</h2>
+                <h3 style="font-size: 15px; color: var(--accent); font-weight:600; margin-bottom: 12px;">Dedicated Teachers and Student Focus</h3>
+                <p style="font-size: 14px; line-height: 1.65; color: var(--text-secondary);">Our teachers focus on each student’s growth and ensure personal attention for better learning outcomes. We promote active mentorship, concept checking and regular assessments.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- 📚 3. ACADEMICS VIEW -->
+    <div id="pub-page-academics" class="pub-page" style="display:none">
+      <header class="public-hero" style="min-height: 40vh; padding-top: 110px;">
+        <div class="hero-overlay"></div>
+        <div class="hero-container" style="padding: 20px 24px; text-align: center;">
+          <h1 class="hero-title" style="font-size: 42px;">Academic Programs at Vandey Bharti School Maharajganj</h1>
+          <h3 class="hero-subtitle-h3" style="font-size: 20px; color: var(--accent);">“Learning for Every Stage of Growth”</h3>
+        </div>
+      </header>
+
+      <section class="public-section why-choose-section">
+        <div class="container" style="max-width: 1000px;">
+          <div class="academics-stacked-list" style="display: flex; flex-direction: column; gap: 40px;">
+            
+            <!-- Playway to KG -->
+            <div class="academic-card-premium" style="flex-direction: row; align-items: center; gap: 32px; width: 100%; border-top: none; border-left: 6px solid #10b981; background: #ffffff;">
+              <div class="why-icon-box green" style="width: 70px; height: 70px; font-size: 32px; border-radius: 16px; flex-shrink: 0;"><i class="ti ti-palette"></i></div>
+              <div>
+                <h2 class="pub-section-title" style="font-size: 24px; margin-bottom: 4px;">Playway to KG</h2>
+                <h3 style="font-size: 16px; color: #10b981; font-weight: 600; margin-bottom: 12px;">Fun-Based Learning</h3>
+                <p style="color: var(--text-secondary); font-size: 14.5px; line-height: 1.6;">We focus on activity-based learning to build early skills and confidence. Our classrooms are equipped with engaging visual templates and safe indoor learning toys.</p>
+              </div>
+            </div>
+
+            <!-- Class 1 to 5 -->
+            <div class="academic-card-premium" style="flex-direction: row; align-items: center; gap: 32px; width: 100%; border-top: none; border-left: 6px solid #3b82f6; background: #ffffff;">
+              <div class="why-icon-box blue" style="width: 70px; height: 70px; font-size: 32px; border-radius: 16px; flex-shrink: 0;"><i class="ti ti-books"></i></div>
+              <div>
+                <h2 class="pub-section-title" style="font-size: 24px; margin-bottom: 4px;">Class 1 to 5</h2>
+                <h3 style="font-size: 16px; color: #3b82f6; font-weight: 600; margin-bottom: 12px;">Strong Foundation Building</h3>
+                <p style="color: var(--text-secondary); font-size: 14.5px; line-height: 1.6; margin-bottom: 12px;">Fostering solid cognitive reading frameworks alongside calculations:</p>
+                <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <li style="font-size: 13.5px; color: var(--text-secondary);"><i class="ti ti-circle-check-filled" style="color: #3b82f6;"></i> Reading and writing skills</li>
+                  <li style="font-size: 13.5px; color: var(--text-secondary);"><i class="ti ti-circle-check-filled" style="color: #3b82f6;"></i> Basic mathematics</li>
+                  <li style="font-size: 13.5px; color: var(--text-secondary);"><i class="ti ti-circle-check-filled" style="color: #3b82f6;"></i> English communication</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Class 6 to 10 -->
+            <div class="academic-card-premium" style="flex-direction: row; align-items: center; gap: 32px; width: 100%; border-top: none; border-left: 6px solid #F2B705; background: #ffffff;">
+              <div class="why-icon-box gold" style="width: 70px; height: 70px; font-size: 32px; border-radius: 16px; flex-shrink: 0;"><i class="ti ti-school"></i></div>
+              <div>
+                <h2 class="pub-section-title" style="font-size: 24px; margin-bottom: 4px;">Class 6 to 10</h2>
+                <h3 style="font-size: 16px; color: #d89e04; font-weight: 600; margin-bottom: 12px;">Concept-Based Learning</h3>
+                <p style="color: var(--text-secondary); font-size: 14.5px; line-height: 1.6; margin-bottom: 12px;">Comprehensive curriculum focused on result validation and board exams:</p>
+                <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <li style="font-size: 13.5px; color: var(--text-secondary);"><i class="ti ti-circle-check-filled" style="color: #F2B705;"></i> Subject clarity</li>
+                  <li style="font-size: 13.5px; color: var(--text-secondary);"><i class="ti ti-circle-check-filled" style="color: #F2B705;"></i> Regular tests and practice</li>
+                  <li style="font-size: 13.5px; color: var(--text-secondary);"><i class="ti ti-circle-check-filled" style="color: #F2B705;"></i> Exam preparation</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <section class="public-section academics-section-alt" style="border-bottom: 1px solid rgba(11,60,93,0.08);">
+        <div class="container text-center-header" style="max-width: 750px;">
+          <span class="section-tag">TEACHING APPROACH</span>
+          <h2 class="pub-section-title">Step-by-Step Learning</h2>
+          <h3 style="font-size: 16px; color: var(--accent); font-weight: 600; margin-bottom: 16px;">Personalized Student Guidance Methodologies</h3>
+          <p class="pub-section-p centered" style="font-size: 15px; color: var(--text-secondary); line-height: 1.7;">We ensure every child understands concepts clearly and performs well academically. Our faculties rely on structured models, individual result checkpoints, and parent-teacher collaboration boards to make learning progressive.</p>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- 🎯 4. ADMISSIONS VIEW (HIGH CONVERSION) -->
+    <div id="pub-page-admissions" class="pub-page" style="display:none">
+      <header class="public-hero" style="min-height: 40vh; padding-top: 110px;">
+        <div class="hero-overlay"></div>
+        <div class="hero-container" style="padding: 20px 24px; text-align: center;">
+          <h1 class="hero-title" style="font-size: 42px;">Admissions Open at Vandey Bharti National Intermediate College</h1>
+          <h3 class="hero-subtitle-h3" style="font-size: 20px; color: var(--accent);">“Enroll Your Child Today for Session 2026-27”</h3>
+        </div>
+      </header>
+
+      <section class="public-section why-choose-section">
+        <div class="container two-col-layout">
+          <div class="section-text-side">
+            <span class="section-tag">BEST SCHOOL IN MAHARAJGANJ</span>
+            <h2 class="pub-section-title">Why Take Admission Here</h2>
+            <h3 style="font-size: 16px; color: var(--accent); font-weight: 600; margin-bottom: 20px;">Top-Rated Educational Standards</h3>
+            <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 16px; margin-bottom: 30px;">
+              <li style="display: flex; gap: 12px; font-size: 14.5px; color: var(--text-secondary);"><i class="ti ti-checkbox" style="color: var(--accent); font-size: 20px; flex-shrink:0;"></i> <span><b>Safe and disciplined environment</b> for moral building</span></li>
+              <li style="display: flex; gap: 12px; font-size: 14.5px; color: var(--text-secondary);"><i class="ti ti-checkbox" style="color: var(--accent); font-size: 20px; flex-shrink:0;"></i> <span><b>Experienced faculty</b> guiding every growth phase</span></li>
+              <li style="display: flex; gap: 12px; font-size: 14.5px; color: var(--text-secondary);"><i class="ti ti-checkbox" style="color: var(--accent); font-size: 20px; flex-shrink:0;"></i> <span><b>Focus on overall development</b> through co-curricular assets</span></li>
+            </ul>
+            
+            <div class="why-card highlight-card" style="background: rgba(242,183,5,0.05); border: 1.5px dashed var(--color-warning);">
+              <h4 style="color: var(--accent); margin-bottom: 6px;"><i class="ti ti-alert-circle"></i> Note on Availability</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin:0;">Seats are strictly limited for the current academic term. Parents are recommended to submit digital enquiries early to book campus tours.</p>
+            </div>
+          </div>
+          
+          <div class="section-form-wrapper">
+            <div class="public-form-card card-glassmorphic" style="border-color: rgba(11,60,93,0.15);">
+              <div class="card-header-teal" style="background: rgba(11,60,93,0.03); border-bottom-color: rgba(11,60,93,0.1);">
+                <h3 class="section-title" style="color: var(--accent);"><i class="ti ti-address-book"></i> Admission Enquiry Form</h3>
+                <span class="card-subtitle">Details are logged directly into the CRM Enquiry pipeline</span>
+              </div>
+              <form id="public-admissions-form" onsubmit="submitPublicEnquiry(event)" class="form-container-teal">
+                <div class="form-row-teal">
+                  <label for="pub-adm-child">Full Child / Candidate Name *</label>
+                  <input id="pub-adm-child" type="text" placeholder="E.g., Aarav Verma" required />
+                </div>
+                <div class="form-row-teal">
+                  <label for="pub-adm-parent">Parent / Guardian Full Name *</label>
+                  <input id="pub-adm-parent" type="text" placeholder="E.g., Deepak Verma" required />
+                </div>
+                <div class="form-grid-2-teal">
+                  <div class="form-row-teal">
+                    <label for="pub-adm-class">Academic Class Sought *</label>
+                    <select id="pub-adm-class" class="styled-select-teal" required>
+                      <option>Class I</option><option>Class II</option><option>Class III</option>
+                      <option>Class IV</option><option>Class V</option><option>Class VI</option>
+                      <option>Class VII</option><option>Class VIII</option><option>Class IX</option>
+                      <option selected>Class X</option><option>Class XI</option><option>Class XII</option>
+                    </select>
+                  </div>
+                  <div class="form-row-teal">
+                    <label for="pub-adm-phone">Contact Phone Number *</label>
+                    <input id="pub-adm-phone" type="tel" placeholder="E.g., 9812345000" required />
+                  </div>
+                </div>
+                <div class="form-row-teal">
+                  <label for="pub-adm-address">Residential Address</label>
+                  <textarea id="pub-adm-address" rows="3" placeholder="E.g., Shyamdeurwa, Maharajganj, UP"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block btn-lg btn-teal-gold" style="background: var(--accent) !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(11,60,93,0.3);">
+                  Submit Admission Enquiry <i class="ti ti-circle-check"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stepper UI Process & Documents -->
+      <section class="public-section academics-section-alt">
+        <div class="container">
+          <div class="two-col-layout" style="gap: 50px;">
+            <div>
+              <span class="section-tag">SIMPLE STEPS</span>
+              <h2 class="pub-section-title">Admission Process</h2>
+              
+              <div class="admission-steps-premium">
+                <div class="step-item-premium">
+                  <div class="step-badge-premium" style="background: var(--accent); box-shadow: 0 4px 10px rgba(11,60,93,0.3);">1</div>
+                  <div class="step-text-premium">
+                    <h5>Visit the school</h5>
+                    <p>Parents visit our campus at Shyamdeurwa Maharajganj to experience the facilities.</p>
+                  </div>
+                </div>
+                <div class="step-item-premium">
+                  <div class="step-badge-premium" style="background: var(--accent); box-shadow: 0 4px 10px rgba(11,60,93,0.3);">2</div>
+                  <div class="step-text-premium">
+                    <h5>Fill admission form</h5>
+                    <p>Obtain and submit the physical/digital enrollment form with necessary fields.</p>
+                  </div>
+                </div>
+                <div class="step-item-premium">
+                  <div class="step-badge-premium" style="background: var(--accent); box-shadow: 0 4px 10px rgba(11,60,93,0.3);">3</div>
+                  <div class="step-text-premium">
+                    <h5>Confirm admission</h5>
+                    <p>Complete standard counseling verification, submit documents and confirm seats.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <span class="section-tag">BASIC REQUIREMENTS</span>
+              <h2 class="pub-section-title">Documents Required</h2>
+              
+              <div class="why-card highlight-card" style="width: 100%; display: flex; flex-direction: column; gap: 20px; background: #ffffff;">
+                <div style="display: flex; gap: 16px; align-items: center;">
+                  <div class="why-icon-box purple" style="width: 44px; height: 44px; font-size: 20px;"><i class="ti ti-id-badge"></i></div>
+                  <div>
+                    <h5 style="font-weight: 700; color: var(--accent); margin:0;">Birth certificate</h5>
+                    <p style="font-size: 12.5px; color: var(--text-secondary); margin: 2px 0 0 0;">Official DOB verification sheet registered under state bodies.</p>
+                  </div>
+                </div>
+                
+                <div style="display: flex; gap: 16px; align-items: center;">
+                  <div class="why-icon-box green" style="width: 44px; height: 44px; font-size: 20px;"><i class="ti ti-file-text"></i></div>
+                  <div>
+                    <h5 style="font-weight: 700; color: var(--accent); margin:0;">Previous marksheet</h5>
+                    <p style="font-size: 12.5px; color: var(--text-secondary); margin: 2px 0 0 0;">Scorecards/Transfer Certificate from the previous recognized institute.</p>
+                  </div>
+                </div>
+                
+                <div style="display: flex; gap: 16px; align-items: center;">
+                  <div class="why-icon-box gold" style="width: 44px; height: 44px; font-size: 20px;"><i class="ti ti-camera"></i></div>
+                  <div>
+                    <h5 style="font-weight: 700; color: var(--accent); margin:0;">Passport size photos</h5>
+                    <p style="font-size: 12.5px; color: var(--text-secondary); margin: 2px 0 0 0;">3 recent color photographs of the student and parents.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Apply Now final cta -->
+      <section class="public-section admission-section-premium" style="background: linear-gradient(135deg, var(--accent) 0%, #051c2d 100%); color: #ffffff;">
+        <div class="container text-center-header" style="max-width: 800px; margin-bottom: 0;">
+          <span class="section-tag" style="color: var(--color-warning);">APPLY NOW</span>
+          <h2 class="pub-section-title" style="color: #ffffff; font-size: 34px;">Limited Seats Available</h2>
+          <h3 style="font-size: 18px; font-weight:500; color: rgba(255,255,255,0.85); margin-bottom: 24px;">Contact us today and secure your child’s admission.</h3>
+          
+          <div class="hero-ctas" style="justify-content: center; display: flex; gap: 16px;">
+            <a href="tel:+919811022334" class="btn btn-lg" style="background: var(--color-warning); color: #0B3C5D; font-weight:700;">Call Today <i class="ti ti-phone"></i></a>
+            <a href="https://wa.me/919811022334" target="_blank" class="btn btn-lg" style="background: #25d366; color: #ffffff; border:none; display: inline-flex; align-items:center; gap: 8px;">WhatsApp <i class="ti ti-brand-whatsapp"></i></a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- 📸 5. GALLERY VIEW -->
+    <div id="pub-page-gallery" class="pub-page" style="display:none">
+      <header class="public-hero" style="min-height: 40vh; padding-top: 110px;">
+        <div class="hero-overlay"></div>
+        <div class="hero-container" style="padding: 20px 24px; text-align: center;">
+          <h1 class="hero-title" style="font-size: 42px;">School Gallery – Vandey Bharti Maharajganj</h1>
+          <h3 class="hero-subtitle-h3" style="font-size: 20px; color: var(--accent);">“Visual Tour of Our Vibrant Learning Environment”</h3>
+        </div>
+      </header>
+
+      <section class="public-section why-choose-section">
+        <div class="container">
+          <!-- Filter buttons -->
+          <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 40px; flex-wrap: wrap;">
+            <button class="btn btn-primary filter-btn active" onclick="filterGallery('all')" style="border-radius: 20px; padding: 8px 20px; font-size:13px; background: var(--accent); color: #ffffff;">All Photos</button>
+            <button class="btn btn-outline filter-btn" onclick="filterGallery('campus')" style="border-radius: 20px; padding: 8px 20px; font-size:13px; border: 1.5px solid var(--accent); color: var(--accent);">Campus & Classrooms</button>
+            <button class="btn btn-outline filter-btn" onclick="filterGallery('activities')" style="border-radius: 20px; padding: 8px 20px; font-size:13px; border: 1.5px solid var(--accent); color: var(--accent);">Student Activities</button>
+            <button class="btn btn-outline filter-btn" onclick="filterGallery('events')" style="border-radius: 20px; padding: 8px 20px; font-size:13px; border: 1.5px solid var(--accent); color: var(--accent);">Events & Celebrations</button>
+          </div>
+
+          <div class="gallery-grid-six" id="masonry-gallery-grid">
+            
+            <!-- Campus item -->
+            <div class="gallery-item-card g-item campus">
+              <div class="gallery-icon-top purple"><i class="ti ti-slideshow"></i></div>
+              <h2 class="pub-section-title" style="font-size: 18px; margin-top: 10px;">Clean and Safe Environment</h2>
+              <h3 style="font-size: 13px; color: var(--accent); font-weight: 600; margin: 0;">Campus and Classrooms</h3>
+              <p>Explore our well-maintained classrooms, hygienic sanitization grids, and safe playing arenas designed for premium protection.</p>
+            </div>
+
+            <!-- Activities item -->
+            <div class="gallery-item-card g-item activities">
+              <div class="gallery-icon-top green"><i class="ti ti-run"></i></div>
+              <h2 class="pub-section-title" style="font-size: 18px; margin-top: 10px;">Learning Beyond Books</h2>
+              <h3 style="font-size: 13px; color: var(--accent); font-weight: 600; margin: 0;">Student Activities</h3>
+              <p>Students participate in physical education, science labs, debate boards, arts assemblies and coding tasks for overall development.</p>
+            </div>
+
+            <!-- Events item -->
+            <div class="gallery-item-card g-item events">
+              <div class="gallery-icon-top blue"><i class="ti ti-award"></i></div>
+              <h2 class="pub-section-title" style="font-size: 18px; margin-top: 10px;">Confidence and Creativity</h2>
+              <h3 style="font-size: 13px; color: var(--accent); font-weight: 600; margin: 0;">Events and Celebrations</h3>
+              <p>We organize annual science fairs, physical sports challenges, and cultural days to encourage talent, confidence and creativity.</p>
+            </div>
+
+            <!-- Campus item 2 -->
+            <div class="gallery-item-card g-item campus">
+              <div class="gallery-icon-top orange"><i class="ti ti-flask"></i></div>
+              <h2 class="pub-section-title" style="font-size: 18px; margin-top: 10px;">Practical Physics Lab</h2>
+              <h3 style="font-size: 13px; color: var(--accent); font-weight: 600; margin: 0;">Modern Labs</h3>
+              <p>Housed with calibrated tools, glassware setups and biological specimens matching the highest educational guidelines.</p>
+            </div>
+
+            <!-- Activities item 2 -->
+            <div class="gallery-item-card g-item activities">
+              <div class="gallery-icon-top red"><i class="ti ti-music"></i></div>
+              <h2 class="pub-section-title" style="font-size: 18px; margin-top: 10px;">Vocal Instrumentation Class</h2>
+              <h3 style="font-size: 13px; color: var(--accent); font-weight: 600; margin: 0;">Co-Curricular</h3>
+              <p>Providing musical training boards for string, percussion, and acoustic classical singing lessons.</p>
+            </div>
+
+            <!-- Events item 2 -->
+            <div class="gallery-item-card g-item events">
+              <div class="gallery-icon-top teal"><i class="ti ti-star"></i></div>
+              <h2 class="pub-section-title" style="font-size: 18px; margin-top: 10px;">Independence Day Parade</h2>
+              <h3 style="font-size: 13px; color: var(--accent); font-weight: 600; margin: 0;">National Pride</h3>
+              <p>Promoting national patriotism, physical parade marching, flag hoisting assemblies and classical anthem tributes.</p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- 📞 6. CONTACT VIEW -->
+    <div id="pub-page-contact" class="pub-page" style="display:none">
+      <header class="public-hero" style="min-height: 40vh; padding-top: 110px;">
+        <div class="hero-overlay"></div>
+        <div class="hero-container" style="padding: 20px 24px; text-align: center;">
+          <h1 class="hero-title" style="font-size: 42px;">Contact Vandey Bharti National Intermediate College</h1>
+          <h3 class="hero-subtitle-h3" style="font-size: 20px; color: var(--accent);">“Get in Touch with Our Administrative Office”</h3>
+        </div>
+      </header>
+
+      <section class="public-section why-choose-section">
+        <div class="container two-col-layout" style="gap: 50px;">
+          
+          <!-- Left details & map -->
+          <div>
+            <span class="section-tag">VISIT OUR SCHOOL</span>
+            <h2 class="pub-section-title">Located in Shyamdeurwa, Maharajganj</h2>
+            <p class="pub-section-p" style="margin-bottom: 24px;">We welcome parents to visit our campus and understand our teaching environment. Our admissions team is always available to guide your inquiries.</p>
+            
+            <div class="why-card highlight-card" style="width: 100%; background: #ffffff; gap: 16px; margin-bottom: 24px;">
+              <div style="display: flex; gap: 14px; align-items: center;">
+                <div class="contact-icon" style="background: rgba(11,60,93,0.06); color: var(--accent); width:38px; height:38px; font-size:16px; border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="ti ti-map-pin"></i></div>
+                <div>
+                  <h5 style="margin:0; font-weight:700; color: var(--accent); font-size: 14px;">School Address</h5>
+                  <p style="margin:2px 0 0 0; font-size:13px; color: var(--text-secondary);">Shyamdeurwa, Maharajganj – 273306, Uttar Pradesh, India</p>
+                </div>
+              </div>
+              
+              <div style="display: flex; gap: 14px; align-items: center;">
+                <div class="contact-icon" style="background: rgba(11,60,93,0.06); color: var(--accent); width:38px; height:38px; font-size:16px; border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="ti ti-phone"></i></div>
+                <div>
+                  <h5 style="margin:0; font-weight:700; color: var(--accent); font-size: 14px;">Contact Numbers</h5>
+                  <p style="margin:2px 0 0 0; font-size:13px; color: var(--text-secondary);">+91 98110 22334 (Front Desk) | +91 11 2345 6789</p>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 14px; align-items: center;">
+                <div class="contact-icon" style="background: rgba(11,60,93,0.06); color: var(--accent); width:38px; height:38px; font-size:16px; border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="ti ti-mail"></i></div>
+                <div>
+                  <h5 style="margin:0; font-weight:700; color: var(--accent); font-size: 14px;">Email Inquiries</h5>
+                  <p style="margin:2px 0 0 0; font-size:13px; color: var(--text-secondary);">info@vbnsacademy.edu | admissions@vbnsacademy.edu</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Simulated Map Frame -->
+            <div style="width: 100%; height: 230px; border-radius: 16px; overflow:hidden; border: 1.5px solid rgba(11,60,93,0.15); position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.03);">
+              <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: #e3ede7; display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 8px; color: var(--accent);">
+                <i class="ti ti-map-2" style="font-size: 40px;"></i>
+                <span style="font-weight: 700; font-size: 14px;">Shyamdeurwa, Maharajganj, UP</span>
+                <span style="font-size: 11px; color: var(--text-tertiary);">Interactive Map Navigation Mockup</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right side form -->
+          <div class="section-form-wrapper">
+            <div class="public-form-card card-glassmorphic" style="border-color: rgba(11,60,93,0.15);">
+              <div class="card-header-teal" style="background: rgba(11,60,93,0.03); border-bottom-color: rgba(11,60,93,0.1);">
+                <h3 class="section-title" style="color: var(--accent);"><i class="ti ti-mail-opened"></i> Submit Admission Enquiry</h3>
+                <span class="card-subtitle">Your contact query will be instantly synced to the Admin Dashboard</span>
+              </div>
+              <form id="public-contact-form" onsubmit="submitPublicEnquiry(event)" class="form-container-teal">
+                <div class="form-row-teal">
+                  <label for="pub-con-child">Child / Candidate Full Name *</label>
+                  <input id="pub-con-child" type="text" placeholder="E.g., Aarav Verma" required />
+                </div>
+                <div class="form-row-teal">
+                  <label for="pub-con-parent">Parent / Guardian Name *</label>
+                  <input id="pub-con-parent" type="text" placeholder="E.g., Deepak Verma" required />
+                </div>
+                <div class="form-grid-2-teal">
+                  <div class="form-row-teal">
+                    <label for="pub-con-class">Class Sought *</label>
+                    <select id="pub-con-class" class="styled-select-teal" required>
+                      <option>Class I</option><option>Class II</option><option>Class III</option>
+                      <option>Class IV</option><option>Class V</option><option>Class VI</option>
+                      <option>Class VII</option><option>Class VIII</option><option>Class IX</option>
+                      <option selected>Class X</option><option>Class XI</option><option>Class XII</option>
+                    </select>
+                  </div>
+                  <div class="form-row-teal">
+                    <label for="pub-con-phone">Contact Phone Number *</label>
+                    <input id="pub-con-phone" type="tel" placeholder="E.g., 9812345000" required />
+                  </div>
+                </div>
+                <div class="form-row-teal">
+                  <label for="pub-con-message">Residential Address / Message</label>
+                  <textarea id="pub-con-message" rows="3" placeholder="Enter your full home address or enquiry questions..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block btn-lg btn-teal-gold" style="background: var(--accent) !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(11,60,93,0.3);">
+                  Submit Enquiry <i class="ti ti-mail-share"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+  <!-- Global Footer (Persistent) -->
+  <footer class="public-footer-teal" style="background-color: var(--bg-secondary); border-top: 2px solid rgba(11,60,93,0.15);">
     <div class="footer-container-teal">
       <div class="footer-split-teal">
         <!-- Brand -->
         <div class="footer-left-teal">
           <div class="footer-logo-title">
-            <img src="logo.jpg" alt="VBNS Logo" />
-            <h4>Vandey Bharti National School</h4>
+            <img src="logo.jpg" alt="VBNS Logo" style="border-color: var(--accent);" />
+            <h4 style="color: var(--accent); font-weight:700;">Vandey Bharti National Intermediate College</h4>
           </div>
-          <p class="footer-desc">A legacy of premium educational excellence, shaping creative thinkers and global leaders of tomorrow. Equipped with modern labs, comprehensive sports academies, and safe digital systems.</p>
+          <p class="footer-desc">A legacy of educational excellence, shaping creative thinkers and global leaders of tomorrow. Equipped with modern scientific labs, secure digital assets, physical sports assemblies and result-oriented mentoring guidelines.</p>
         </div>
         <!-- Quick Links -->
         <div class="footer-center-teal">
-          <h5>Quick Navigation</h5>
+          <h5 style="color: var(--accent); border-bottom-color: var(--accent);">Quick Navigation</h5>
           <ul class="footer-menu-links">
-            <li><a href="#hero" onclick="navigatePublic('hero', event)">Home</a></li>
-            <li><a href="#why-choose-us" onclick="navigatePublic('why-choose-us', event)">Why Choose Us</a></li>
+            <li><a href="#home" onclick="navigatePublic('home', event)">Homepage</a></li>
+            <li><a href="#about" onclick="navigatePublic('about', event)">About Us</a></li>
             <li><a href="#academics" onclick="navigatePublic('academics', event)">Academics</a></li>
-            <li><a href="#campus-gallery" onclick="navigatePublic('campus-gallery', event)">Campus Gallery</a></li>
-            <li><a href="#admissions" onclick="navigatePublic('admissions', event)">Admissions Form</a></li>
+            <li><a href="#admissions" onclick="navigatePublic('admissions', event)">Admissions Process</a></li>
+            <li><a href="#gallery" onclick="navigatePublic('gallery', event)">Campus Gallery</a></li>
+            <li><a href="#contact" onclick="navigatePublic('contact', event)">Contact Office</a></li>
           </ul>
         </div>
         <!-- Address & Contact -->
         <div class="footer-right-teal">
-          <h5>Contact Information</h5>
-          <p><i class="ti ti-map-pin"></i> 12 Education Lane, New Delhi - 110001</p>
-          <p><i class="ti ti-phone"></i> +91 11 2345 6789</p>
-          <p><i class="ti ti-mail"></i> info@vbnsacademy.edu</p>
+          <h5 style="color: var(--accent); border-bottom-color: var(--accent);">Contact Information</h5>
+          <p><i class="ti ti-map-pin" style="color: var(--accent);"></i> Shyamdeurwa, Maharajganj, UP – 273306</p>
+          <p><i class="ti ti-phone" style="color: var(--accent);"></i> +91 98110 22334 (Registrar)</p>
+          <p><i class="ti ti-mail" style="color: var(--accent);"></i> info@vbnsacademy.edu</p>
           <div class="footer-social-icons">
-            <a href="#"><i class="ti ti-brand-facebook"></i></a>
-            <a href="#"><i class="ti ti-brand-twitter"></i></a>
-            <a href="#"><i class="ti ti-brand-instagram"></i></a>
-            <a href="#"><i class="ti ti-brand-youtube"></i></a>
+            <a href="#" style="background: rgba(11,60,93,0.05); border-color: rgba(11,60,93,0.1); color: var(--accent);"><i class="ti ti-brand-facebook"></i></a>
+            <a href="#" style="background: rgba(11,60,93,0.05); border-color: rgba(11,60,93,0.1); color: var(--accent);"><i class="ti ti-brand-twitter"></i></a>
+            <a href="#" style="background: rgba(11,60,93,0.05); border-color: rgba(11,60,93,0.1); color: var(--accent);"><i class="ti ti-brand-instagram"></i></a>
+            <a href="#" style="background: rgba(11,60,93,0.05); border-color: rgba(11,60,93,0.1); color: var(--accent);"><i class="ti ti-brand-youtube"></i></a>
           </div>
         </div>
       </div>
       
-      <div class="footer-copyright-teal">
+      <div class="footer-copyright-teal" style="border-top-color: rgba(11,60,93,0.1);">
         <div class="footer-copyright-left">
-          <p>&copy; 2026 Vandey Bharti National School. All Rights Reserved.</p>
+          <p>&copy; 2026 Vandey Bharti National Intermediate College. All Rights Reserved. (PW-Class 10)</p>
         </div>
         <div class="footer-copyright-right">
-          <a href="#" onclick="resetDatabaseToDefault(event)"><i class="ti ti-rotate-clockwise"></i> Reset ERP State</a>
+          <a href="#" onclick="resetDatabaseToDefault(event)" style="color: var(--text-tertiary);"><i class="ti ti-rotate-clockwise"></i> Reset ERP State</a>
         </div>
       </div>
     </div>
   </footer>
+
+  <!-- Floating Pulsing WhatsApp Support Badge -->
+  <a href="https://wa.me/919811022334" target="_blank" class="whatsapp-floating-btn" title="Chat on WhatsApp">
+    <i class="ti ti-brand-whatsapp"></i>
+    <span class="tooltip-text">WhatsApp Support</span>
+  </a>
+
+  <!-- Mobile Sticky Bottom Call Bar (Call Now Footer) -->
+  <div class="mobile-sticky-footer">
+    <a href="tel:+919811022334" class="sticky-footer-btn call-btn">
+      <i class="ti ti-phone"></i> Call Admissions Office
+    </a>
+    <a href="https://wa.me/919811022334" target="_blank" class="sticky-footer-btn whatsapp-btn">
+      <i class="ti ti-brand-whatsapp"></i> WhatsApp Chat
+    </a>
+  </div>
 </div>
 
 <div id="app">
