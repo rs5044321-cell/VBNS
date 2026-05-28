@@ -3596,3 +3596,63 @@ function resetDatabaseToDefault(event) {
   sessionStorage.clear();
   window.location.reload();
 }
+
+// Database Backup: Stringifies State and triggers automatic local JSON file download
+function exportSchoolDatabase() {
+  try {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(State, null, 2));
+    const dlAnchorElem = document.createElement('a');
+    const dateStr = new Date().toISOString().split('T')[0];
+    
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", `vbns_crm_backup_${dateStr}.json`);
+    dlAnchorElem.click();
+    
+    showToast('Backup Created', 'Database JSON export file downloaded to your system.', 'ti-database-export');
+    logActivity(State.auth.currentUser ? State.auth.currentUser.name : 'System Admin', 'Database Export', 'system', 'Successfully exported system database locally');
+  } catch (e) {
+    showToast('Export Error', 'Failed to generate JSON backup sheet.', 'ti-alert-octagon');
+  }
+}
+
+// Triggers hidden database import file dialog click
+function triggerImportSelection() {
+  const fileInput = document.getElementById('database-import-file-input');
+  if (fileInput) fileInput.click();
+}
+
+// Database Restore: Reads selected JSON backup file and replaces browser's active localStorage state
+function importSchoolDatabase(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      
+      // Validation: Ensure the JSON sheet represents a valid VBNS CRM Database
+      if (!parsed.students || !parsed.ledger) {
+        showToast('Restore Failed', 'Invalid database sheet structure. Required properties missing.', 'ti-alert-octagon');
+        return;
+      }
+
+      if (!confirm("Are you sure you want to restore this database backup? This will overwrite all active student profiles, financial sheets, and configuration settings in this browser!")) {
+        return;
+      }
+
+      // Overwrite current state and sync
+      State = parsed;
+      saveState();
+      
+      showToast('Database Restored', 'All custom student records, transactions, and settings successfully imported!', 'ti-database-import');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+      
+    } catch (err) {
+      showToast('Restore Error', 'Corrupted file payload. Could not parse database JSON.', 'ti-alert-triangle');
+    }
+  };
+  reader.readAsText(file);
+}
