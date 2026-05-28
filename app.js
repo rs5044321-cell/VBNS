@@ -3741,8 +3741,8 @@ function renderPublicNotices() {
 
 // Navigation scroll logic for public headers
 function navigatePublic(sectionId, event) {
-  if (event) event.preventDefault();
-
+  // Allow native browser smooth scrolling to work naturally!
+  
   // Highlight active link
   document.querySelectorAll('.public-nav .nav-link').forEach(link => {
     link.classList.remove('active');
@@ -3758,8 +3758,6 @@ function navigatePublic(sectionId, event) {
   // Close public mobile menu if open
   const navLinks = document.querySelector('.public-nav .nav-links');
   if (navLinks) navLinks.classList.remove('mobile-open');
-
-  scrollToSection(sectionId);
 }
 
 // Scroll viewport smoothly to section coordinate
