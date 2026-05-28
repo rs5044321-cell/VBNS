@@ -17,7 +17,8 @@
 
 <!-- Secure Multi-Role Login Portal Overlay -->
 <div id="login-screen" class="login-overlay">
-  <div class="login-card glass">
+  <div class="login-card glass" style="position: relative;">
+    <button class="login-close-btn" onclick="closeLoginOverlay()" title="Back to Public Website"><i class="ti ti-x"></i></button>
     <div class="login-brand">
       <div class="sb-brand-logo" style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: none; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);">
         <img src="logo.jpg" alt="VBNS Logo" style="width: 100%; height: 100%; object-fit: cover;" />
@@ -56,6 +57,348 @@
       </div>
     </div>
   </div>
+</div>
+
+<!-- ========================================== -->
+<!-- PUBLIC SCHOOL WEBSITE CONTAINER (NEW)      -->
+<!-- ========================================== -->
+<div id="public-website">
+  <!-- Nav Bar -->
+  <nav class="public-nav">
+    <div class="nav-container">
+      <div class="nav-brand" onclick="scrollToSection('hero')">
+        <div class="nav-logo"><img src="logo.jpg" alt="VBNS Logo" /></div>
+        <div class="nav-brand-text">
+          <span class="nav-school-name">VBNS</span>
+          <span class="nav-school-tag">International Academy</span>
+        </div>
+      </div>
+      
+      <div class="nav-menu-toggle" onclick="togglePublicMobileMenu()">
+        <i class="ti ti-menu-2"></i>
+      </div>
+      
+      <ul class="nav-links">
+        <li><a href="#hero" class="nav-link active" onclick="navigatePublic('hero', event)">Home</a></li>
+        <li><a href="#about" class="nav-link" onclick="navigatePublic('about', event)">About Us</a></li>
+        <li><a href="#academics" class="nav-link" onclick="navigatePublic('academics', event)">Academics</a></li>
+        <li><a href="#campus-life" class="nav-link" onclick="navigatePublic('campus-life', event)">Campus Life</a></li>
+        <li><a href="#notices" class="nav-link" onclick="navigatePublic('notices', event)">Notices</a></li>
+        <li><a href="#admissions" class="nav-link" onclick="navigatePublic('admissions', event)">Admissions</a></li>
+        <li><a href="#contact" class="nav-link" onclick="navigatePublic('contact', event)">Contact</a></li>
+        <li><button class="btn btn-primary portal-access-btn" onclick="openLoginOverlay()">Portal Access <i class="ti ti-key"></i></button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header id="hero" class="public-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="hero-badge"><i class="ti ti-school"></i> Admissions Open for Session 2026-27</span>
+      <h1 class="hero-title animate-title">Nurturing Minds,<br><span class="gradient-text">Shaping Future Leaders.</span></h1>
+      <p class="hero-subtitle">Welcome to VBNS International Academy. A sanctuary of academic excellence, holistic development, and innovative learning in the heart of New Delhi.</p>
+      <div class="hero-ctas">
+        <a href="#admissions" class="btn btn-primary btn-lg" onclick="navigatePublic('admissions', event)">Apply Now <i class="ti ti-arrow-right"></i></a>
+        <button class="btn btn-secondary btn-lg" onclick="openLoginOverlay()">Access Portal <i class="ti ti-device-laptop"></i></button>
+      </div>
+    </div>
+    <div class="hero-scroll-down" onclick="scrollToSection('about')">
+      <span>Discover More</span>
+      <i class="ti ti-chevron-down"></i>
+    </div>
+  </header>
+
+  <!-- Statistics Grid -->
+  <section class="public-stats-section">
+    <div class="stats-grid">
+      <div class="pub-stat-card">
+        <div class="pub-stat-icon purple"><i class="ti ti-books"></i></div>
+        <div class="pub-stat-info">
+          <h3>98%</h3>
+          <p>Board Success Rate</p>
+        </div>
+      </div>
+      <div class="pub-stat-card">
+        <div class="pub-stat-icon blue"><i class="ti ti-users"></i></div>
+        <div class="pub-stat-info">
+          <h3>1:12</h3>
+          <p>Teacher-Student Ratio</p>
+        </div>
+      </div>
+      <div class="pub-stat-card">
+        <div class="pub-stat-icon green"><i class="ti ti-award"></i></div>
+        <div class="pub-stat-info">
+          <h3>25+</h3>
+          <p>Sports & Arts Programs</p>
+        </div>
+      </div>
+      <div class="pub-stat-card">
+        <div class="pub-stat-icon orange"><i class="ti ti-bus"></i></div>
+        <div class="pub-stat-info">
+          <h3>100%</h3>
+          <p>GPS Tracked Safe Transit</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Us Section -->
+  <section id="about" class="public-section">
+    <div class="container two-col-layout">
+      <div class="section-image-wrapper">
+        <div class="decorative-box-glow"></div>
+        <div class="about-hero-img-container">
+          <img src="logo.jpg" alt="VBNS Campus" class="about-hero-img" />
+        </div>
+      </div>
+      <div class="section-text-wrapper">
+        <span class="section-tag">WHO WE ARE</span>
+        <h2 class="pub-section-title">A Legacy of Educational Integrity & Excellence</h2>
+        <p class="pub-section-p">Established with a vision to revolutionize primary and secondary education, VBNS International Academy combines rigorous academic methodologies with cutting-edge student administration tools. We believe that true education goes beyond textbooks—it lies in fostering curiosity, building character, and developing modern global citizens.</p>
+        
+        <div class="about-features">
+          <div class="about-feat-item">
+            <div class="about-feat-icon"><i class="ti ti-sparkles"></i></div>
+            <div>
+              <h4>Holistic Academic Pedagogy</h4>
+              <p>Aligned with top national boards, preparing students for university success and global opportunities.</p>
+            </div>
+          </div>
+          <div class="about-feat-item">
+            <div class="about-feat-icon"><i class="ti ti-shield-check"></i></div>
+            <div>
+              <h4>Advanced Campus Security</h4>
+              <p>Featuring standard attendance alerts, comprehensive digital libraries, and smart transport registries.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Academics Section -->
+  <section id="academics" class="public-section alt-bg">
+    <div class="container">
+      <div class="text-center-header">
+        <span class="section-tag">ACADEMIC EXCELLENCE</span>
+        <h2 class="pub-section-title">Our Curriculum & Grades</h2>
+        <p class="pub-section-p centered">We offer comprehensive academic pathways from Primary School to Senior Secondary Board Examinations, maintaining world-class standards.</p>
+      </div>
+      
+      <div class="academics-grid">
+        <div class="academic-card glass">
+          <div class="academic-card-icon green"><i class="ti ti-palette"></i></div>
+          <h3>Primary (Grades I - V)</h3>
+          <p>Fostering basic literacy, numeracy, creative expression, and curiosity through highly interactive play-based learning activities.</p>
+        </div>
+        <div class="academic-card glass">
+          <div class="academic-card-icon blue"><i class="ti ti-calculator"></i></div>
+          <h3>Middle School (Grades VI - VIII)</h3>
+          <p>Transitioning into robust conceptual knowledge in mathematics, natural sciences, language boards, and computer literacy.</p>
+        </div>
+        <div class="academic-card glass">
+          <div class="academic-card-icon purple"><i class="ti ti-device-laptop"></i></div>
+          <h3>Senior Secondary (Grades IX - XII)</h3>
+          <p>Advanced specializations in Science, Commerce, and Humanities. Aligned with Board Examinations and college-prep pathways.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Campus Life Section -->
+  <section id="campus-life" class="public-section">
+    <div class="container">
+      <div class="text-center-header">
+        <span class="section-tag">CAMPUS HIGHLIGHTS</span>
+        <h2 class="pub-section-title">Life at VBNS</h2>
+        <p class="pub-section-p centered">A quick tour of the vibrant activities, advanced resources, and infrastructure available to our student community.</p>
+      </div>
+
+      <div class="campus-grid">
+        <div class="campus-card">
+          <div class="campus-card-img-wrapper">
+            <div style="background: linear-gradient(135deg, #6366f1, #a855f7); width:100%; height:180px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:32px;"><i class="ti ti-books"></i></div>
+          </div>
+          <div class="campus-card-content">
+            <h4>Modern Resource Library</h4>
+            <p>Home to over 10,000 volumes, subscription journals, and an integrated circulation logger managed via the ERP.</p>
+          </div>
+        </div>
+
+        <div class="campus-card">
+          <div class="campus-card-img-wrapper">
+            <div style="background: linear-gradient(135deg, #10b981, #06b6d4); width:100%; height:180px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:32px;"><i class="ti ti-flask"></i></div>
+          </div>
+          <div class="campus-card-content">
+            <h4>Hi-Tech Science Labs</h4>
+            <p>Advanced physics, chemistry, and computer labs designed to facilitate practical discoveries and scientific inquiry.</p>
+          </div>
+        </div>
+
+        <div class="campus-card">
+          <div class="campus-card-img-wrapper">
+            <div style="background: linear-gradient(135deg, #f59e0b, #ef4444); width:100%; height:180px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:32px;"><i class="ti ti-bus"></i></div>
+          </div>
+          <div class="campus-card-content">
+            <h4>Safe & Tracked Transport</h4>
+            <p>Dedicated transit fleet covering key routes in NCR. Outfitted with GPS devices and audited daily in the portal.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notices Section (Dynamically Synced!) -->
+  <section id="notices" class="public-section alt-bg">
+    <div class="container two-col-layout">
+      <div class="section-text-wrapper">
+        <span class="section-tag">CAMPUS BULLETIN</span>
+        <h2 class="pub-section-title">Official Announcements</h2>
+        <p class="pub-section-p">Keep up-to-date with active bulletins, administrative schedules, holiday details, and milestones directly published by the school administration board.</p>
+        <div class="alert-box-info" style="margin-top: 20px;">
+          <i class="ti ti-info-circle"></i> Notices are mirrored in real-time from our central ERP CRM portal database.
+        </div>
+      </div>
+      <div class="section-notices-wrapper">
+        <div class="public-notice-board card glass">
+          <div class="card-header">
+            <h3 class="section-title"><i class="ti ti-broadcast"></i> Dynamic Bulletin Notice Board</h3>
+            <span class="card-subtitle">Latest postings for Parents & Students</span>
+          </div>
+          <div id="public-notices-feed" class="public-notices-feed-container">
+            <div class="loading-placeholder">
+              <i class="ti ti-loader animate-spin"></i> Loading notices...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admissions Section (Interactive Enquiry Form!) -->
+  <section id="admissions" class="public-section">
+    <div class="container two-col-layout">
+      <div class="section-image-wrapper text-side">
+        <span class="section-tag">APPLICATIONS FOR 2026-27</span>
+        <h2 class="pub-section-title">Join Our Learning Community</h2>
+        <p class="pub-section-p">Admissions to VBNS International Academy are open for the upcoming academic session. We offer a streamlined admission process designed to understand your child's potential.</p>
+        
+        <div class="admission-steps">
+          <div class="step-item">
+            <div class="step-badge">1</div>
+            <div>
+              <h5>Submit Online Enquiry</h5>
+              <p>Fill out the enquiry form on this page to initiate the request in our school registrar system.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-badge">2</div>
+            <div>
+              <h5>Counseling & Campus Tour</h5>
+              <p>Our counseling team will contact you to schedule an interaction and campus orientation.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-badge">3</div>
+            <div>
+              <h5>Documentation & Enrollment</h5>
+              <p>Submit essential transcripts, complete fee installment payments, and receive student ID codes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section-form-wrapper">
+        <div class="public-form-card card glass">
+          <div class="card-header">
+            <h3 class="section-title"><i class="ti ti-address-book"></i> Admission Enquiry Form</h3>
+            <span class="card-subtitle">Submit details to be registered directly in the school system</span>
+          </div>
+          <form id="public-enquiry-form" onsubmit="submitPublicEnquiry(event)" class="form-container">
+            <div class="form-row">
+              <label for="pub-enq-child">Full Child/Candidate Name *</label>
+              <input id="pub-enq-child" type="text" placeholder="E.g., Aarav Verma" required />
+            </div>
+            <div class="form-row">
+              <label for="pub-enq-parent">Parent / Guardian Full Name *</label>
+              <input id="pub-enq-parent" type="text" placeholder="E.g., Deepak Verma" required />
+            </div>
+            <div class="form-grid-2">
+              <div class="form-row">
+                <label for="pub-enq-class">Academic Class Sought *</label>
+                <select id="pub-enq-class" class="styled-select" required>
+                  <option>Class I</option><option>Class II</option><option>Class III</option>
+                  <option>Class IV</option><option>Class V</option><option>Class VI</option>
+                  <option>Class VII</option><option>Class VIII</option><option>Class IX</option>
+                  <option selected>Class X</option><option>Class XI</option><option>Class XII</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="pub-enq-phone">Contact Phone Number *</label>
+                <input id="pub-enq-phone" type="tel" placeholder="E.g., 9812345000" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="pub-enq-address">Residential Address</label>
+              <textarea id="pub-enq-address" rows="3" placeholder="E.g., 14 MG Road, Sector 3, New Delhi"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg">
+              Submit Admission Enquiry <i class="ti ti-circle-check"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Us Section -->
+  <section id="contact" class="public-section alt-bg">
+    <div class="container">
+      <div class="text-center-header">
+        <span class="section-tag">GET IN TOUCH</span>
+        <h2 class="pub-section-title">Contact Our Campus</h2>
+        <p class="pub-section-p centered">Have any questions? Reach out to our front desk or administrative office directly.</p>
+      </div>
+      
+      <div class="contact-grid">
+        <div class="contact-card card glass">
+          <i class="ti ti-map-pin"></i>
+          <h4>School Address</h4>
+          <p>12 Education Lane, New Delhi – 110001</p>
+        </div>
+        <div class="contact-card card glass">
+          <i class="ti ti-phone"></i>
+          <h4>Phone Numbers</h4>
+          <p>+91 11 2345 6789<br>+91 98110 22334</p>
+        </div>
+        <div class="contact-card card glass">
+          <i class="ti ti-mail"></i>
+          <h4>Email & Web</h4>
+          <p>info@vbnsacademy.edu<br>www.vbnsacademy.edu</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Public Footer -->
+  <footer class="public-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="logo.jpg" alt="VBNS Logo" />
+        <div>
+          <h4>VBNS International Academy</h4>
+          <p>Nurturing Minds, Shaping Future Leaders.</p>
+        </div>
+      </div>
+      <div class="footer-links">
+        <a href="#" onclick="resetDatabaseToDefault(event)"><i class="ti ti-rotate-clockwise"></i> Reset ERP State</a>
+        <span>|</span>
+        <a href="#hero" onclick="navigatePublic('hero', event)">Top <i class="ti ti-arrow-narrow-up"></i></a>
+      </div>
+      <p class="footer-copyright">&copy; 2026 VBNS International Academy. All Rights Reserved. Powered by VBNS Educational ERP.</p>
+    </div>
+  </footer>
 </div>
 
 <div id="app">

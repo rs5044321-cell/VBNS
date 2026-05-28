@@ -436,16 +436,26 @@ function executeLogout() {
   sessionStorage.removeItem('apex_auth_role');
   sessionStorage.removeItem('apex_auth_user');
 
-  // Restore screen blocker overlay
-  const screen = document.getElementById('login-screen');
-  screen.classList.remove('hidden');
-
-  // Reset classes on main app container
+  // Hide CRM and show public website
   const appContainer = document.getElementById('app');
-  appContainer.className = '';
+  if (appContainer) {
+    appContainer.style.display = 'none';
+    appContainer.className = '';
+  }
+  
+  const pubWeb = document.getElementById('public-website');
+  if (pubWeb) pubWeb.style.display = 'block';
+
+  // Make sure login overlay is hidden
+  const screen = document.getElementById('login-screen');
+  if (screen) screen.classList.add('hidden');
+
+  document.body.classList.remove('crm-active');
 
   showToast('Logged Out', 'Successfully signed out of the central database.', 'ti-logout');
-  nav('dashboard');
+  
+  // Reload notices in case they were updated
+  renderPublicNotices();
 }
 
 function validateSessionHandler() {
@@ -463,8 +473,20 @@ function validateSessionHandler() {
     }
   }
 
-  // If no session exists, force screen login overlay blocker
-  document.getElementById('login-screen').classList.remove('hidden');
+  // If no session exists, show public landing page and hide CRM app and login overlay
+  const appContainer = document.getElementById('app');
+  if (appContainer) appContainer.style.display = 'none';
+  
+  const pubWeb = document.getElementById('public-website');
+  if (pubWeb) pubWeb.style.display = 'block';
+
+  const screen = document.getElementById('login-screen');
+  if (screen) screen.classList.add('hidden');
+
+  document.body.classList.remove('crm-active');
+
+  // Load notices dynamically onto public landing page notice board
+  renderPublicNotices();
 }
 
 function applySessionAccessLayout() {
@@ -474,9 +496,17 @@ function applySessionAccessLayout() {
   const role = State.auth.currentRole;
   const user = State.auth.currentUser;
 
-  // Add layout class to #app to drive responsive CSS blocks
+  // Show CRM app container and hide public website
   const appContainer = document.getElementById('app');
-  appContainer.className = `logged-in-${role}`;
+  if (appContainer) {
+    appContainer.style.display = 'flex';
+    appContainer.className = `logged-in-${role}`;
+  }
+  
+  const pubWeb = document.getElementById('public-website');
+  if (pubWeb) pubWeb.style.display = 'none';
+
+  document.body.classList.add('crm-active');
 
   // Update topbar badges
   const uBadge = document.getElementById('user-display-name');
@@ -3595,4 +3625,157 @@ function resetDatabaseToDefault(event) {
   localStorage.removeItem('apex_school_crm_state');
   sessionStorage.clear();
   window.location.reload();
+}
+
+// =============================================================
+// INTEGRATION & PUBLIC WEBSITE FUNCTIONALITY (NEW)
+// =============================================================
+
+// Open the login screen overlay
+function openLoginOverlay() {
+  const screen = document.getElementById('login-screen');
+  if (screen) {
+    screen.classList.remove('hidden');
+    // Set role to default 'admin'
+    setLoginRole('admin');
+  }
+}
+
+// Close the login screen overlay
+function closeLoginOverlay() {
+  const screen = document.getElementById('login-screen');
+  if (screen) {
+    screen.classList.add('hidden');
+  }
+}
+
+// Submit the public Admission Enquiry Form
+function submitPublicEnquiry(event) {
+  event.preventDefault();
+  
+  const nameEl = document.getElementById('pub-enq-child');
+  const parentEl = document.getElementById('pub-enq-parent');
+  const classEl = document.getElementById('pub-enq-class');
+  const phoneEl = document.getElementById('pub-enq-phone');
+  const addressEl = document.getElementById('pub-enq-address');
+
+  if (!nameEl || !parentEl || !classEl || !phoneEl) return;
+
+  const name = nameEl.value.trim();
+  const parent = parentEl.value.trim();
+  const cls = classEl.value;
+  const phone = phoneEl.value.trim();
+  const address = addressEl ? addressEl.value.trim() : '';
+
+  if (!name || !parent || !phone) {
+    showToast('Validation Error', 'Please satisfy all mandatory enquiry fields.', 'ti-alert-circle');
+    return;
+  }
+
+  // Push record into enquiries database
+  State.enquiries.push({
+    name: name,
+    cls: cls,
+    parent: parent,
+    phone: phone,
+    source: 'Digital Web Portal Form',
+    status: 'Interested'
+  });
+
+  // Log in CRM activity history
+  logActivity('Public Website Visitor', 'Online Enquiry Logged', 'system', `Submitted admission enquiry form for candidate child: ${name}`);
+
+  // Save new database state
+  saveState();
+
+  // Reset form inputs
+  nameEl.value = '';
+  parentEl.value = '';
+  phoneEl.value = '';
+  if (addressEl) addressEl.value = '';
+
+  // Show a gorgeous custom success message
+  showToast('Enquiry Submitted', `Thank you! Our admission team will contact you shortly regarding ${name}'s admission.`, 'ti-circle-check-filled');
+}
+
+// Render active notice board bulletins onto the public landing page noticed board
+function renderPublicNotices() {
+  const container = document.getElementById('public-notices-feed');
+  if (!container) return;
+
+  // Retrieve active announcements from state registers (get latest 3)
+  const list = [...State.notices].reverse().slice(0, 3);
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div class="empty-preview" style="background: none; border: none; box-shadow: none; padding: 40px 0;">
+        <i class="ti ti-speakerphone" style="font-size: 32px; color: var(--text-tertiary);"></i>
+        <p style="margin-top: 8px; font-size: 13px; color: var(--text-secondary);">No active school notices found today.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = list.map(item => {
+    let pClass = 'normal';
+    if (item.priority.includes('Urgent')) pClass = 'urgent';
+    else if (item.priority.includes('Important')) pClass = 'important';
+
+    return `
+      <div class="notice-item public-feed-card priority-${pClass}" style="margin-bottom: 12px; padding: 14px 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <h4 style="font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin: 0;">${item.title}</h4>
+          <span class="badge" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-secondary); background: var(--bg-tertiary); color: var(--text-primary);">${item.priority.split(' ')[0]}</span>
+        </div>
+        <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 6px 0;">${item.body}</p>
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-tertiary); margin-top: 8px;">
+          <span>By: <b>${item.by}</b></span>
+          <span>Date: ${item.date}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Navigation scroll logic for public headers
+function navigatePublic(sectionId, event) {
+  if (event) event.preventDefault();
+
+  // Highlight active link
+  document.querySelectorAll('.public-nav .nav-link').forEach(link => {
+    link.classList.remove('active');
+  });
+
+  if (event && event.currentTarget) {
+    event.currentTarget.classList.add('active');
+  } else {
+    const activeLink = document.querySelector(`.public-nav a[href="#${sectionId}"]`);
+    if (activeLink) activeLink.classList.add('active');
+  }
+
+  // Close public mobile menu if open
+  const navLinks = document.querySelector('.public-nav .nav-links');
+  if (navLinks) navLinks.classList.remove('mobile-open');
+
+  scrollToSection(sectionId);
+}
+
+// Scroll viewport smoothly to section coordinate
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    const navHeight = 75;
+    const topOffset = el.offsetTop - navHeight;
+    window.scrollTo({
+      top: topOffset,
+      behavior: 'smooth'
+    });
+  }
+}
+
+// Toggle public mobile layout links drawer
+function togglePublicMobileMenu() {
+  const navLinks = document.querySelector('.public-nav .nav-links');
+  if (navLinks) {
+    navLinks.classList.toggle('mobile-open');
+  }
 }
