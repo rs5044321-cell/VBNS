@@ -2,7 +2,7 @@ const CACHE_NAME = 'nexus-crm-v1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './styles.css',
+  './style.css',
   './app.js',
   './manifest.json',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap',
