@@ -89,7 +89,26 @@ function seedDatabase() {
     try {
       const parsed = JSON.parse(localState);
       if (parsed.students && parsed.students.length > 0) {
-        State = { ...State, ...parsed };
+        // Defensive property merge: Prevent old cached localStorage properties from overriding newer state definitions with undefined
+        State.students = parsed.students || State.students;
+        State.ledger = parsed.ledger || State.ledger;
+        State.feeLog = parsed.feeLog || State.feeLog;
+        State.enquiries = parsed.enquiries || State.enquiries;
+        State.smsLog = parsed.smsLog || State.smsLog;
+        State.notices = parsed.notices || State.notices;
+        State.attendance = parsed.attendance || State.attendance;
+        State.staffAttendance = parsed.staffAttendance || State.staffAttendance;
+        State.payrollConfig = parsed.payrollConfig || State.payrollConfig;
+        State.staffPasswords = parsed.staffPasswords || State.staffPasswords;
+        State.homework = parsed.homework || State.homework;
+        State.auditLog = parsed.auditLog || State.auditLog;
+        
+        if (parsed.staff && parsed.staff.length > 0) {
+          State.staff = parsed.staff;
+        }
+        if (parsed.config) {
+          State.config = { ...State.config, ...parsed.config };
+        }
         
         // Force update school name if still the old default
         if (State.config.schoolName === 'Sunrise Academy') {
@@ -350,14 +369,14 @@ function executeLogin() {
   let authenticatedUser = null;
 
   if (activeLoginRole === 'admin') {
-    if (username.toLowerCase() === 'admin' && passVal === 'admin') {
+    if (username.toLowerCase() === 'admin' && passVal.trim() === 'admin') {
       authenticatedUser = { name: 'CRM Super Admin', id: 'admin' };
     }
   } else if (activeLoginRole === 'teacher') {
-    // Forgiving Faculty ID matching (case-insensitive)
+    // Forgiving Faculty ID matching (case-insensitive) and password trimming
     const staffObj = State.staff.find(st => st.id.toUpperCase() === username.toUpperCase());
     const validPassword = State.staffPasswords[username.toUpperCase()];
-    if (staffObj && validPassword && passVal === validPassword) {
+    if (staffObj && validPassword && passVal.trim() === validPassword.trim()) {
       authenticatedUser = staffObj;
     }
   } else if (activeLoginRole === 'student') {
@@ -3564,4 +3583,15 @@ function renderAuditPanel() {
       </tr>
     `).join('');
   }
+}
+
+// Emergency Reset Utility: Clears corrupted local caches and restores full VBNS database state
+function resetDatabaseToDefault(event) {
+  if (event) event.preventDefault();
+  if (!confirm("Are you sure you want to restore the VBNS database to system defaults? This will erase all local modifications, log out the current session, and reset all students, staff, and payroll settings to high-fidelity factory configurations.")) {
+    return;
+  }
+  localStorage.removeItem('apex_school_crm_state');
+  sessionStorage.clear();
+  window.location.reload();
 }

@@ -47,6 +47,13 @@
       </div>
       <button class="btn btn-primary btn-block" onclick="executeLogin()"><i class="ti ti-login-2"></i> Access Portal</button>
       <div id="login-error" class="login-error-msg" style="display:none"></div>
+      
+      <div style="margin-top: 20px; text-align: center; border-top: 1px dashed var(--border-secondary); padding-top: 16px;">
+        <span style="font-size: 11px; color: var(--text-secondary);">Problems logging in?</span>
+        <a href="#" onclick="resetDatabaseToDefault(event)" style="font-size: 11px; color: var(--accent); font-weight: 600; text-decoration: none; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; transition: color var(--transition-fast);" onmouseover="this.style.color='var(--color-danger)'" onmouseout="this.style.color='var(--accent)'">
+          <i class="ti ti-rotate-clockwise"></i> Reset System State
+        </a>
+      </div>
     </div>
   </div>
 </div>
