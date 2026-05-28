@@ -3,7 +3,7 @@
 // Centralized State Container
 let State = {
   config: {
-    schoolName: 'Vandey Bharti National School',
+    schoolName: 'VBNS',
     address: '12 Education Lane, New Delhi – 110001',
     phone: '+91 11 2345 6789',
     prefix: 'SAC',
@@ -112,7 +112,7 @@ function seedDatabase() {
         
         // Force update school name if still the old default
         if (State.config.schoolName === 'Sunrise Academy' || State.config.schoolName === 'VBNS') {
-          State.config.schoolName = 'Vandey Bharti National School';
+          State.config.schoolName = 'VBNS';
         }
         
         // SELF-CORRECTION: Populate operational blocks if missing on existing localStorage instances
