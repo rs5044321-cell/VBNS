@@ -2098,6 +2098,57 @@ function removeEnquiry(realIndex) {
   saveState();
   renderEnquiryRegister();
   showToast('Enquiry Deleted', 'Lead prospect removed from CRM pipelines.', 'ti-trash');
+// -------------------------------------------------------------
+// ATTENDANCE STATS CALCULATION UTILITIES
+// -------------------------------------------------------------
+function getStudentAttendanceStats(studentId) {
+  let present = 0;
+  let absent = 0;
+  let leave = 0;
+
+  Object.keys(State.attendance).forEach(key => {
+    const records = State.attendance[key];
+    if (Array.isArray(records)) {
+      const rec = records.find(r => r.id === studentId);
+      if (rec) {
+        if (rec.status === 'Present') present++;
+        else if (rec.status === 'Absent') absent++;
+        else if (rec.status === 'Leave') leave++;
+      }
+    }
+  });
+
+  return {
+    present,
+    absent,
+    leave,
+    total: present + absent + leave
+  };
+}
+
+function getStaffAttendanceStats(staffId) {
+  let present = 0;
+  let absent = 0;
+  let leave = 0;
+
+  Object.keys(State.staffAttendance).forEach(dateStr => {
+    const records = State.staffAttendance[dateStr];
+    if (Array.isArray(records)) {
+      const rec = records.find(r => r.id === staffId);
+      if (rec) {
+        if (rec.status === 'Present') present++;
+        else if (rec.status === 'Absent') absent++;
+        else if (rec.status === 'Leave') leave++;
+      }
+    }
+  });
+
+  return {
+    present,
+    absent,
+    leave,
+    total: present + absent + leave
+  };
 }
 
 // -------------------------------------------------------------
@@ -2119,6 +2170,34 @@ function loadAttendanceRegister() {
     // Hide controls and update headers
     document.getElementById('student-att-controls-wrapper').style.display = 'none';
     subtitleEl.innerHTML = `<i class="ti ti-id"></i> Private Attendance Logs for <b>${student.name} (${student.id})</b>`;
+
+    // Render Stats Summary Cards
+    const stats = getStudentAttendanceStats(student.id);
+    const statsContainer = document.getElementById('student-att-stats-summary');
+    if (statsContainer) {
+      statsContainer.style.display = 'grid';
+      statsContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(180px, 1fr))';
+      statsContainer.style.gap = '16px';
+      statsContainer.style.padding = '0 0 16px';
+      statsContainer.innerHTML = `
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(99, 102, 241, 0.04); border: 1px solid rgba(99, 102, 241, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Working Days</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--accent); margin-top: 4px;">${stats.total} <span style="font-size: 11px; font-weight:500;">Days</span></div>
+        </div>
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Days Attended</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--color-success); margin-top: 4px;">${stats.present} <span style="font-size: 11px; font-weight:500; color:var(--text-secondary);">(${stats.total > 0 ? Math.round(stats.present / stats.total * 100) : 0}%)</span></div>
+        </div>
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Leaves / Holidays</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--color-warning); margin-top: 4px;">${stats.leave} <span style="font-size: 11px; font-weight:500;">Days</span></div>
+        </div>
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(239, 68, 68, 0.04); border: 1px solid rgba(239, 68, 68, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Days Absent</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--color-danger); margin-top: 4px;">${stats.absent} <span style="font-size: 11px; font-weight:500;">Days</span></div>
+        </div>
+      `;
+    }
 
     // Rewrite table headers
     const headerRow = document.getElementById('student-att-table-header');
@@ -2199,8 +2278,10 @@ function loadAttendanceRegister() {
   const listKey = `${grade}_${dateStr}`;
   let records = State.attendance[listKey];
 
+  const statsContainer = document.getElementById('student-att-stats-summary');
   const studentsInClass = State.students.filter(s => s.cls === grade);
   if (studentsInClass.length === 0) {
+    if (statsContainer) statsContainer.style.display = 'none';
     tbody.innerHTML = `
       <tr>
         <td colspan="5" class="center-col" style="color:var(--text-tertiary); padding: 32px 0;">
@@ -2220,11 +2301,50 @@ function loadAttendanceRegister() {
     State.attendance[listKey] = records;
   }
 
+  // Render Daily Class Stats Summary Cards
+  if (statsContainer) {
+    const totalStudents = records.length;
+    const presentCount = records.filter(r => r.status === 'Present').length;
+    const absentCount = records.filter(r => r.status === 'Absent').length;
+    const leaveCount = records.filter(r => r.status === 'Leave').length;
+
+    statsContainer.style.display = 'grid';
+    statsContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(180px, 1fr))';
+    statsContainer.style.gap = '16px';
+    statsContainer.style.padding = '0 0 16px';
+    statsContainer.innerHTML = `
+      <div class="stat-card" style="padding: 14px 16px; background: rgba(99, 102, 241, 0.04); border: 1px solid rgba(99, 102, 241, 0.12); border-radius: var(--border-radius-md);">
+        <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Students in Roster</div>
+        <div style="font-size: 22px; font-weight: 700; color: var(--accent); margin-top: 4px;">${totalStudents} <span style="font-size: 11px; font-weight:500;">Students</span></div>
+      </div>
+      <div class="stat-card" style="padding: 14px 16px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.12); border-radius: var(--border-radius-md);">
+        <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Present Today</div>
+        <div style="font-size: 22px; font-weight: 700; color: var(--color-success); margin-top: 4px;">${presentCount} <span style="font-size: 11px; font-weight:500; color:var(--text-secondary);">(${totalStudents > 0 ? Math.round(presentCount / totalStudents * 100) : 0}%)</span></div>
+      </div>
+      <div class="stat-card" style="padding: 14px 16px; background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.12); border-radius: var(--border-radius-md);">
+        <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Approved Leaves</div>
+        <div style="font-size: 22px; font-weight: 700; color: var(--color-warning); margin-top: 4px;">${leaveCount} <span style="font-size: 11px; font-weight:500;">Students</span></div>
+      </div>
+      <div class="stat-card" style="padding: 14px 16px; background: rgba(239, 68, 68, 0.04); border: 1px solid rgba(239, 68, 68, 0.12); border-radius: var(--border-radius-md);">
+        <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Absent Today</div>
+        <div style="font-size: 22px; font-weight: 700; color: var(--color-danger); margin-top: 4px;">${absentCount} <span style="font-size: 11px; font-weight:500;">Students</span></div>
+      </div>
+    `;
+  }
+
   tbody.innerHTML = records.map((rec, index) => {
+    const stats = getStudentAttendanceStats(rec.id);
     return `
       <tr>
         <td><b>${rec.id}</b></td>
-        <td>${rec.name}</td>
+        <td>
+          <b>${rec.name}</b>
+          <small style="color:var(--text-secondary); display:block; margin-top:2px;">
+            Cumulative: <span style="color:var(--color-success)">${stats.present} Present</span> | 
+            <span style="color:var(--color-danger)">${stats.absent} Absent</span> | 
+            <span style="color:var(--color-warning)">${stats.leave} Leave</span> (Total: ${stats.total} days)
+          </small>
+        </td>
         <td class="center-col">
           <input type="radio" name="att_${rec.id}" value="Present" ${rec.status === 'Present' ? 'checked' : ''} onchange="updateAttendanceRecord('${listKey}', ${index}, 'Present')" style="width:16px; height:16px; cursor:pointer;" />
         </td>
@@ -2243,6 +2363,34 @@ function updateAttendanceRecord(listKey, studentIndex, newStatus) {
   const records = State.attendance[listKey];
   if (records && records[studentIndex]) {
     records[studentIndex].status = newStatus;
+    
+    // Dynamic stats card updates
+    const statsContainer = document.getElementById('student-att-stats-summary');
+    if (statsContainer && statsContainer.style.display !== 'none') {
+      const totalStudents = records.length;
+      const presentCount = records.filter(r => r.status === 'Present').length;
+      const absentCount = records.filter(r => r.status === 'Absent').length;
+      const leaveCount = records.filter(r => r.status === 'Leave').length;
+
+      statsContainer.innerHTML = `
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(99, 102, 241, 0.04); border: 1px solid rgba(99, 102, 241, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Students in Roster</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--accent); margin-top: 4px;">${totalStudents} <span style="font-size: 11px; font-weight:500;">Students</span></div>
+        </div>
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Present Today</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--color-success); margin-top: 4px;">${presentCount} <span style="font-size: 11px; font-weight:500; color:var(--text-secondary);">(${totalStudents > 0 ? Math.round(presentCount / totalStudents * 100) : 0}%)</span></div>
+        </div>
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Approved Leaves</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--color-warning); margin-top: 4px;">${leaveCount} <span style="font-size: 11px; font-weight:500;">Students</span></div>
+        </div>
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(239, 68, 68, 0.04); border: 1px solid rgba(239, 68, 68, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Absent Today</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--color-danger); margin-top: 4px;">${absentCount} <span style="font-size: 11px; font-weight:500;">Students</span></div>
+        </div>
+      `;
+    }
   }
 }
 
@@ -2262,6 +2410,8 @@ function loadStaffAttendanceRegister() {
   let records = State.staffAttendance[dateStr];
 
   if (State.staff.length === 0) {
+    const statsContainer = document.getElementById('staff-att-stats-summary');
+    if (statsContainer) statsContainer.style.display = 'none';
     tbody.innerHTML = `
       <tr>
         <td colspan="6" class="center-col" style="color:var(--text-tertiary); padding: 32px 0;">
@@ -2282,11 +2432,51 @@ function loadStaffAttendanceRegister() {
     State.staffAttendance[dateStr] = records;
   }
 
+  // Render Daily Staff Stats Summary Cards
+  const statsContainer = document.getElementById('staff-att-stats-summary');
+  if (statsContainer) {
+    const totalStaff = records.length;
+    const presentCount = records.filter(r => r.status === 'Present').length;
+    const absentCount = records.filter(r => r.status === 'Absent').length;
+    const leaveCount = records.filter(r => r.status === 'Leave').length;
+
+    statsContainer.style.display = 'grid';
+    statsContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(180px, 1fr))';
+    statsContainer.style.gap = '16px';
+    statsContainer.style.padding = '0 0 16px';
+    statsContainer.innerHTML = `
+      <div class="stat-card" style="padding: 14px 16px; background: rgba(99, 102, 241, 0.04); border: 1px solid rgba(99, 102, 241, 0.12); border-radius: var(--border-radius-md);">
+        <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Total Employees</div>
+        <div style="font-size: 22px; font-weight: 700; color: var(--accent); margin-top: 4px;">${totalStaff} <span style="font-size: 11px; font-weight:500;">Staff</span></div>
+      </div>
+      <div class="stat-card" style="padding: 14px 16px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.12); border-radius: var(--border-radius-md);">
+        <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Present Today</div>
+        <div style="font-size: 22px; font-weight: 700; color: var(--color-success); margin-top: 4px;">${presentCount} <span style="font-size: 11px; font-weight:500; color:var(--text-secondary);">(${totalStaff > 0 ? Math.round(presentCount / totalStaff * 100) : 0}%)</span></div>
+      </div>
+      <div class="stat-card" style="padding: 14px 16px; background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.12); border-radius: var(--border-radius-md);">
+        <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">On Approved Leave</div>
+        <div style="font-size: 22px; font-weight: 700; color: var(--color-warning); margin-top: 4px;">${leaveCount} <span style="font-size: 11px; font-weight:500;">Staff</span></div>
+      </div>
+      <div class="stat-card" style="padding: 14px 16px; background: rgba(239, 68, 68, 0.04); border: 1px solid rgba(239, 68, 68, 0.12); border-radius: var(--border-radius-md);">
+        <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Absent / Off-duty</div>
+        <div style="font-size: 22px; font-weight: 700; color: var(--color-danger); margin-top: 4px;">${absentCount} <span style="font-size: 11px; font-weight:500;">Staff</span></div>
+      </div>
+    `;
+  }
+
   tbody.innerHTML = records.map((rec, index) => {
+    const stats = getStaffAttendanceStats(rec.id);
     return `
       <tr>
         <td><b>${rec.id}</b></td>
-        <td>${rec.name}</td>
+        <td>
+          <b>${rec.name}</b>
+          <small style="color:var(--text-secondary); display:block; margin-top:2px;">
+            Cumulative: <span style="color:var(--color-success)">${stats.present} Present</span> | 
+            <span style="color:var(--color-danger)">${stats.absent} Absent</span> | 
+            <span style="color:var(--color-warning)">${stats.leave} Leave</span> (Total: ${stats.total} days)
+          </small>
+        </td>
         <td><span class="pill pill-blue">${rec.role}</span></td>
         <td class="center-col">
           <input type="radio" name="staff_att_${rec.id}" value="Present" ${rec.status === 'Present' ? 'checked' : ''} onchange="updateStaffAttendanceRecord('${dateStr}', ${index}, 'Present')" style="width:16px; height:16px; cursor:pointer;" />
@@ -2306,6 +2496,34 @@ function updateStaffAttendanceRecord(dateStr, staffIndex, newStatus) {
   const records = State.staffAttendance[dateStr];
   if (records && records[staffIndex]) {
     records[staffIndex].status = newStatus;
+    
+    // Dynamic stats card updates
+    const statsContainer = document.getElementById('staff-att-stats-summary');
+    if (statsContainer && statsContainer.style.display !== 'none') {
+      const totalStaff = records.length;
+      const presentCount = records.filter(r => r.status === 'Present').length;
+      const absentCount = records.filter(r => r.status === 'Absent').length;
+      const leaveCount = records.filter(r => r.status === 'Leave').length;
+
+      statsContainer.innerHTML = `
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(99, 102, 241, 0.04); border: 1px solid rgba(99, 102, 241, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Total Employees</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--accent); margin-top: 4px;">${totalStaff} <span style="font-size: 11px; font-weight:500;">Staff</span></div>
+        </div>
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Present Today</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--color-success); margin-top: 4px;">${presentCount} <span style="font-size: 11px; font-weight:500; color:var(--text-secondary);">(${totalStaff > 0 ? Math.round(presentCount / totalStaff * 100) : 0}%)</span></div>
+        </div>
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">On Approved Leave</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--color-warning); margin-top: 4px;">${leaveCount} <span style="font-size: 11px; font-weight:500;">Staff</span></div>
+        </div>
+        <div class="stat-card" style="padding: 14px 16px; background: rgba(239, 68, 68, 0.04); border: 1px solid rgba(239, 68, 68, 0.12); border-radius: var(--border-radius-md);">
+          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Absent / Off-duty</div>
+          <div style="font-size: 22px; font-weight: 700; color: var(--color-danger); margin-top: 4px;">${absentCount} <span style="font-size: 11px; font-weight:500;">Staff</span></div>
+        </div>
+      `;
+    }
   }
 }
 
