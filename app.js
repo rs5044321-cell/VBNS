@@ -1758,6 +1758,7 @@ function renderStaffPayroll() {
       }
     });
 
+    const stats = getStaffAttendanceStats(st.id);
     const attendanceDeduct = Math.round(absencesCount * dailySalary);
     const netPayout = Math.max(conf.base + conf.allowance - attendanceDeduct - conf.deductions, 0);
 
@@ -1775,7 +1776,13 @@ function renderStaffPayroll() {
         <td>${st.name} (${st.role})</td>
         <td class="text-right">${formatCurrency(conf.base)}</td>
         <td class="text-right" style="color: var(--color-success)">+${formatCurrency(conf.allowance)}</td>
-        <td class="text-right" style="color: var(--color-danger)">-${formatCurrency(attendanceDeduct)} <small>(${absencesCount} Abs)</small></td>
+        <td class="text-right" style="color: var(--color-danger)">
+          -${formatCurrency(attendanceDeduct)}
+          <br>
+          <small style="color: var(--text-tertiary); font-size: 10px;">
+            (${stats.present}P / ${stats.absent}A / ${stats.leave}L)
+          </small>
+        </td>
         <td class="text-right" style="color: var(--color-danger)">-${formatCurrency(conf.deductions)}</td>
         <td class="text-right" style="font-weight: 700; color: var(--accent)">${formatCurrency(netPayout)}</td>
         <td>${statusPill}</td>
@@ -2396,6 +2403,15 @@ function updateAttendanceRecord(listKey, studentIndex, newStatus) {
 
 function saveAttendanceRegister() {
   saveState();
+
+  const actor = State.auth.currentUser ? State.auth.currentUser.name : 'System Admin';
+  const gradeSelect = document.getElementById('att-class');
+  const dateInput = document.getElementById('att-date');
+  const grade = gradeSelect ? gradeSelect.value : 'Class X';
+  const dateStr = dateInput ? dateInput.value : '';
+
+  logActivity(actor, 'Attendance Submitted', 'academic', `Committed student attendance register for ${grade} on date ${dateStr}`);
+
   showToast('Attendance Saved', 'Daily classroom attendance register saved.', 'ti-circle-check-filled');
 }
 
@@ -2529,6 +2545,13 @@ function updateStaffAttendanceRecord(dateStr, staffIndex, newStatus) {
 
 function saveStaffAttendanceRegister() {
   saveState();
+
+  const actor = State.auth.currentUser ? State.auth.currentUser.name : 'System Admin';
+  const dateInput = document.getElementById('staff-att-date');
+  const dateStr = dateInput ? dateInput.value : '';
+
+  logActivity(actor, 'Staff Attendance Saved', 'security', `Committed employee attendance register for date ${dateStr}`);
+
   showToast('Attendance Marked', 'Staff faculty attendance registers committed to system database.', 'ti-checkbox');
   
   if (document.getElementById('tab-payroll').classList.contains('active')) {
