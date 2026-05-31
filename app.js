@@ -5,7 +5,7 @@ let State = {
   config: {
     schoolName: 'VBNS',
     address: '12 Education Lane, New Delhi – 110001',
-    phone: '+91 11 2345 6789',
+    phone: '+91 91201 93467',
     prefix: 'SAC',
     currency: '₹',
     latefee: 2,
