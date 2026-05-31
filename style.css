@@ -2938,6 +2938,10 @@ body.crm-active {
   background: linear-gradient(135deg, rgba(249, 115, 22, 0.02) 0%, rgba(249, 115, 22, 0.05) 100%);
   border: 1px solid rgba(249, 115, 22, 0.1);
 }
+.gallery-grid-six > *:nth-child(53) {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.02) 0%, rgba(20, 184, 166, 0.05) 100%);
+  border: 1px solid rgba(20, 184, 166, 0.1);
+}
 
 
 /* Individual Glowing Hover States */
@@ -3252,6 +3256,12 @@ body.crm-active {
   background: #ffffff;
   border-color: #d97706;
   box-shadow: 0 12px 30px rgba(217, 119, 6, 0.12);
+}
+.gallery-grid-six > *:nth-child(53):hover {
+  transform: translateY(-5px);
+  background: #ffffff;
+  border-color: #0d9488;
+  box-shadow: 0 12px 30px rgba(13, 148, 136, 0.12);
 }
 
 .gallery-icon-top {
