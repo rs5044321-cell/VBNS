@@ -2782,6 +2782,26 @@ body.crm-active {
   background: linear-gradient(135deg, rgba(20, 184, 166, 0.02) 0%, rgba(20, 184, 166, 0.05) 100%);
   border: 1px solid rgba(20, 184, 166, 0.1);
 }
+.gallery-grid-six > *:nth-child(14) {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.02) 0%, rgba(168, 85, 247, 0.05) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.1);
+}
+.gallery-grid-six > *:nth-child(15) {
+  background: linear-gradient(135deg, rgba(11, 60, 93, 0.02) 0%, rgba(11, 60, 93, 0.05) 100%);
+  border: 1px solid rgba(11, 60, 93, 0.1);
+}
+.gallery-grid-six > *:nth-child(16) {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.02) 0%, rgba(59, 130, 246, 0.05) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+.gallery-grid-six > *:nth-child(17) {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.02) 0%, rgba(249, 115, 22, 0.05) 100%);
+  border: 1px solid rgba(249, 115, 22, 0.1);
+}
+.gallery-grid-six > *:nth-child(18) {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.02) 0%, rgba(20, 184, 166, 0.05) 100%);
+  border: 1px solid rgba(20, 184, 166, 0.1);
+}
 
 /* Individual Glowing Hover States */
 .gallery-grid-six > *:nth-child(1):hover {
@@ -2857,6 +2877,36 @@ body.crm-active {
   box-shadow: 0 12px 30px rgba(217, 119, 6, 0.12);
 }
 .gallery-grid-six > *:nth-child(13):hover {
+  transform: translateY(-5px);
+  background: #ffffff;
+  border-color: #0d9488;
+  box-shadow: 0 12px 30px rgba(13, 148, 136, 0.12);
+}
+.gallery-grid-six > *:nth-child(14):hover {
+  transform: translateY(-5px);
+  background: #ffffff;
+  border-color: #8b5cf6;
+  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.12);
+}
+.gallery-grid-six > *:nth-child(15):hover {
+  transform: translateY(-5px);
+  background: #ffffff;
+  border-color: #0B3C5D;
+  box-shadow: 0 12px 30px rgba(11, 60, 93, 0.12);
+}
+.gallery-grid-six > *:nth-child(16):hover {
+  transform: translateY(-5px);
+  background: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.12);
+}
+.gallery-grid-six > *:nth-child(17):hover {
+  transform: translateY(-5px);
+  background: #ffffff;
+  border-color: #d97706;
+  box-shadow: 0 12px 30px rgba(217, 119, 6, 0.12);
+}
+.gallery-grid-six > *:nth-child(18):hover {
   transform: translateY(-5px);
   background: #ffffff;
   border-color: #0d9488;
