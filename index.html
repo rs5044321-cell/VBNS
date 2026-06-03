@@ -16,6 +16,22 @@
   <link rel="stylesheet" href="style.css?v=5.0">
 </head>
 <body>
+  <!-- Welcome Advertisement Popup Overlay -->
+  <div id="welcome-ad-popup" class="ad-popup-overlay">
+    <div class="ad-popup-card">
+      <button class="ad-popup-close-btn" onclick="closeAdPopup()">&times;</button>
+      <a class="ad-popup-image-link" onclick="handleAdClick(event)">
+        <img src="school_advertisement.jpg" alt="Vandey Bharti 2026 Board Results Advertisement" class="ad-popup-img" />
+      </a>
+      <div class="ad-popup-footer">
+        <span class="ad-popup-footer-text"><i class="ti ti-trophy" style="color: var(--color-warning)"></i> 100% Results - Class 10 Toppers 2026</span>
+        <a href="#admissions" class="ad-popup-action-btn" onclick="handleAdClick(event)">
+          Admission Open Today <i class="ti ti-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
 
 
 
