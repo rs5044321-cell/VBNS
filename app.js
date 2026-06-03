@@ -3915,38 +3915,3 @@ function importSchoolDatabase(event) {
 }
 
 
-
-// =============================================================
-// WELCOME ADVERTISEMENT POPUP LOGIC (NEW)
-// =============================================================
-
-// Open the advertisement popup modal once per session
-window.addEventListener('DOMContentLoaded', () => {
-  // Only show if it has not been shown in this browser session
-  if (!sessionStorage.getItem('welcome_ad_shown')) {
-    setTimeout(() => {
-      const popup = document.getElementById('welcome-ad-popup');
-      if (popup) {
-        popup.classList.add('active');
-      }
-    }, 1200); // 1.2 second slight delay for natural presentation
-  }
-});
-
-// Close the advertisement popup modal
-function closeAdPopup() {
-  const popup = document.getElementById('welcome-ad-popup');
-  if (popup) {
-    popup.classList.remove('active');
-    sessionStorage.setItem('welcome_ad_shown', 'true');
-  }
-}
-
-// Redirect user to admissions section and close popup
-function handleAdClick(event) {
-  if (event) event.preventDefault();
-  closeAdPopup();
-  navigatePublic('admissions');
-  // Scroll smoothly to Admissions page
-  window.location.hash = '#admissions';
-}
