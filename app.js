@@ -369,7 +369,7 @@ function executeLogin() {
   let authenticatedUser = null;
 
   if (activeLoginRole === 'admin') {
-    if (username.toLowerCase() === 'admin' && passVal.trim() === 'admin') {
+    if (username.toLowerCase() === 'admin' && passVal.trim() === 'Raghu123!') {
       authenticatedUser = { name: 'CRM Super Admin', id: 'admin' };
     }
   } else if (activeLoginRole === 'teacher') {
