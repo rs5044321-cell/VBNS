@@ -544,9 +544,9 @@ async function executeLogin() {
       errorEl.style.display = 'block';
     }
   } catch (err) {
-    console.warn("Login connection error, attempting client-side authentication fallback...", err);
+    console.warn("Backend unreachable, using local authentication fallback...", err);
     
-    // Client-side authentication fallback
+    // Client-side authentication fallback (used on GitHub Pages / when server is offline)
     let authenticatedUser = null;
     let localRole = activeLoginRole;
     const key = username.toUpperCase();
@@ -558,7 +558,8 @@ async function executeLogin() {
     } else if (localRole === 'teacher') {
       const staffMember = State.staff.find(st => st.id.toUpperCase() === key);
       if (staffMember) {
-        const storedPass = (State.staffPasswords && State.staffPasswords[staffMember.id]) || 'teacher123';
+        // Check stored password field first, then staffPasswords dict, then default
+        const storedPass = staffMember.password || (State.staffPasswords && State.staffPasswords[staffMember.id]) || 'teacher123';
         if (passVal.trim() === storedPass) {
           authenticatedUser = staffMember;
         }
@@ -566,8 +567,9 @@ async function executeLogin() {
     } else if (localRole === 'student') {
       const studentMember = State.students.find(s => s.id.toUpperCase() === key);
       if (studentMember) {
-        // Fall back to default student password
-        if (passVal.trim() === 'student123') {
+        // Check stored password field first, then default
+        const storedPass = studentMember.password || 'student123';
+        if (passVal.trim() === storedPass) {
           authenticatedUser = studentMember;
         }
       }
@@ -580,7 +582,7 @@ async function executeLogin() {
       sessionStorage.setItem('apex_auth_role', localRole);
       sessionStorage.setItem('apex_auth_user', JSON.stringify(authenticatedUser));
 
-      logActivity(authenticatedUser.name, 'User Login (Local Fallback)', 'security', `Successfully authorized via local browser fallback as ${localRole.toUpperCase()}`);
+      logActivity(authenticatedUser.name, 'User Login', 'security', `Successfully authorized as ${localRole.toUpperCase()}`);
 
       applySessionAccessLayout();
       
@@ -589,9 +591,9 @@ async function executeLogin() {
       
       document.getElementById('login-username').value = '';
       document.getElementById('login-password').value = '';
-      showToast('Login Granted (Offline)', `Authorized locally as ${authenticatedUser.name}.`, 'ti-circle-key-filled');
+      showToast('Login Granted', `Welcome back, ${authenticatedUser.name}!`, 'ti-circle-key-filled');
     } else {
-      errorEl.textContent = 'Connection error to central database. Please run the server or double check credentials.';
+      errorEl.textContent = 'Incorrect ID or password. Please try again.';
       errorEl.style.display = 'block';
     }
   }
