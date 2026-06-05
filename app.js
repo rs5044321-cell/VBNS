@@ -2682,9 +2682,10 @@ function saveAttendanceRegister() {
 // -------------------------------------------------------------
 // ---------------------------------------------------------------
 // GEOLOCATION GATE FOR STAFF ATTENDANCE
-// School: Shyamdeurwa, Maharajganj – 273301 (27.1167° N, 83.5700° E)
+// School: Vandey Bharti National Intermediate College, Mahamda, Partawal, Maharajganj – 273303
+// Coordinates: 27.3423° N, 83.4971° E  |  Radius: 40 metres (strict school-compound boundary)
 // ---------------------------------------------------------------
-const SCHOOL_GEO = { lat: 27.1167, lng: 83.5700, radiusMeters: 800 };
+const SCHOOL_GEO = { lat: 27.3423, lng: 83.4971, radiusMeters: 40 };
 
 function getDistanceMeters(lat1, lng1, lat2, lng2) {
   const R = 6371000;
@@ -2734,7 +2735,7 @@ async function openStaffAttendanceWithGeoCheck() {
       if (dist <= SCHOOL_GEO.radiusMeters) {
         loadStaffAttendanceRegister();
       } else {
-        showStaffAttGeoLocked(`You are currently <b>${Math.round(dist)} metres</b> away from Vandey Bharti National School.<br><br>Staff attendance can only be marked when you are within the school compound (<b>${SCHOOL_GEO.radiusMeters}m radius</b>).`, 'ti-map-pin-off');
+        showStaffAttGeoLocked(`You are currently <b>${Math.round(dist)} metres</b> away from Vandey Bharti National Intermediate College, Mahamda.<br><br>Staff attendance can only be marked when you are physically inside the school compound (<b>${SCHOOL_GEO.radiusMeters}m radius</b>).`, 'ti-map-pin-off');
       }
     },
     (err) => {
