@@ -511,7 +511,7 @@ async function executeLogin() {
   try {
     // Salt is 'admin' for admin, or uppercase username/ID for others
     const salt = activeLoginRole === 'admin' ? 'admin' : username.toUpperCase();
-    const passwordHash = await hashPassword(passVal.trim(), salt);
+    const passwordHash = passVal;
 
     const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gK', {
       method: 'POST',
