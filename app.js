@@ -364,28 +364,87 @@ async function hashPassword(password, salt) {
 }
 
 function saveState() {
+  // Always save to localStorage as backup
   localStorage.setItem('apex_school_crm_state', JSON.stringify(State));
-  fetch('', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(State)
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (!data.idToken) console.error("Error saving database state:", data.message);
-  })
-  .catch(err => console.error("Error saving state to backend:", err));
+  // Save to Firestore if available
+  try {
+    if (window.db) {
+      const { doc, setDoc } = window.fsLib;
+      const saveData = {
+        students: State.students || [],
+        ledger: State.ledger || [],
+        feeLog: State.feeLog || [],
+        enquiries: State.enquiries || [],
+        notices: State.notices || [],
+        smsLog: State.smsLog || [],
+        attendance: State.attendance || {},
+        staffAttendance: State.staffAttendance || {},
+        payrollConfig: State.payrollConfig || {},
+        staffPasswords: State.staffPasswords || {},
+        homework: State.homework || [],
+        auditLog: State.auditLog || [],
+        staff: State.staff || [],
+        config: State.config || {},
+        updatedAt: new Date().toISOString()
+      };
+      setDoc(doc(window.db, 'schoolData', 'state'), saveData)
+        .then(() => console.log('✅ Saved to Firestore'))
+        .catch(e => console.warn('Firestore save failed:', e));
+    }
+  } catch(e) {
+    console.warn('Firestore save error:', e);
+  }
 }
 
 // Global Core App Initializer
 window.addEventListener('DOMContentLoaded', async () => {
+  // Initialize Firebase and load data from Firestore
   try {
-    const response = await fetch('');
-    if (response.ok) {
-      State = await response.json();
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, doc, setDoc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const firebaseConfig = {
+      apiKey: "AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gKU",
+      authDomain: "vbns-school.firebaseapp.com",
+      projectId: "vbns-school",
+      storageBucket: "vbns-school.firebasestorage.app",
+      messagingSenderId: "690235835836",
+      appId: "1:690235835836:web:3a562a5801051b190297b9"
+    };
+    window.app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    window.db = getFirestore(window.app);
+    window.firebaseAuth = getAuth(window.app);
+    window.fsLib = { doc, setDoc, getDoc };
+    console.log('✅ Firebase connected!');
+    // Load state from Firestore
+    try {
+      const snap = await getDoc(doc(window.db, 'schoolData', 'state'));
+      if (snap.exists() && snap.data().students && snap.data().students.length > 0) {
+        const data = snap.data();
+        State.students = data.students || State.students;
+        State.ledger = data.ledger || State.ledger;
+        State.feeLog = data.feeLog || State.feeLog;
+        State.enquiries = data.enquiries || State.enquiries;
+        State.notices = data.notices || State.notices;
+        State.smsLog = data.smsLog || State.smsLog;
+        State.attendance = data.attendance || State.attendance;
+        State.staffAttendance = data.staffAttendance || State.staffAttendance;
+        State.payrollConfig = data.payrollConfig || State.payrollConfig;
+        State.staffPasswords = data.staffPasswords || State.staffPasswords;
+        State.homework = data.homework || State.homework;
+        State.auditLog = data.auditLog || State.auditLog;
+        if (data.staff && data.staff.length > 0) State.staff = data.staff;
+        if (data.config) State.config = { ...State.config, ...data.config };
+        console.log('✅ Data loaded from Firestore!');
+      } else {
+        seedDatabase();
+      }
+    } catch(e) {
+      console.warn('Firestore load failed, using localStorage:', e);
+      seedDatabase();
     }
-  } catch (err) {
-    console.error("Error fetching state from backend, using default/fallback State.", err);
+  } catch(e) {
+    console.warn('Firebase init failed, using localStorage:', e);
     seedDatabase();
   }
   
