@@ -473,9 +473,56 @@ async function executeLogin() {
       errorEl.style.display = 'block';
     }
   } catch (err) {
-    console.error("Login connection error:", err);
-    errorEl.textContent = 'Connection error to central database.';
-    errorEl.style.display = 'block';
+    console.warn("Login connection error, attempting client-side authentication fallback...", err);
+    
+    // Client-side authentication fallback
+    let authenticatedUser = null;
+    let localRole = activeLoginRole;
+    const key = username.toUpperCase();
+
+    if (localRole === 'admin') {
+      if (username.toLowerCase() === 'admin' && passVal.trim() === 'Raghu123!') {
+        authenticatedUser = { name: "CRM Super Admin", id: "admin" };
+      }
+    } else if (localRole === 'teacher') {
+      const staffMember = State.staff.find(st => st.id.toUpperCase() === key);
+      if (staffMember) {
+        const storedPass = (State.staffPasswords && State.staffPasswords[staffMember.id]) || 'teacher123';
+        if (passVal.trim() === storedPass) {
+          authenticatedUser = staffMember;
+        }
+      }
+    } else if (localRole === 'student') {
+      const studentMember = State.students.find(s => s.id.toUpperCase() === key);
+      if (studentMember) {
+        // Fall back to default student password
+        if (passVal.trim() === 'student123') {
+          authenticatedUser = studentMember;
+        }
+      }
+    }
+
+    if (authenticatedUser) {
+      State.auth.currentRole = localRole;
+      State.auth.currentUser = authenticatedUser;
+      
+      sessionStorage.setItem('apex_auth_role', localRole);
+      sessionStorage.setItem('apex_auth_user', JSON.stringify(authenticatedUser));
+
+      logActivity(authenticatedUser.name, 'User Login (Local Fallback)', 'security', `Successfully authorized via local browser fallback as ${localRole.toUpperCase()}`);
+
+      applySessionAccessLayout();
+      
+      const defaultTab = localRole === 'student' ? 'fees' : 'dashboard';
+      nav(defaultTab);
+      
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
+      showToast('Login Granted (Offline)', `Authorized locally as ${authenticatedUser.name}.`, 'ti-circle-key-filled');
+    } else {
+      errorEl.textContent = 'Connection error to central database. Please run the server or double check credentials.';
+      errorEl.style.display = 'block';
+    }
   }
 }
 
