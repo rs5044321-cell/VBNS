@@ -4330,3 +4330,23 @@ body.crm-active {
     max-width: 500px;
   }
 }
+
+/* =============================================================
+   INTEGRATION LAYOUT & SIBLING CONFLICT OVERRIDES
+   ============================================================= */
+#app {
+  display: none !important;
+}
+
+#public-website {
+  display: block !important;
+}
+
+body.crm-active #app {
+  display: flex !important;
+}
+
+body.crm-active #public-website {
+  display: none !important;
+}
+

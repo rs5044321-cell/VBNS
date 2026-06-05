@@ -58,11 +58,9 @@ let State = {
     'SAC-007': { examName: 'Midterm Board Evaluation 2026', subjects: [{ sub: 'Mathematics', marks: 42, max: 100 }, { sub: 'Science', marks: 50, max: 100 }, { sub: 'English', marks: 58, max: 100 }, { sub: 'Social Studies', marks: 35, max: 80 }, { sub: 'Hindi', marks: 40, max: 80 }, { sub: 'Computer Science', marks: 25, max: 50 }] },
   },
   library: [
-    { id: 'LIB-302', title: 'Concepts of Physics (Vol 1)', author: 'Dr. H.C. Verma', cls: 'Class XI', issuedTo: 'Aarav Sharma (SAC-001)', due: '2026-06-05', status: 'Issued' },
-    { id: 'LIB-451', title: 'A Brief History of Time', author: 'Stephen Hawking', cls: 'Class XII', issuedTo: 'Sneha Patel (SAC-004)', due: '2026-06-02', status: 'Issued' },
+    { id: 'LIB-302', title: 'Concepts of Physics (Vol 1)', author: 'Dr. H.C. Verma', cls: 'Class X', issuedTo: 'Aarav Sharma (SAC-001)', due: '2026-06-05', status: 'Issued' },
     { id: 'LIB-112', title: 'High School English Grammar', author: 'Wren & Martin', cls: 'Class X', issuedTo: 'Rohan Gupta (SAC-003)', due: '2026-05-20', status: 'Overdue' },
-    { id: 'LIB-098', title: 'Introduction to Algorithms', author: 'Cormen, Leiserson', cls: 'Class XII', issuedTo: '-', due: '-', status: 'Available' },
-    { id: 'LIB-224', title: 'Understanding Chemistry', author: 'Dr. C.N.R. Rao', cls: 'Class XI', issuedTo: '-', due: '-', status: 'Available' }
+    { id: 'LIB-098', title: 'Introduction to Algorithms', author: 'Cormen, Leiserson', cls: 'Class X', issuedTo: '-', due: '-', status: 'Available' }
   ],
   transport: [
     { route: 'Route 1 - East Delhi', driver: 'Madan Lal', vehicle: 'DL-1PB-4521 (Bus)', stops: 'Preet Vihar, Laxmi Nagar, Anand Vihar', count: 42, status: 'Operational' },
@@ -171,8 +169,8 @@ function seedDatabase() {
     { id: 'SAC-001', name: 'Aarav Sharma', cls: 'Class X', sec: 'A', parent: 'Ramesh Sharma', phone: '9812345001', dob: '2010-03-15', address: '14 MG Road, New Delhi', fee: 45000, balance: 0, status: 'Paid', enrolledDate: '2025-04-10' },
     { id: 'SAC-002', name: 'Priya Mehta', cls: 'Class X', sec: 'B', parent: 'Suresh Mehta', phone: '9812345002', dob: '2010-07-22', address: '8 Lajpat Nagar, Delhi', fee: 45000, balance: 15000, status: 'Partial', enrolledDate: '2025-04-12' },
     { id: 'SAC-003', name: 'Rohan Gupta', cls: 'Class IX', sec: 'A', parent: 'Vikram Gupta', phone: '9812345003', dob: '2011-01-10', address: '22 Karol Bagh, Delhi', fee: 40000, balance: 40000, status: 'Pending', enrolledDate: '2025-04-15' },
-    { id: 'SAC-004', name: 'Sneha Patel', cls: 'Class XI', sec: 'A', parent: 'Anand Patel', phone: '9812345004', dob: '2009-05-30', address: '6 Dwarka Sector 5', fee: 50000, balance: 0, status: 'Paid', enrolledDate: '2025-04-18' },
-    { id: 'SAC-005', name: 'Karan Singh', cls: 'Class XII', sec: 'B', parent: 'Harjinder Singh', phone: '9812345005', dob: '2008-09-18', address: '3 Punjabi Bagh', fee: 55000, balance: 25000, status: 'Partial', enrolledDate: '2025-04-20' },
+    { id: 'SAC-004', name: 'Sneha Patel', cls: 'Class VIII', sec: 'A', parent: 'Anand Patel', phone: '9812345004', dob: '2012-05-30', address: '6 Dwarka Sector 5', fee: 35000, balance: 0, status: 'Paid', enrolledDate: '2025-04-18' },
+    { id: 'SAC-005', name: 'Karan Singh', cls: 'Class X', sec: 'B', parent: 'Harjinder Singh', phone: '9812345005', dob: '2010-09-18', address: '3 Punjabi Bagh', fee: 45000, balance: 25000, status: 'Partial', enrolledDate: '2025-04-20' },
     { id: 'SAC-006', name: 'Ananya Verma', cls: 'Class VIII', sec: 'C', parent: 'Deepak Verma', phone: '9812345006', dob: '2012-11-05', address: '19 Rohini Sector 3', fee: 35000, balance: 0, status: 'Paid', enrolledDate: '2025-04-22' },
     { id: 'SAC-007', name: 'Arjun Nair', cls: 'Class VII', sec: 'A', parent: 'Suresh Nair', phone: '9812345007', dob: '2013-04-14', address: '45 Vasant Kunj', fee: 35000, balance: 35000, status: 'Pending', enrolledDate: '2025-04-25' }
   ];
@@ -209,8 +207,8 @@ function seedDatabase() {
 
   State.notices = [
     { title: 'Annual Sports Day Board Assembly', body: 'The Annual Sports Meet is scheduled for 15th December 2026. Grade athletic selections begin Monday.', date: '2026-05-24', priority: 'Normal Broadcast', by: 'Sports Admin Board' },
-    { title: 'Mandatory Parent-Teacher Meeting (PTM)', body: 'Critical academic discussion regarding final board test timetables for Classes VI-XII on 10th June 2026, 10:00 AM.', date: '2026-05-22', priority: 'Important Bulletin', by: 'Principal Office' },
-    { title: 'Urgent: CBSE Registration Compliance', body: 'All Grade X and XII students must submit three verified photographs and duplicate board forms by 30th May without fail.', date: '2026-05-20', priority: 'Urgent Announcement', by: 'Academic Director' }
+    { title: 'Mandatory Parent-Teacher Meeting (PTM)', body: 'Critical academic discussion regarding final board test timetables for Classes VI-X on 10th June 2026, 10:00 AM.', date: '2026-05-22', priority: 'Important Bulletin', by: 'Principal Office' },
+    { title: 'Urgent: CBSE Registration Compliance', body: 'All Grade X students must submit three verified photographs and duplicate board forms by 30th May without fail.', date: '2026-05-20', priority: 'Urgent Announcement', by: 'Academic Director' }
   ];
 
   // Initialize Default Staff Passwords and Salaries
@@ -237,13 +235,38 @@ function seedDatabase() {
   saveState();
 }
 
+async function hashPassword(password, salt) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password + salt);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 function saveState() {
-  localStorage.setItem('apex_school_crm_state', JSON.stringify(State));
+  fetch('http://localhost:3000/api/state', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(State)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (!data.success) console.error("Error saving database state:", data.message);
+  })
+  .catch(err => console.error("Error saving state to backend:", err));
 }
 
 // Global Core App Initializer
-window.addEventListener('DOMContentLoaded', () => {
-  seedDatabase();
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const response = await fetch('http://localhost:3000/api/state');
+    if (response.ok) {
+      State = await response.json();
+    }
+  } catch (err) {
+    console.error("Error fetching state from backend, using default/fallback State.", err);
+    seedDatabase();
+  }
   
   // Apply Date and settings configuration
   renderDateDisplay();
@@ -330,33 +353,31 @@ function setLoginRole(role) {
 
   document.getElementById('login-error').style.display = 'none';
 
+  dobRow.style.display = 'none'; // Always hide DOB row now that students use passwords
+
   if (role === 'admin') {
     userRow.style.display = 'block';
     passRow.style.display = 'block';
-    dobRow.style.display = 'none';
     userLbl.textContent = 'Admin Username';
     document.getElementById('login-username').placeholder = 'E.g., admin';
   } else if (role === 'teacher') {
     userRow.style.display = 'block';
     passRow.style.display = 'block';
-    dobRow.style.display = 'none';
     userLbl.textContent = 'Faculty Officer ID';
     document.getElementById('login-username').placeholder = 'E.g., TCH-001';
   } else if (role === 'student') {
     userRow.style.display = 'block';
     passRow.style.display = 'block';
-    dobRow.style.display = 'none';
     userLbl.textContent = 'Registered Student ID';
     document.getElementById('login-username').placeholder = 'E.g., SAC-001';
-    document.getElementById('login-password').placeholder = 'E.g., Aarav2010-03-15';
+    document.getElementById('login-password').placeholder = '••••••••';
   }
 }
 
-function executeLogin() {
+async function executeLogin() {
   const errorEl = document.getElementById('login-error');
   const username = document.getElementById('login-username').value.trim();
   const passVal = document.getElementById('login-password').value;
-  const dobVal = document.getElementById('login-dob').value;
 
   errorEl.style.display = 'none';
 
@@ -366,65 +387,44 @@ function executeLogin() {
     return;
   }
 
-  let authenticatedUser = null;
+  try {
+    // Salt is 'admin' for admin, or uppercase username/ID for others
+    const salt = activeLoginRole === 'admin' ? 'admin' : username.toUpperCase();
+    const passwordHash = await hashPassword(passVal.trim(), salt);
 
-  if (activeLoginRole === 'admin') {
-    if (username.toLowerCase() === 'admin' && passVal.trim() === 'Raghu123!') {
-      authenticatedUser = { name: 'CRM Super Admin', id: 'admin' };
-    }
-  } else if (activeLoginRole === 'teacher') {
-    // Forgiving Faculty ID matching (case-insensitive) and password trimming
-    const staffObj = State.staff.find(st => st.id.toUpperCase() === username.toUpperCase());
-    const validPassword = State.staffPasswords[username.toUpperCase()];
-    if (staffObj && validPassword && passVal.trim() === validPassword.trim()) {
-      authenticatedUser = staffObj;
-    }
-  } else if (activeLoginRole === 'student') {
-    // Forgiving Student login: ID = Student ID, Password = first name + DOB (e.g. Aarav2010-03-15)
-    const stuObj = State.students.find(s => {
-      if (s.id.toUpperCase() !== username.toUpperCase()) return false;
-      const firstName = s.name.trim().split(' ')[0];
-      const expectedPassword = `${firstName}${s.dob}`;
-      return passVal.trim().toLowerCase() === expectedPassword.toLowerCase();
+    const response = await fetch('http://localhost:3000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, role: activeLoginRole, passwordHash })
     });
-    if (stuObj) {
-      authenticatedUser = stuObj;
+
+    const data = await response.json();
+    if (response.ok && data.success) {
+      const authenticatedUser = data.user;
+      
+      State.auth.currentRole = activeLoginRole;
+      State.auth.currentUser = authenticatedUser;
+      
+      sessionStorage.setItem('apex_auth_role', activeLoginRole);
+      sessionStorage.setItem('apex_auth_user', JSON.stringify(authenticatedUser));
+
+      logActivity(authenticatedUser.name, 'User Login', 'security', `Successfully authorized as ${activeLoginRole.toUpperCase()}`);
+
+      applySessionAccessLayout();
+      
+      const defaultTab = activeLoginRole === 'student' ? 'fees' : 'dashboard';
+      nav(defaultTab);
+      
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
+      showToast('Login Granted', `Welcome back, ${authenticatedUser.name}!`, 'ti-circle-key-filled');
+    } else {
+      errorEl.textContent = data.message || 'Incorrect login details.';
+      errorEl.style.display = 'block';
     }
-  }
-
-  if (authenticatedUser) {
-    // Commit to session and state
-    State.auth.currentRole = activeLoginRole;
-    State.auth.currentUser = authenticatedUser;
-    
-    // Save to sessionStorage to maintain logins on refresh
-    sessionStorage.setItem('apex_auth_role', activeLoginRole);
-    sessionStorage.setItem('apex_auth_user', JSON.stringify(authenticatedUser));
-
-    // Audit successful login
-    logActivity(authenticatedUser.name, 'User Login', 'security', `Successfully authorized as ${activeLoginRole.toUpperCase()}`);
-
-    applySessionAccessLayout();
-    
-    // Navigate to default tab based on role
-    const defaultTab = activeLoginRole === 'student' ? 'fees' : 'dashboard';
-    nav(defaultTab);
-    
-    // Clear login inputs
-    document.getElementById('login-username').value = '';
-    document.getElementById('login-password').value = '';
-    document.getElementById('login-dob').value = '';
-
-    showToast('Login Granted', `Welcome back, ${authenticatedUser.name}!`, 'ti-circle-key-filled');
-  } else {
-    // Helpful login failure clues
-    let clue = 'Invalid credentials. Access denied.';
-    if (activeLoginRole === 'student') {
-      clue = 'Student ID/Name or Date-of-Birth does not match our records.';
-    } else if (activeLoginRole === 'teacher') {
-      clue = 'Faculty ID or Password does not match our records.';
-    }
-    errorEl.textContent = clue;
+  } catch (err) {
+    console.error("Login connection error:", err);
+    errorEl.textContent = 'Connection error to central database.';
     errorEl.style.display = 'block';
   }
 }
@@ -947,7 +947,7 @@ function renderQuickActionsPanel() {
 // -------------------------------------------------------------
 // MODULE 2: NEW ENROLLMENT ADMISSION
 // -------------------------------------------------------------
-function admitStudent() {
+async function admitStudent() {
   const nameEl = document.getElementById('adm-name');
   const classEl = document.getElementById('adm-class');
   const secEl = document.getElementById('adm-section');
@@ -1006,6 +1006,20 @@ function admitStudent() {
   });
 
   logActivity('Super Admin', 'Student Admission', 'enrollment', `Enrolled new student file for ${name} (${nextId})`);
+  
+  try {
+    // Register Default Student Password ('student123')
+    const salt = nextId.toUpperCase();
+    const passwordHash = await hashPassword('student123', salt);
+    await fetch('http://localhost:3000/api/auth/credentials', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: nextId, passwordHash })
+    });
+  } catch (err) {
+    console.error("Error saving student default credentials:", err);
+  }
+
   saveState();
 
   // Create Beautiful Profile Panel Output Preview
@@ -1027,7 +1041,7 @@ function admitStudent() {
         <div><span style="color:var(--text-secondary)">Admission Date:</span> <b>${currentDateStr}</b></div>
       </div>
       <div style="margin-top:16px; padding:10px; border-radius:var(--border-radius-sm); background-color:var(--color-success-bg); color:var(--color-success); font-size:11px; font-weight:600; display:flex; align-items:center; gap:8px">
-        <i class="ti ti-circle-check"></i> Student registered successfully!
+        <i class="ti ti-circle-check"></i> Student registered successfully! (Default Password: student123)
       </div>
     </div>
   `;
@@ -1710,7 +1724,7 @@ function renderFeeReport() {
   if (!tbody) return;
 
   // Group calculations by classroom grade
-  const classesList = ['Class I', 'Class II', 'Class III', 'Class IV', 'Class V', 'Class VI', 'Class VII', 'Class VIII', 'Class IX', 'Class X', 'Class XI', 'Class XII'];
+  const classesList = ['Class I', 'Class II', 'Class III', 'Class IV', 'Class V', 'Class VI', 'Class VII', 'Class VIII', 'Class IX', 'Class X'];
   const breakdown = classesList.map(grade => {
     const studentsInClass = State.students.filter(s => s.cls === grade);
     if (studentsInClass.length === 0) return null;
@@ -1933,8 +1947,6 @@ function sendSMSBroadcast() {
     recipientCount = State.students.filter(s => s.balance > 0).length;
   } else if (target.includes('Class X')) {
     recipientCount = State.students.filter(s => s.cls === 'Class X').length;
-  } else if (target.includes('Class XII')) {
-    recipientCount = State.students.filter(s => s.cls === 'Class XII').length;
   } else {
     recipientCount = State.staff.length; 
   }
@@ -2980,7 +2992,6 @@ function renderStaffRegistry() {
   if (!tbody) return;
 
   tbody.innerHTML = State.staff.map(st => {
-    const pw = State.staffPasswords[st.id] || 'teacher123';
     const accessStr = st.access ? st.access.join(', ') : 'Default Academic';
     const assignedClassStr = st.assignedClass ? `<span class="pill pill-green" style="font-size: 10px; padding: 2px 6px;">${st.assignedClass}</span>` : `<span class="pill pill-amber" style="font-size: 10px; padding: 2px 6px;">None</span>`;
     return `
@@ -2991,9 +3002,6 @@ function renderStaffRegistry() {
           <small style="color:var(--text-tertiary); font-size:10px; display:block; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${accessStr}">${accessStr}</small>
         </td>
         <td><span class="pill pill-blue">${st.role}</span></td>
-        <td>
-          <input type="text" value="${pw}" style="width:110px; padding:4px 8px; font-size:11px" onchange="updateStaffPassword('${st.id}', this.value)" />
-        </td>
         <td>${st.contact}</td>
         <td>
           <div style="display:flex; gap:6px">
@@ -3022,7 +3030,8 @@ function editStaffRecord(staffId) {
   document.getElementById('staff-role').value = st.role;
   document.getElementById('staff-sub').value = st.sub;
   document.getElementById('staff-phone').value = st.contact;
-  document.getElementById('staff-password').value = State.staffPasswords[st.id] || 'teacher123';
+  document.getElementById('staff-password').value = ''; // Leave blank when editing to keep existing
+  document.getElementById('staff-password').placeholder = 'Leave blank to keep existing';
   document.getElementById('staff-assigned-class').value = st.assignedClass || '';
   
   const payroll = State.payrollConfig[st.id] || { base: 40000 };
@@ -3043,11 +3052,10 @@ function editStaffRecord(staffId) {
   const btn = document.getElementById('staff-submit-btn');
   btn.innerHTML = `<i class="ti ti-device-floppy"></i> Save Staff Changes`;
   
-  // Scroll to form or show toast
   showToast('Edit Mode Enabled', `Loaded details for ${st.name}.`, 'ti-edit');
 }
 
-function addStaffRecord() {
+async function addStaffRecord() {
   const nameEl = document.getElementById('staff-name');
   const roleEl = document.getElementById('staff-role');
   const subEl = document.getElementById('staff-sub');
@@ -3064,7 +3072,7 @@ function addStaffRecord() {
   const baseSalary = parseFloat(salEl.value) || 30000;
   const assignedClass = classEl.value;
 
-  if (!name || !role || !contact || !password) {
+  if (!name || !role || !contact || (!editingStaffId && !password)) {
     showToast('Validation Error', 'Fill name, role, contact, and password fields.', 'ti-alert-circle');
     return;
   }
@@ -3078,6 +3086,8 @@ function addStaffRecord() {
     }
   });
 
+  let staffId = editingStaffId;
+
   if (editingStaffId) {
     // Edit existing staff member
     const st = State.staff.find(x => x.id === editingStaffId);
@@ -3089,7 +3099,15 @@ function addStaffRecord() {
       st.access = access;
       st.assignedClass = assignedClass;
       
-      State.staffPasswords[editingStaffId] = password;
+      if (password) {
+        const salt = editingStaffId.toUpperCase();
+        const passwordHash = await hashPassword(password, salt);
+        await fetch('http://localhost:3000/api/auth/credentials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: editingStaffId, passwordHash })
+        });
+      }
       if (State.payrollConfig[editingStaffId]) {
         State.payrollConfig[editingStaffId].base = baseSalary;
       }
@@ -3106,7 +3124,7 @@ function addStaffRecord() {
     // Create new staff member
     const staffPrefix = 'TCH-';
     const nextNum = State.staff.length + 1;
-    const staffId = `${staffPrefix}${String(nextNum).padStart(3, '0')}`;
+    staffId = `${staffPrefix}${String(nextNum).padStart(3, '0')}`;
 
     const newStaff = {
       id: staffId,
@@ -3120,13 +3138,20 @@ function addStaffRecord() {
     };
 
     State.staff.push(newStaff);
-    State.staffPasswords[staffId] = password;
     State.payrollConfig[staffId] = {
       base: baseSalary,
       allowance: 3000,
       deductions: 0,
       status: 'Unpaid'
     };
+
+    const salt = staffId.toUpperCase();
+    const passwordHash = await hashPassword(password, salt);
+    await fetch('http://localhost:3000/api/auth/credentials', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: staffId, passwordHash })
+    });
 
     logActivity('Super Admin', 'Staff Registered', 'security', `Created new faculty registry for ${name} (${staffId})`);
     showToast('Staff Registered', `Faculty profile for ${name} created. ID: ${staffId}`, 'ti-briefcase');
@@ -3141,6 +3166,7 @@ function addStaffRecord() {
   subEl.value = '';
   phoneEl.value = '';
   pwEl.value = 'teacher123';
+  pwEl.placeholder = '';
   salEl.value = '40000';
   classEl.value = 'Class X';
   
@@ -3154,7 +3180,7 @@ function addStaffRecord() {
   });
 }
 
-function removeStaffRecord(staffId) {
+async function removeStaffRecord(staffId) {
   const index = State.staff.findIndex(st => st.id === staffId);
   if (index === -1) return;
 
@@ -3164,8 +3190,15 @@ function removeStaffRecord(staffId) {
   }
 
   State.staff.splice(index, 1);
-  delete State.staffPasswords[staffId];
   delete State.payrollConfig[staffId];
+
+  try {
+    await fetch(`http://localhost:3000/api/auth/credentials/${staffId}`, {
+      method: 'DELETE'
+    });
+  } catch (err) {
+    console.error("Error deleting staff credentials on server:", err);
+  }
 
   logActivity('Super Admin', 'Staff Member Removed', 'security', `Removed staff member ${st.name} (${staffId})`);
   saveState();
@@ -3536,10 +3569,9 @@ function logActivity(actor, action, category, details) {
 // -------------------------------------------------------------
 function renderAuditPanel() {
   const logBody = document.getElementById('audit-log-body');
-  const credentialsBody = document.getElementById('audit-credentials-body');
   const homeworkBody = document.getElementById('audit-homework-body');
 
-  if (!logBody || !credentialsBody || !homeworkBody) return;
+  if (!logBody || !homeworkBody) return;
 
   // 1. Render System activity logs
   const logs = State.auditLog || [];
@@ -3564,42 +3596,7 @@ function renderAuditPanel() {
     }).join('');
   }
 
-  // 2. Render Credentials List
-  let credentialRows = [];
-  
-  // Faculty credentials
-  State.staff.forEach(st => {
-    const pw = State.staffPasswords[st.id] || 'teacher123';
-    credentialRows.push({
-      id: st.id,
-      name: st.name,
-      role: st.role,
-      password: pw
-    });
-  });
-
-  // Student credentials
-  State.students.forEach(s => {
-    const firstName = s.name.trim().split(' ')[0];
-    const expectedPassword = `${firstName}${s.dob}`;
-    credentialRows.push({
-      id: s.id,
-      name: s.name,
-      role: 'Student / Parent',
-      password: expectedPassword
-    });
-  });
-
-  credentialsBody.innerHTML = credentialRows.map(row => `
-    <tr>
-      <td><b>${row.id}</b></td>
-      <td>${row.name}</td>
-      <td><span class="pill ${row.role.includes('Student') ? 'pill-green' : 'pill-blue'}">${row.role}</span></td>
-      <td><span class="password-text-toggle">${row.password}</span></td>
-    </tr>
-  `).join('');
-
-  // 3. Render Homework history
+  // 2. Render Homework history
   const homeworks = State.homework || [];
   if (homeworks.length === 0) {
     homeworkBody.innerHTML = `<tr><td colspan="6" class="center-col" style="color:var(--text-tertiary)">No homework records.</td></tr>`;
@@ -3620,14 +3617,48 @@ function renderAuditPanel() {
 }
 
 // Emergency Reset Utility: Clears corrupted local caches and restores full VBNS database state
-function resetDatabaseToDefault(event) {
+async function resetDatabaseToDefault(event) {
   if (event) event.preventDefault();
-  if (!confirm("Are you sure you want to restore the VBNS database to system defaults? This will erase all local modifications, log out the current session, and reset all students, staff, and payroll settings to high-fidelity factory configurations.")) {
+  
+  const confirmText = "Are you sure you want to restore the VBNS database to system defaults? This will erase all local modifications, log out the current session, and reset all students, staff, and payroll settings to high-fidelity factory configurations.";
+  if (!confirm(confirmText)) {
     return;
   }
-  localStorage.removeItem('apex_school_crm_state');
-  sessionStorage.clear();
-  window.location.reload();
+  
+  const password = prompt("Re-authentication Required: Please enter the Admin password to authorize database reset:");
+  if (!password) {
+    showToast('Reset Cancelled', 'Database reset was cancelled or password was not provided.', 'ti-alert-triangle');
+    return;
+  }
+  
+  try {
+    const passwordHash = await hashPassword(password.trim(), 'admin');
+    const response = await fetch('http://localhost:3000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: 'admin', role: 'admin', passwordHash })
+    });
+    
+    const data = await response.json();
+    if (response.ok && data.success) {
+      // Re-authenticated! Send reset call to backend
+      const resetRes = await fetch('http://localhost:3000/api/reset', { method: 'POST' });
+      if (resetRes.ok) {
+        sessionStorage.clear();
+        showToast('Database Reset', 'Database successfully restored to factory defaults.', 'ti-refresh');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        showToast('Reset Failed', 'Server failed to reset the database state.', 'ti-alert-triangle');
+      }
+    } else {
+      showToast('Reset Failed', 'Invalid admin password. Database reset denied.', 'ti-lock');
+    }
+  } catch (err) {
+    console.error("Reset re-auth connection error:", err);
+    showToast('Reset Failed', 'Could not connect to central server for re-authentication.', 'ti-alert-circle');
+  }
 }
 
 // =============================================================
