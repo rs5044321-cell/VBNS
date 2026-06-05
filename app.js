@@ -372,7 +372,7 @@ function saveState() {
   })
   .then(res => res.json())
   .then(data => {
-    if (!data.success) console.error("Error saving database state:", data.message);
+    if (!data.idToken) console.error("Error saving database state:", data.message);
   })
   .catch(err => console.error("Error saving state to backend:", err));
 }
@@ -516,12 +516,12 @@ async function executeLogin() {
     const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gK', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, role: activeLoginRole, passwordHash })
+      body: JSON.stringify({ email: username, password: passVal.trim(), returnSecureToken: true })
     });
 
     const data = await response.json();
-    if (response.ok && data.success) {
-      const authenticatedUser = data.user;
+    if (response.ok && data.idToken) {
+      const authenticatedUser = { name: username, email: username, role: activeLoginRole, uid: data.localId };
       
       State.auth.currentRole = activeLoginRole;
       State.auth.currentUser = authenticatedUser;
@@ -4110,7 +4110,7 @@ async function resetDatabaseToDefault(event) {
     });
     
     const data = await response.json();
-    if (response.ok && data.success) {
+    if (response.ok && data.idToken) {
       // Re-authenticated! Send reset call to backend
       const resetRes = await fetch('http://localhost:3000/api/reset', { method: 'POST' });
       if (resetRes.ok) {
