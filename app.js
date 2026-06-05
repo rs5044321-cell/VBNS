@@ -872,7 +872,7 @@ function nav(tabId, sidebarElement) {
       loadAttendanceRegister();
       break;
     case 'staffattendance':
-      loadStaffAttendanceRegister();
+      openStaffAttendanceWithGeoCheck();
       break;
     case 'timetable':
       renderTimetableModule();
@@ -1023,6 +1023,11 @@ function renderDashboard() {
   // 4. Custom Collection Mini Bar Chart
   if (currentRole === 'admin') {
     renderDashboardBarChart();
+  }
+
+  // 5. Student Quick-Jump Overview Panel
+  if (currentRole === 'student') {
+    renderStudentOverview();
   }
 }
 
@@ -2675,12 +2680,87 @@ function saveAttendanceRegister() {
 // -------------------------------------------------------------
 // MODULE 14: DAILY STAFF FACULTY ATTENDANCE
 // -------------------------------------------------------------
+// ---------------------------------------------------------------
+// GEOLOCATION GATE FOR STAFF ATTENDANCE
+// School: Shyamdeurwa, Maharajganj – 273301 (27.1167° N, 83.5700° E)
+// ---------------------------------------------------------------
+const SCHOOL_GEO = { lat: 27.1167, lng: 83.5700, radiusMeters: 800 };
+
+function getDistanceMeters(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(Δφ/2)**2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function showStaffAttGeoLocked(message, icon = 'ti-map-pin-off') {
+  const tbody = document.getElementById('staff-att-body');
+  const statsContainer = document.getElementById('staff-att-stats-summary');
+  if (statsContainer) statsContainer.style.display = 'none';
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="padding: 48px 24px; text-align: center;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:14px;">
+            <div style="width:64px; height:64px; border-radius:50%; background:rgba(239,68,68,0.1); display:flex; align-items:center; justify-content:center;">
+              <i class="ti ${icon}" style="font-size:28px; color:var(--color-danger);"></i>
+            </div>
+            <div style="font-size:16px; font-weight:700; color:var(--text-primary);">Access Restricted</div>
+            <div style="font-size:13px; color:var(--text-secondary); max-width:380px; line-height:1.6;">${message}</div>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+}
+
+async function openStaffAttendanceWithGeoCheck() {
+  const tbody = document.getElementById('staff-att-body');
+  const statsContainer = document.getElementById('staff-att-stats-summary');
+  if (statsContainer) statsContainer.style.display = 'none';
+  if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px;"><i class="ti ti-map-pin" style="font-size:28px; display:block; margin-bottom:8px; color:var(--accent);"></i><span style="color:var(--text-secondary); font-size:13px;">Verifying school location…</span></td></tr>`;
+
+  if (!navigator.geolocation) {
+    showStaffAttGeoLocked('Your device does not support GPS / Geolocation. Staff attendance can only be marked from within the school compound.', 'ti-location-off');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const dist = getDistanceMeters(pos.coords.latitude, pos.coords.longitude, SCHOOL_GEO.lat, SCHOOL_GEO.lng);
+      if (dist <= SCHOOL_GEO.radiusMeters) {
+        loadStaffAttendanceRegister();
+      } else {
+        showStaffAttGeoLocked(`You are currently <b>${Math.round(dist)} metres</b> away from Vandey Bharti National School.<br><br>Staff attendance can only be marked when you are within the school compound (<b>${SCHOOL_GEO.radiusMeters}m radius</b>).`, 'ti-map-pin-off');
+      }
+    },
+    (err) => {
+      // If location is denied, admins can still override for offline use
+      if (State.auth.currentRole === 'admin') {
+        showToast('Location Bypassed', 'GPS unavailable. Admin override: loading attendance register.', 'ti-shield-lock');
+        loadStaffAttendanceRegister();
+      } else {
+        showStaffAttGeoLocked('Location permission was denied. Please allow location access in your browser to mark staff attendance. This ensures attendance is recorded only from within school premises.', 'ti-location-off');
+      }
+    },
+    { timeout: 8000, maximumAge: 60000, enableHighAccuracy: true }
+  );
+}
+
 function loadStaffAttendanceRegister() {
-  const dateStr = document.getElementById('staff-att-date').value;
+  const dateInput = document.getElementById('staff-att-date');
+  const today = new Date().toISOString().split('T')[0];
+  if (dateInput && !dateInput.value) dateInput.value = today;
+  const dateStr = dateInput ? dateInput.value : today;
   const tbody = document.getElementById('staff-att-body');
   if (!tbody || !dateStr) return;
 
+  // Same-day rule: if the selected date is before today and no records exist, auto-mark all Absent
   let records = State.staffAttendance[dateStr];
+  const isPastDay = dateStr < today;
 
   if (State.staff.length === 0) {
     const statsContainer = document.getElementById('staff-att-stats-summary');
@@ -2696,13 +2776,19 @@ function loadStaffAttendanceRegister() {
   }
 
   if (!records) {
+    // Auto-mark as Absent if it's a past day with no records
+    const defaultStatus = isPastDay ? 'Absent' : 'Present';
     records = State.staff.map(st => ({
       id: st.id,
       name: st.name,
       role: st.role,
-      status: 'Present'
+      status: defaultStatus
     }));
     State.staffAttendance[dateStr] = records;
+    if (isPastDay) {
+      saveState();
+      showToast('Auto-Marked Absent', `No attendance was submitted for ${dateStr}. All staff marked Absent.`, 'ti-alert-circle');
+    }
   }
 
   // Render Daily Staff Stats Summary Cards
@@ -2801,19 +2887,138 @@ function updateStaffAttendanceRecord(dateStr, staffIndex, newStatus) {
 }
 
 function saveStaffAttendanceRegister() {
+  const dateInput = document.getElementById('staff-att-date');
+  const today = new Date().toISOString().split('T')[0];
+  const dateStr = dateInput ? dateInput.value : today;
+
+  // Auto-mark any unsubmitted staff as Absent before saving
+  const records = State.staffAttendance[dateStr];
+  if (records) {
+    let autoAbsent = 0;
+    records.forEach(rec => {
+      if (!rec.status) {
+        rec.status = 'Absent';
+        autoAbsent++;
+      }
+    });
+    if (autoAbsent > 0) {
+      showToast('Auto-Absent Applied', `${autoAbsent} unmarked staff member(s) were automatically marked Absent.`, 'ti-alert-triangle');
+    }
+  }
+
   saveState();
 
   const actor = State.auth.currentUser ? State.auth.currentUser.name : 'System Admin';
-  const dateInput = document.getElementById('staff-att-date');
-  const dateStr = dateInput ? dateInput.value : '';
-
   logActivity(actor, 'Staff Attendance Saved', 'security', `Committed employee attendance register for date ${dateStr}`);
 
-  showToast('Attendance Marked', 'Staff faculty attendance registers committed to system database.', 'ti-checkbox');
+  showToast('Attendance Committed', `Staff attendance for ${dateStr} saved. Any unmarked staff auto-marked Absent.`, 'ti-checkbox');
+  loadStaffAttendanceRegister();
   
-  if (document.getElementById('tab-payroll').classList.contains('active')) {
+  if (document.getElementById('tab-payroll') && document.getElementById('tab-payroll').classList.contains('active')) {
     renderStaffPayroll();
   }
+}
+
+// -------------------------------------------------------------
+// STUDENT QUICK-JUMP OVERVIEW
+// -------------------------------------------------------------
+function renderStudentOverview() {
+  const container = document.getElementById('student-overview-section');
+  if (!container) return;
+
+  const student = State.auth.currentUser;
+  if (!student) return;
+
+  // Make section visible
+  container.style.display = 'block';
+
+  const s = State.students.find(x => x.id === student.id) || student;
+
+  // Fee status
+  const feeColor = s.status === 'Paid' ? '#10b981' : s.status === 'Partial' ? '#f59e0b' : '#ef4444';
+  const feeIcon = s.status === 'Paid' ? 'ti-circle-check' : s.status === 'Partial' ? 'ti-alert-circle' : 'ti-circle-x';
+
+  // Attendance stats
+  const today = new Date().toISOString().split('T')[0];
+  let attPresent = 0, attTotal = 0;
+  Object.values(State.attendance || {}).forEach(dayList => {
+    const myRecord = dayList.find(r => r.id === s.id);
+    if (myRecord) { attTotal++; if (myRecord.status === 'Present') attPresent++; }
+  });
+  const attPct = attTotal > 0 ? Math.round(attPresent / attTotal * 100) : 100;
+  const attColor = attPct >= 75 ? '#10b981' : attPct >= 60 ? '#f59e0b' : '#ef4444';
+
+  // Homework count
+  const myHomework = (State.homework || []).filter(hw => hw.cls === s.cls);
+
+  // Results
+  const myResults = (State.results || {})[s.id];
+  const resultSummary = myResults ? `${myResults.subjects.length} subjects graded` : 'Not published yet';
+
+  container.innerHTML = `
+    <div style="margin-bottom: 20px;">
+      <h3 style="font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--text-primary); margin:0 0 4px 0;"><i class="ti ti-layout-grid" style="color:var(--accent);"></i> My Quick Overview</h3>
+      <p style="font-size:12px; color:var(--text-tertiary); margin:0;">Jump directly to any section of your portal</p>
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:14px;">
+
+      <!-- Fee Status -->
+      <div onclick="nav('fees')" style="cursor:pointer; border-radius:var(--border-radius-md); padding:16px; background:rgba(${s.status === 'Paid' ? '16,185,129' : s.status === 'Partial' ? '245,158,11' : '239,68,68'},0.06); border:1.5px solid rgba(${s.status === 'Paid' ? '16,185,129' : s.status === 'Partial' ? '245,158,11' : '239,68,68'},0.2); transition:transform 0.15s; hover:transform:scale(1.02);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <i class="ti ${feeIcon}" style="font-size:22px; color:${feeColor}; display:block; margin-bottom:8px;"></i>
+        <div style="font-size:11px; font-weight:600; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.5px;">Fee Status</div>
+        <div style="font-size:14px; font-weight:700; color:${feeColor}; margin-top:3px;">${s.status}</div>
+        <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">Balance: ₹${(s.balance || 0).toLocaleString()}</div>
+      </div>
+
+      <!-- Attendance -->
+      <div onclick="nav('attendance')" style="cursor:pointer; border-radius:var(--border-radius-md); padding:16px; background:rgba(99,102,241,0.05); border:1.5px solid rgba(99,102,241,0.15); transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <i class="ti ti-calendar-user" style="font-size:22px; color:${attColor}; display:block; margin-bottom:8px;"></i>
+        <div style="font-size:11px; font-weight:600; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.5px;">Attendance</div>
+        <div style="font-size:14px; font-weight:700; color:${attColor}; margin-top:3px;">${attPct}%</div>
+        <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">${attPresent} / ${attTotal} days</div>
+      </div>
+
+      <!-- Timetable -->
+      <div onclick="nav('timetable')" style="cursor:pointer; border-radius:var(--border-radius-md); padding:16px; background:rgba(168,85,247,0.05); border:1.5px solid rgba(168,85,247,0.15); transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <i class="ti ti-calendar-time" style="font-size:22px; color:#a855f7; display:block; margin-bottom:8px;"></i>
+        <div style="font-size:11px; font-weight:600; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.5px;">My Timetable</div>
+        <div style="font-size:14px; font-weight:700; color:#a855f7; margin-top:3px;">${s.cls}</div>
+        <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">Section ${s.sec}</div>
+      </div>
+
+      <!-- Exam Results -->
+      <div onclick="nav('results')" style="cursor:pointer; border-radius:var(--border-radius-md); padding:16px; background:rgba(245,158,11,0.05); border:1.5px solid rgba(245,158,11,0.15); transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <i class="ti ti-award" style="font-size:22px; color:#f59e0b; display:block; margin-bottom:8px;"></i>
+        <div style="font-size:11px; font-weight:600; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.5px;">Exam Results</div>
+        <div style="font-size:14px; font-weight:700; color:#f59e0b; margin-top:3px;">${myResults ? 'Available' : 'Pending'}</div>
+        <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">${resultSummary}</div>
+      </div>
+
+      <!-- Homework -->
+      <div onclick="nav('homework')" style="cursor:pointer; border-radius:var(--border-radius-md); padding:16px; background:rgba(6,182,212,0.05); border:1.5px solid rgba(6,182,212,0.15); transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <i class="ti ti-pencil" style="font-size:22px; color:#06b6d4; display:block; margin-bottom:8px;"></i>
+        <div style="font-size:11px; font-weight:600; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.5px;">Homework</div>
+        <div style="font-size:14px; font-weight:700; color:#06b6d4; margin-top:3px;">${myHomework.length} Tasks</div>
+        <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">Active assignments</div>
+      </div>
+
+      <!-- Library -->
+      <div onclick="nav('library')" style="cursor:pointer; border-radius:var(--border-radius-md); padding:16px; background:rgba(16,185,129,0.05); border:1.5px solid rgba(16,185,129,0.15); transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <i class="ti ti-books" style="font-size:22px; color:#10b981; display:block; margin-bottom:8px;"></i>
+        <div style="font-size:11px; font-weight:600; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.5px;">Library</div>
+        <div style="font-size:14px; font-weight:700; color:#10b981; margin-top:3px;">Books</div>
+        <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">Issue &amp; return</div>
+      </div>
+
+      <!-- Bus Routes -->
+      <div onclick="nav('transport')" style="cursor:pointer; border-radius:var(--border-radius-md); padding:16px; background:rgba(239,68,68,0.05); border:1.5px solid rgba(239,68,68,0.15); transition:transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <i class="ti ti-bus" style="font-size:22px; color:#ef4444; display:block; margin-bottom:8px;"></i>
+        <div style="font-size:11px; font-weight:600; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.5px;">Transport</div>
+        <div style="font-size:14px; font-weight:700; color:#ef4444; margin-top:3px;">Routes</div>
+        <div style="font-size:10px; color:var(--text-tertiary); margin-top:2px;">Bus schedule</div>
+      </div>
+    </div>
+  `;
 }
 
 // -------------------------------------------------------------
