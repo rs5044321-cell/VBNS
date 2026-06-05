@@ -513,7 +513,7 @@ async function executeLogin() {
     const salt = activeLoginRole === 'admin' ? 'admin' : username.toUpperCase();
     const passwordHash = passVal;
 
-    const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gK', {
+    const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gKU', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: username, password: passVal.trim(), returnSecureToken: true })
@@ -4103,7 +4103,7 @@ async function resetDatabaseToDefault(event) {
   
   try {
     const passwordHash = await hashPassword(password.trim(), 'admin');
-    const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gK', {
+    const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gKU', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: 'admin', role: 'admin', passwordHash })
@@ -4480,5 +4480,6 @@ function handleAdClick(event) {
   // Scroll smoothly to Admissions page
   window.location.hash = '#admissions';
 }
+
 
 
