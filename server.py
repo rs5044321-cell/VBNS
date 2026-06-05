@@ -32,13 +32,14 @@ DEFAULT_STUDENTS = [
 DEFAULT_STATE = {
   "config": {
     "schoolName": "VBNS",
-    "address": "Shyamdeurwa, Mahmada, Uttar Pradesh 273301",
+    "address": "Shyamdeurwa, Maharajganj – 273301",
     "phone": "+91 91185 08216",
     "prefix": "SAC",
     "currency": "₹",
     "latefee": 2,
     "receiptNote": "Thank you for your payment. Fee once paid is non-refundable.",
     "smsCredits": 850,
+    "formspreeId": "",
     "teacherAccess": ["dashboard", "directory", "notice", "attendance", "timetable", "exam", "results", "library", "transport"]
   },
   "auth": {

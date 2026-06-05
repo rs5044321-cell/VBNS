@@ -4,7 +4,7 @@
 let State = {
   config: {
     schoolName: 'VBNS',
-    address: '12 Education Lane, New Delhi – 110001',
+    address: 'Shyamdeurwa, Maharajganj – 273301',
     phone: '+91 91201 93467',
     prefix: 'SAC',
     currency: '₹',
@@ -244,6 +244,7 @@ async function hashPassword(password, salt) {
 }
 
 function saveState() {
+  localStorage.setItem('apex_school_crm_state', JSON.stringify(State));
   fetch('http://localhost:3000/api/state', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -3229,6 +3230,7 @@ function renderSettingsValues() {
   document.getElementById('set-currency').value = State.config.currency;
   document.getElementById('set-latefee').value = State.config.latefee;
   document.getElementById('set-receipt-note').value = State.config.receiptNote;
+  document.getElementById('set-formspree').value = State.config.formspreeId || '';
   
   applySettingsConfig();
 
@@ -3252,6 +3254,7 @@ function applySettingsConfig() {
     State.config.currency = document.getElementById('set-currency').value;
     State.config.latefee = parseFloat(document.getElementById('set-latefee').value) || 0;
     State.config.receiptNote = document.getElementById('set-receipt-note').value.trim() || '';
+    State.config.formspreeId = (document.getElementById('set-formspree').value || '').trim();
   }
 
   const sbSchoolName = document.getElementById('sb-school-name');
@@ -3742,6 +3745,35 @@ function submitPublicEnquiry(event) {
 
   // Save new database state
   saveState();
+
+  // Connect forms to Formspree if formspreeId is configured
+  if (State.config && State.config.formspreeId) {
+    const formData = new FormData();
+    formData.append('Name', name);
+    formData.append('Parent/Guardian', parent);
+    formData.append('Class Sought', cls);
+    formData.append('Phone', phone);
+    formData.append('Address or Message', address);
+    formData.append('Form Source', formId === 'public-admissions-form' ? 'Digital Admissions Page Form' : 'Digital Contact Page Form');
+
+    fetch(`https://formspree.io/f/${State.config.formspreeId}`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        showToast('Sync Successful', 'Details successfully pushed to external Formspree email backend.', 'ti-cloud-check');
+      } else {
+        console.warn('Formspree response not OK:', response);
+      }
+    })
+    .catch(error => {
+      console.error('Error sending form data to Formspree:', error);
+    });
+  }
 
   // Reset form inputs
   nameEl.value = '';
