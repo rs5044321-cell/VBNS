@@ -38,6 +38,69 @@ let State = {
       { time: '10:00 AM - 10:15 AM', mon: { sub: 'Recess', t: '-' }, tue: { sub: 'Recess', t: '-' }, wed: { sub: 'Recess', t: '-' }, thu: { sub: 'Recess', t: '-' }, fri: { sub: 'Recess', t: '-' }, sat: { sub: 'Recess', t: '-' } },
       { time: '10:15 AM - 11:00 AM', mon: { sub: 'Social Sci.', t: 'Miss Roy' }, tue: { sub: 'Mathematics', t: 'Dr. Sharma' }, wed: { sub: 'Science', t: 'Mrs. Sen' }, thu: { sub: 'English', t: 'Mr. Paul' }, fri: { sub: 'Hindi', t: 'Mr. Joshi' }, sat: { sub: 'Library', t: 'Mrs. Kaur' } },
       { time: '11:00 AM - 11:45 AM', mon: { sub: 'English', t: 'Mr. Paul' }, tue: { sub: 'Hindi', t: 'Mr. Joshi' }, wed: { sub: 'Social Sci.', t: 'Miss Roy' }, thu: { sub: 'Computer', t: 'Mrs. Dixit' }, fri: { sub: 'Computer', t: 'Mrs. Dixit' }, sat: { sub: 'Art & Craft', t: 'Miss Das' } },
+    ],
+    'Class IX-A': [
+      { time: '08:30 AM - 09:15 AM', mon: { sub: 'Science', t: 'Mrs. Sen' }, tue: { sub: 'English', t: 'Mr. Paul' }, wed: { sub: 'Mathematics', t: 'Dr. Sharma' }, thu: { sub: 'Hindi', t: 'Mr. Joshi' }, fri: { sub: 'Social Sci.', t: 'Miss Roy' }, sat: { sub: 'PT / Games', t: 'Mr. Negi' } },
+      { time: '09:15 AM - 10:00 AM', mon: { sub: 'Mathematics', t: 'Dr. Sharma' }, tue: { sub: 'Science', t: 'Mrs. Sen' }, wed: { sub: 'English', t: 'Mr. Paul' }, thu: { sub: 'Social Sci.', t: 'Miss Roy' }, fri: { sub: 'Mathematics', t: 'Dr. Sharma' }, sat: { sub: 'Science', t: 'Mrs. Sen' } },
+      { time: '10:00 AM - 10:15 AM', mon: { sub: 'Recess', t: '-' }, tue: { sub: 'Recess', t: '-' }, wed: { sub: 'Recess', t: '-' }, thu: { sub: 'Recess', t: '-' }, fri: { sub: 'Recess', t: '-' }, sat: { sub: 'Recess', t: '-' } },
+      { time: '10:15 AM - 11:00 AM', mon: { sub: 'English', t: 'Mr. Paul' }, tue: { sub: 'Hindi', t: 'Mr. Joshi' }, wed: { sub: 'Social Sci.', t: 'Miss Roy' }, thu: { sub: 'Computer', t: 'Mrs. Dixit' }, fri: { sub: 'Computer', t: 'Mrs. Dixit' }, sat: { sub: 'Art & Craft', t: 'Miss Das' } },
+      { time: '11:00 AM - 11:45 AM', mon: { sub: 'Social Sci.', t: 'Miss Roy' }, tue: { sub: 'Mathematics', t: 'Dr. Sharma' }, wed: { sub: 'Science', t: 'Mrs. Sen' }, thu: { sub: 'English', t: 'Mr. Paul' }, fri: { sub: 'Hindi', t: 'Mr. Joshi' }, sat: { sub: 'Library', t: 'Mrs. Kaur' } }
+    ],
+    'Class VIII-A': [
+      { time: '08:30 AM - 09:15 AM', mon: { sub: 'English', t: 'Mr. Paul' }, tue: { sub: 'Mathematics', t: 'Dr. Sharma' }, wed: { sub: 'Social Sci.', t: 'Miss Roy' }, thu: { sub: 'Computer', t: 'Mrs. Dixit' }, fri: { sub: 'Science', t: 'Mrs. Sen' }, sat: { sub: 'Art & Craft', t: 'Miss Das' } },
+      { time: '09:15 AM - 10:00 AM', mon: { sub: 'Social Sci.', t: 'Miss Roy' }, tue: { sub: 'Hindi', t: 'Mr. Joshi' }, wed: { sub: 'English', t: 'Mr. Paul' }, thu: { sub: 'Science', t: 'Mrs. Sen' }, fri: { sub: 'Mathematics', t: 'Dr. Sharma' }, sat: { sub: 'PT / Games', t: 'Mr. Negi' } },
+      { time: '10:00 AM - 10:15 AM', mon: { sub: 'Recess', t: '-' }, tue: { sub: 'Recess', t: '-' }, wed: { sub: 'Recess', t: '-' }, thu: { sub: 'Recess', t: '-' }, fri: { sub: 'Recess', t: '-' }, sat: { sub: 'Recess', t: '-' } },
+      { time: '10:15 AM - 11:00 AM', mon: { sub: 'Mathematics', t: 'Dr. Sharma' }, tue: { sub: 'Science', t: 'Mrs. Sen' }, wed: { sub: 'Computer', t: 'Mrs. Dixit' }, thu: { sub: 'English', t: 'Mr. Paul' }, fri: { sub: 'Hindi', t: 'Mr. Joshi' }, sat: { sub: 'Library', t: 'Mrs. Kaur' } },
+      { time: '11:00 AM - 11:45 AM', mon: { sub: 'Science', t: 'Mrs. Sen' }, tue: { sub: 'English', t: 'Mr. Paul' }, wed: { sub: 'Mathematics', t: 'Dr. Sharma' }, thu: { sub: 'Social Sci.', t: 'Miss Roy' }, fri: { sub: 'PT / Games', t: 'Mr. Negi' }, sat: { sub: 'Hindi', t: 'Mr. Joshi' } }
+    ],
+    'Class VII-A': [
+      { time: '08:30 AM - 09:15 AM', mon: { sub: 'Mathematics', t: 'Dr. Sharma' }, tue: { sub: 'Science', t: 'Mrs. Sen' }, wed: { sub: 'English', t: 'Mr. Paul' }, thu: { sub: 'Social Sci.', t: 'Miss Roy' }, fri: { sub: 'Mathematics', t: 'Dr. Sharma' }, sat: { sub: 'Science', t: 'Mrs. Sen' } },
+      { time: '09:15 AM - 10:00 AM', mon: { sub: 'Science', t: 'Mrs. Sen' }, tue: { sub: 'English', t: 'Mr. Paul' }, wed: { sub: 'Mathematics', t: 'Dr. Sharma' }, thu: { sub: 'Hindi', t: 'Mr. Joshi' }, fri: { sub: 'Social Sci.', t: 'Miss Roy' }, sat: { sub: 'PT / Games', t: 'Mr. Negi' } },
+      { time: '10:00 AM - 10:15 AM', mon: { sub: 'Recess', t: '-' }, tue: { sub: 'Recess', t: '-' }, wed: { sub: 'Recess', t: '-' }, thu: { sub: 'Recess', t: '-' }, fri: { sub: 'Recess', t: '-' }, sat: { sub: 'Recess', t: '-' } },
+      { time: '10:15 AM - 11:00 AM', mon: { sub: 'Social Sci.', t: 'Miss Roy' }, tue: { sub: 'Mathematics', t: 'Dr. Sharma' }, wed: { sub: 'Science', t: 'Mrs. Sen' }, thu: { sub: 'English', t: 'Mr. Paul' }, fri: { sub: 'Hindi', t: 'Mr. Joshi' }, sat: { sub: 'Library', t: 'Mrs. Kaur' } },
+      { time: '11:00 AM - 11:45 AM', mon: { sub: 'English', t: 'Mr. Paul' }, tue: { sub: 'Hindi', t: 'Mr. Joshi' }, wed: { sub: 'Social Sci.', t: 'Miss Roy' }, thu: { sub: 'Computer', t: 'Mrs. Dixit' }, fri: { sub: 'Computer', t: 'Mrs. Dixit' }, sat: { sub: 'Art & Craft', t: 'Miss Das' } }
+    ],
+    'Class VI-A': [
+      { time: '08:30 AM - 09:15 AM', mon: { sub: 'Science', t: 'Mrs. Sen' }, tue: { sub: 'English', t: 'Mr. Paul' }, wed: { sub: 'Mathematics', t: 'Dr. Sharma' }, thu: { sub: 'Hindi', t: 'Mr. Joshi' }, fri: { sub: 'Social Sci.', t: 'Miss Roy' }, sat: { sub: 'PT / Games', t: 'Mr. Negi' } },
+      { time: '09:15 AM - 10:00 AM', mon: { sub: 'Mathematics', t: 'Dr. Sharma' }, tue: { sub: 'Science', t: 'Mrs. Sen' }, wed: { sub: 'English', t: 'Mr. Paul' }, thu: { sub: 'Social Sci.', t: 'Miss Roy' }, fri: { sub: 'Mathematics', t: 'Dr. Sharma' }, sat: { sub: 'Science', t: 'Mrs. Sen' } },
+      { time: '10:00 AM - 10:15 AM', mon: { sub: 'Recess', t: '-' }, tue: { sub: 'Recess', t: '-' }, wed: { sub: 'Recess', t: '-' }, thu: { sub: 'Recess', t: '-' }, fri: { sub: 'Recess', t: '-' }, sat: { sub: 'Recess', t: '-' } },
+      { time: '10:15 AM - 11:00 AM', mon: { sub: 'English', t: 'Mr. Paul' }, tue: { sub: 'Hindi', t: 'Mr. Joshi' }, wed: { sub: 'Social Sci.', t: 'Miss Roy' }, thu: { sub: 'Computer', t: 'Mrs. Dixit' }, fri: { sub: 'Computer', t: 'Mrs. Dixit' }, sat: { sub: 'Art & Craft', t: 'Miss Das' } },
+      { time: '11:00 AM - 11:45 AM', mon: { sub: 'Social Sci.', t: 'Miss Roy' }, tue: { sub: 'Mathematics', t: 'Dr. Sharma' }, wed: { sub: 'Science', t: 'Mrs. Sen' }, thu: { sub: 'English', t: 'Mr. Paul' }, fri: { sub: 'Hindi', t: 'Mr. Joshi' }, sat: { sub: 'Library', t: 'Mrs. Kaur' } }
+    ],
+    'Class V-A': [
+      { time: '08:30 AM - 09:15 AM', mon: { sub: 'English', t: 'Mr. Paul' }, tue: { sub: 'Mathematics', t: 'Dr. Sharma' }, wed: { sub: 'Social Sci.', t: 'Miss Roy' }, thu: { sub: 'Computer', t: 'Mrs. Dixit' }, fri: { sub: 'Science', t: 'Mrs. Sen' }, sat: { sub: 'Art & Craft', t: 'Miss Das' } },
+      { time: '09:15 AM - 10:00 AM', mon: { sub: 'Social Sci.', t: 'Miss Roy' }, tue: { sub: 'Hindi', t: 'Mr. Joshi' }, wed: { sub: 'English', t: 'Mr. Paul' }, thu: { sub: 'Science', t: 'Mrs. Sen' }, fri: { sub: 'Mathematics', t: 'Dr. Sharma' }, sat: { sub: 'PT / Games', t: 'Mr. Negi' } },
+      { time: '10:00 AM - 10:15 AM', mon: { sub: 'Recess', t: '-' }, tue: { sub: 'Recess', t: '-' }, wed: { sub: 'Recess', t: '-' }, thu: { sub: 'Recess', t: '-' }, fri: { sub: 'Recess', t: '-' }, sat: { sub: 'Recess', t: '-' } },
+      { time: '10:15 AM - 11:00 AM', mon: { sub: 'Mathematics', t: 'Dr. Sharma' }, tue: { sub: 'Science', t: 'Mrs. Sen' }, wed: { sub: 'Computer', t: 'Mrs. Dixit' }, thu: { sub: 'English', t: 'Mr. Paul' }, fri: { sub: 'Hindi', t: 'Mr. Joshi' }, sat: { sub: 'Library', t: 'Mrs. Kaur' } },
+      { time: '11:00 AM - 11:45 AM', mon: { sub: 'Science', t: 'Mrs. Sen' }, tue: { sub: 'English', t: 'Mr. Paul' }, wed: { sub: 'Mathematics', t: 'Dr. Sharma' }, thu: { sub: 'Social Sci.', t: 'Miss Roy' }, fri: { sub: 'PT / Games', t: 'Mr. Negi' }, sat: { sub: 'Hindi', t: 'Mr. Joshi' } }
+    ],
+    'Class IV-A': [
+      { time: '08:30 AM - 09:15 AM', mon: { sub: 'Mathematics', t: 'Dr. Sharma' }, tue: { sub: 'Science', t: 'Mrs. Sen' }, wed: { sub: 'English', t: 'Mr. Paul' }, thu: { sub: 'Social Sci.', t: 'Miss Roy' }, fri: { sub: 'Mathematics', t: 'Dr. Sharma' }, sat: { sub: 'Science', t: 'Mrs. Sen' } },
+      { time: '09:15 AM - 10:00 AM', mon: { sub: 'Science', t: 'Mrs. Sen' }, tue: { sub: 'English', t: 'Mr. Paul' }, wed: { sub: 'Mathematics', t: 'Dr. Sharma' }, thu: { sub: 'Hindi', t: 'Mr. Joshi' }, fri: { sub: 'Social Sci.', t: 'Miss Roy' }, sat: { sub: 'PT / Games', t: 'Mr. Negi' } },
+      { time: '10:00 AM - 10:15 AM', mon: { sub: 'Recess', t: '-' }, tue: { sub: 'Recess', t: '-' }, wed: { sub: 'Recess', t: '-' }, thu: { sub: 'Recess', t: '-' }, fri: { sub: 'Recess', t: '-' }, sat: { sub: 'Recess', t: '-' } },
+      { time: '10:15 AM - 11:00 AM', mon: { sub: 'Social Sci.', t: 'Miss Roy' }, tue: { sub: 'Mathematics', t: 'Dr. Sharma' }, wed: { sub: 'Science', t: 'Mrs. Sen' }, thu: { sub: 'English', t: 'Mr. Paul' }, fri: { sub: 'Hindi', t: 'Mr. Joshi' }, sat: { sub: 'Library', t: 'Mrs. Kaur' } },
+      { time: '11:00 AM - 11:45 AM', mon: { sub: 'English', t: 'Mr. Paul' }, tue: { sub: 'Hindi', t: 'Mr. Joshi' }, wed: { sub: 'Social Sci.', t: 'Miss Roy' }, thu: { sub: 'Computer', t: 'Mrs. Dixit' }, fri: { sub: 'Computer', t: 'Mrs. Dixit' }, sat: { sub: 'Art & Craft', t: 'Miss Das' } }
+    ],
+    'Class III-A': [
+      { time: '08:30 AM - 09:15 AM', mon: { sub: 'Science', t: 'Mrs. Sen' }, tue: { sub: 'English', t: 'Mr. Paul' }, wed: { sub: 'Mathematics', t: 'Dr. Sharma' }, thu: { sub: 'Hindi', t: 'Mr. Joshi' }, fri: { sub: 'Social Sci.', t: 'Miss Roy' }, sat: { sub: 'PT / Games', t: 'Mr. Negi' } },
+      { time: '09:15 AM - 10:00 AM', mon: { sub: 'Mathematics', t: 'Dr. Sharma' }, tue: { sub: 'Science', t: 'Mrs. Sen' }, wed: { sub: 'English', t: 'Mr. Paul' }, thu: { sub: 'Social Sci.', t: 'Miss Roy' }, fri: { sub: 'Mathematics', t: 'Dr. Sharma' }, sat: { sub: 'Science', t: 'Mrs. Sen' } },
+      { time: '10:00 AM - 10:15 AM', mon: { sub: 'Recess', t: '-' }, tue: { sub: 'Recess', t: '-' }, wed: { sub: 'Recess', t: '-' }, thu: { sub: 'Recess', t: '-' }, fri: { sub: 'Recess', t: '-' }, sat: { sub: 'Recess', t: '-' } },
+      { time: '10:15 AM - 11:00 AM', mon: { sub: 'English', t: 'Mr. Paul' }, tue: { sub: 'Hindi', t: 'Mr. Joshi' }, wed: { sub: 'Social Sci.', t: 'Miss Roy' }, thu: { sub: 'Computer', t: 'Mrs. Dixit' }, fri: { sub: 'Computer', t: 'Mrs. Dixit' }, sat: { sub: 'Art & Craft', t: 'Miss Das' } },
+      { time: '11:00 AM - 11:45 AM', mon: { sub: 'Social Sci.', t: 'Miss Roy' }, tue: { sub: 'Mathematics', t: 'Dr. Sharma' }, wed: { sub: 'Science', t: 'Mrs. Sen' }, thu: { sub: 'English', t: 'Mr. Paul' }, fri: { sub: 'Hindi', t: 'Mr. Joshi' }, sat: { sub: 'Library', t: 'Mrs. Kaur' } }
+    ],
+    'Class II-A': [
+      { time: '08:30 AM - 09:15 AM', mon: { sub: 'English', t: 'Mr. Paul' }, tue: { sub: 'Mathematics', t: 'Dr. Sharma' }, wed: { sub: 'Social Sci.', t: 'Miss Roy' }, thu: { sub: 'Computer', t: 'Mrs. Dixit' }, fri: { sub: 'Science', t: 'Mrs. Sen' }, sat: { sub: 'Art & Craft', t: 'Miss Das' } },
+      { time: '09:15 AM - 10:00 AM', mon: { sub: 'Social Sci.', t: 'Miss Roy' }, tue: { sub: 'Hindi', t: 'Mr. Joshi' }, wed: { sub: 'English', t: 'Mr. Paul' }, thu: { sub: 'Science', t: 'Mrs. Sen' }, fri: { sub: 'Mathematics', t: 'Dr. Sharma' }, sat: { sub: 'PT / Games', t: 'Mr. Negi' } },
+      { time: '10:00 AM - 10:15 AM', mon: { sub: 'Recess', t: '-' }, tue: { sub: 'Recess', t: '-' }, wed: { sub: 'Recess', t: '-' }, thu: { sub: 'Recess', t: '-' }, fri: { sub: 'Recess', t: '-' }, sat: { sub: 'Recess', t: '-' } },
+      { time: '10:15 AM - 11:00 AM', mon: { sub: 'Mathematics', t: 'Dr. Sharma' }, tue: { sub: 'Science', t: 'Mrs. Sen' }, wed: { sub: 'Computer', t: 'Mrs. Dixit' }, thu: { sub: 'English', t: 'Mr. Paul' }, fri: { sub: 'Hindi', t: 'Mr. Joshi' }, sat: { sub: 'Library', t: 'Mrs. Kaur' } },
+      { time: '11:00 AM - 11:45 AM', mon: { sub: 'Science', t: 'Mrs. Sen' }, tue: { sub: 'English', t: 'Mr. Paul' }, wed: { sub: 'Mathematics', t: 'Dr. Sharma' }, thu: { sub: 'Social Sci.', t: 'Miss Roy' }, fri: { sub: 'PT / Games', t: 'Mr. Negi' }, sat: { sub: 'Hindi', t: 'Mr. Joshi' } }
+    ],
+    'Class I-A': [
+      { time: '08:30 AM - 09:15 AM', mon: { sub: 'Mathematics', t: 'Dr. Sharma' }, tue: { sub: 'Science', t: 'Mrs. Sen' }, wed: { sub: 'English', t: 'Mr. Paul' }, thu: { sub: 'Social Sci.', t: 'Miss Roy' }, fri: { sub: 'Mathematics', t: 'Dr. Sharma' }, sat: { sub: 'Science', t: 'Mrs. Sen' } },
+      { time: '09:15 AM - 10:00 AM', mon: { sub: 'Science', t: 'Mrs. Sen' }, tue: { sub: 'English', t: 'Mr. Paul' }, wed: { sub: 'Mathematics', t: 'Dr. Sharma' }, thu: { sub: 'Hindi', t: 'Mr. Joshi' }, fri: { sub: 'Social Sci.', t: 'Miss Roy' }, sat: { sub: 'PT / Games', t: 'Mr. Negi' } },
+      { time: '10:00 AM - 10:15 AM', mon: { sub: 'Recess', t: '-' }, tue: { sub: 'Recess', t: '-' }, wed: { sub: 'Recess', t: '-' }, thu: { sub: 'Recess', t: '-' }, fri: { sub: 'Recess', t: '-' }, sat: { sub: 'Recess', t: '-' } },
+      { time: '10:15 AM - 11:00 AM', mon: { sub: 'Social Sci.', t: 'Miss Roy' }, tue: { sub: 'Mathematics', t: 'Dr. Sharma' }, wed: { sub: 'Science', t: 'Mrs. Sen' }, thu: { sub: 'English', t: 'Mr. Paul' }, fri: { sub: 'Hindi', t: 'Mr. Joshi' }, sat: { sub: 'Library', t: 'Mrs. Kaur' } },
+      { time: '11:00 AM - 11:45 AM', mon: { sub: 'English', t: 'Mr. Paul' }, tue: { sub: 'Hindi', t: 'Mr. Joshi' }, wed: { sub: 'Social Sci.', t: 'Miss Roy' }, thu: { sub: 'Computer', t: 'Mrs. Dixit' }, fri: { sub: 'Computer', t: 'Mrs. Dixit' }, sat: { sub: 'Art & Craft', t: 'Miss Das' } }
     ]
   },
   exams: [
@@ -147,6 +210,7 @@ function seedDatabase() {
         State.staffAttendance = parsed.staffAttendance || State.staffAttendance;
         State.payrollConfig = parsed.payrollConfig || State.payrollConfig;
         State.staffPasswords = parsed.staffPasswords || State.staffPasswords;
+        State.timetable = parsed.timetable || State.timetable;
         State.homework = parsed.homework || State.homework;
         State.auditLog = parsed.auditLog || State.auditLog;
         
@@ -215,13 +279,19 @@ function seedDatabase() {
 
   // Initial Seed
   State.students = [
-    { id: 'SAC-001', name: 'Aarav Sharma', cls: 'Class X', sec: 'A', parent: 'Ramesh Sharma', phone: '9812345001', dob: '2010-03-15', address: '14 MG Road, New Delhi', fee: 45000, balance: 0, status: 'Paid', enrolledDate: '2025-04-10' },
-    { id: 'SAC-002', name: 'Priya Mehta', cls: 'Class X', sec: 'B', parent: 'Suresh Mehta', phone: '9812345002', dob: '2010-07-22', address: '8 Lajpat Nagar, Delhi', fee: 45000, balance: 15000, status: 'Partial', enrolledDate: '2025-04-12' },
-    { id: 'SAC-003', name: 'Rohan Gupta', cls: 'Class IX', sec: 'A', parent: 'Vikram Gupta', phone: '9812345003', dob: '2011-01-10', address: '22 Karol Bagh, Delhi', fee: 40000, balance: 40000, status: 'Pending', enrolledDate: '2025-04-15' },
-    { id: 'SAC-004', name: 'Sneha Patel', cls: 'Class VIII', sec: 'A', parent: 'Anand Patel', phone: '9812345004', dob: '2012-05-30', address: '6 Dwarka Sector 5', fee: 35000, balance: 0, status: 'Paid', enrolledDate: '2025-04-18' },
-    { id: 'SAC-005', name: 'Karan Singh', cls: 'Class X', sec: 'B', parent: 'Harjinder Singh', phone: '9812345005', dob: '2010-09-18', address: '3 Punjabi Bagh', fee: 45000, balance: 25000, status: 'Partial', enrolledDate: '2025-04-20' },
-    { id: 'SAC-006', name: 'Ananya Verma', cls: 'Class VIII', sec: 'C', parent: 'Deepak Verma', phone: '9812345006', dob: '2012-11-05', address: '19 Rohini Sector 3', fee: 35000, balance: 0, status: 'Paid', enrolledDate: '2025-04-22' },
-    { id: 'SAC-007', name: 'Arjun Nair', cls: 'Class VII', sec: 'A', parent: 'Suresh Nair', phone: '9812345007', dob: '2013-04-14', address: '45 Vasant Kunj', fee: 35000, balance: 35000, status: 'Pending', enrolledDate: '2025-04-25' }
+    { id: 'SAC-001', name: 'Aarav Sharma', cls: 'Class X', sec: 'A', parent: 'Ramesh Sharma', phone: '9812345001', dob: '2010-03-15', address: '14 MG Road, New Delhi', fee: 45000, balance: 0, status: 'Paid', enrolledDate: '2025-04-10', password: 'student123' },
+    { id: 'SAC-002', name: 'Priya Mehta', cls: 'Class X', sec: 'B', parent: 'Suresh Mehta', phone: '9812345002', dob: '2010-07-22', address: '8 Lajpat Nagar, Delhi', fee: 45000, balance: 15000, status: 'Partial', enrolledDate: '2025-04-12', password: 'student123' },
+    { id: 'SAC-003', name: 'Rohan Gupta', cls: 'Class IX', sec: 'A', parent: 'Vikram Gupta', phone: '9812345003', dob: '2011-01-10', address: '22 Karol Bagh, Delhi', fee: 40000, balance: 40000, status: 'Pending', enrolledDate: '2025-04-15', password: 'student123' },
+    { id: 'SAC-004', name: 'Sneha Patel', cls: 'Class VIII', sec: 'A', parent: 'Anand Patel', phone: '9812345004', dob: '2012-05-30', address: '6 Dwarka Sector 5', fee: 35000, balance: 0, status: 'Paid', enrolledDate: '2025-04-18', password: 'student123' },
+    { id: 'SAC-005', name: 'Karan Singh', cls: 'Class X', sec: 'B', parent: 'Harjinder Singh', phone: '9812345005', dob: '2010-09-18', address: '3 Punjabi Bagh', fee: 45000, balance: 25000, status: 'Partial', enrolledDate: '2025-04-20', password: 'student123' },
+    { id: 'SAC-006', name: 'Ananya Verma', cls: 'Class VIII', sec: 'C', parent: 'Deepak Verma', phone: '9812345006', dob: '2012-11-05', address: '19 Rohini Sector 3', fee: 35000, balance: 0, status: 'Paid', enrolledDate: '2025-04-22', password: 'student123' },
+    { id: 'SAC-007', name: 'Arjun Nair', cls: 'Class VII', sec: 'A', parent: 'Suresh Nair', phone: '9812345007', dob: '2013-04-14', address: '45 Vasant Kunj', fee: 35000, balance: 35000, status: 'Pending', enrolledDate: '2025-04-25', password: 'student123' },
+    { id: 'SAC-008', name: 'Dev Tiwari', cls: 'Class VI', sec: 'A', parent: 'Rajesh Tiwari', phone: '9922334455', dob: '2014-08-10', address: 'Maharajganj Town, UP', fee: 30000, balance: 0, status: 'Paid', enrolledDate: '2025-04-25', password: 'student123' },
+    { id: 'SAC-009', name: 'Vihaan Shah', cls: 'Class V', sec: 'A', parent: 'Ketan Shah', phone: '9812345009', dob: '2015-02-12', address: 'Shyamdeurwa Market', fee: 30000, balance: 10000, status: 'Partial', enrolledDate: '2025-04-25', password: 'student123' },
+    { id: 'SAC-010', name: 'Kabir Verma', cls: 'Class IV', sec: 'A', parent: 'Deepak Verma', phone: '9812345010', dob: '2016-05-18', address: 'Karol Bagh, Delhi', fee: 25000, balance: 25000, status: 'Pending', enrolledDate: '2025-04-25', password: 'student123' },
+    { id: 'SAC-011', name: 'Aaradhya Iyer', cls: 'Class III', sec: 'A', parent: 'Sundar Iyer', phone: '9812345011', dob: '2017-09-05', address: 'Sector 15, Noida', fee: 25000, balance: 0, status: 'Paid', enrolledDate: '2025-04-25', password: 'student123' },
+    { id: 'SAC-012', name: 'Ishaan Bhat', cls: 'Class II', sec: 'A', parent: 'Sunil Bhat', phone: '9812345012', dob: '2018-11-20', address: 'Ghat Road, Maharajganj', fee: 20000, balance: 10000, status: 'Partial', enrolledDate: '2025-04-25', password: 'student123' },
+    { id: 'SAC-013', name: 'Riya Joshi', cls: 'Class I', sec: 'A', parent: 'Mohan Joshi', phone: '9911223344', dob: '2019-04-14', address: 'Shyamdeurwa Central', fee: 20000, balance: 20000, status: 'Pending', enrolledDate: '2025-04-25', password: 'student123' }
   ];
 
   State.feeLog = [
@@ -263,6 +333,7 @@ function seedDatabase() {
   // Initialize Default Staff Passwords and Salaries
   State.staff.forEach(st => {
     State.staffPasswords[st.id] = 'teacher123';
+    st.password = 'teacher123';
     State.payrollConfig[st.id] = { base: st.role.includes('Senior') ? 45000 : 35000, allowance: 3000, deductions: 0, status: 'Unpaid' };
     st.access = ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
     if (st.id === 'TCH-001') st.assignedClass = 'Class X';
@@ -1086,7 +1157,8 @@ async function admitStudent() {
     fee: annualFee,
     balance: annualFee, 
     status: 'Pending',
-    enrolledDate: currentDateStr
+    enrolledDate: currentDateStr,
+    password: 'student123'
   };
 
   State.students.push(newStudent);
@@ -1191,7 +1263,7 @@ function renderDirectoryList() {
   if (filtered.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" class="center-col" style="color: var(--text-tertiary); padding: 32px 0;">
+        <td colspan="8" class="center-col" style="color: var(--text-tertiary); padding: 32px 0;">
           <i class="ti ti-users" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
           No student files match current filters.
         </td>
@@ -1203,6 +1275,7 @@ function renderDirectoryList() {
   tbody.innerHTML = filtered.map(s => {
     const deleteBtn = currentRole === 'admin' ? 
       `<button class="btn btn-sm btn-danger" onclick="removeStudent('${s.id}')" title="Delete Profile"><i class="ti ti-trash"></i> Delete</button>` : '';
+    const pwd = s.password || 'student123';
 
     return `
       <tr>
@@ -1211,6 +1284,7 @@ function renderDirectoryList() {
         <td>${s.cls} — Sec ${s.sec}</td>
         <td>${s.parent}</td>
         <td>${s.phone}</td>
+        <td><code style="background:rgba(99,102,241,0.06); color:var(--accent); padding:2px 6px; border-radius:4px; font-size:11.5px; font-family:monospace; font-weight:600;">${s.id} / ${pwd}</code></td>
         <td>
           <span class="pill ${s.status === 'Paid' ? 'pill-green' : s.status === 'Pending' ? 'pill-red' : 'pill-amber'}">${s.status}</span>
         </td>
@@ -2747,27 +2821,56 @@ function renderTimetableModule() {
   const tbody = document.getElementById('tt-body');
   if (!tbody) return;
 
-  const list = State.timetable['Class X-A'];
+  const selectEl = document.getElementById('tt-class-sel');
+  let classKey = selectEl ? selectEl.value : 'Class X-A';
+
+  // If page loaded first time, set selector to teacher's class if applicable
+  const currentRole = State.auth.currentRole;
+  if (currentRole === 'teacher' && !selectEl) {
+    const activeTeacher = State.auth.currentUser;
+    if (activeTeacher && activeTeacher.assignedClass) {
+      classKey = activeTeacher.assignedClass + '-A';
+    }
+  }
+
+  // Ensure selector value is correct
+  if (selectEl && selectEl.value !== classKey) {
+    selectEl.value = classKey;
+  }
+
+  const list = State.timetable[classKey];
+  if (!list || !Array.isArray(list) || list.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="center-col" style="color: var(--text-tertiary); padding: 32px 0;">
+          <i class="ti ti-calendar-off" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
+          No timetable schedules mapped for ${classKey} yet.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
   tbody.innerHTML = list.map(item => `
     <tr>
       <td><b>${item.time}</b></td>
       <td>
-        ${item.mon.sub !== 'Recess' ? `<b>${item.mon.sub}</b><span>${item.mon.t}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+        ${item.mon && item.mon.sub && item.mon.sub !== 'Recess' ? `<b>${item.mon.sub}</b><span>${item.mon.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
       </td>
       <td>
-        ${item.tue.sub !== 'Recess' ? `<b>${item.tue.sub}</b><span>${item.tue.t}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+        ${item.tue && item.tue.sub && item.tue.sub !== 'Recess' ? `<b>${item.tue.sub}</b><span>${item.tue.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
       </td>
       <td>
-        ${item.wed.sub !== 'Recess' ? `<b>${item.wed.sub}</b><span>${item.wed.t}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+        ${item.wed && item.wed.sub && item.wed.sub !== 'Recess' ? `<b>${item.wed.sub}</b><span>${item.wed.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
       </td>
       <td>
-        ${item.thu.sub !== 'Recess' ? `<b>${item.thu.sub}</b><span>${item.thu.t}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+        ${item.thu && item.thu.sub && item.thu.sub !== 'Recess' ? `<b>${item.thu.sub}</b><span>${item.thu.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
       </td>
       <td>
-        ${item.fri.sub !== 'Recess' ? `<b>${item.fri.sub}</b><span>${item.fri.t}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+        ${item.fri && item.fri.sub && item.fri.sub !== 'Recess' ? `<b>${item.fri.sub}</b><span>${item.fri.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
       </td>
       <td>
-        ${item.sat.sub !== 'Recess' ? `<b>${item.sat.sub}</b><span>${item.sat.t}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+        ${item.sat && item.sat.sub && item.sat.sub !== 'Recess' ? `<b>${item.sat.sub}</b><span>${item.sat.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
       </td>
     </tr>
   `).join('');
@@ -3091,6 +3194,7 @@ function renderStaffRegistry() {
   tbody.innerHTML = State.staff.map(st => {
     const accessStr = st.access ? st.access.join(', ') : 'Default Academic';
     const assignedClassStr = st.assignedClass ? `<span class="pill pill-green" style="font-size: 10px; padding: 2px 6px;">${st.assignedClass}</span>` : `<span class="pill pill-amber" style="font-size: 10px; padding: 2px 6px;">None</span>`;
+    const pwd = st.password || State.staffPasswords[st.id] || 'teacher123';
     return `
       <tr>
         <td><b>${st.id}</b></td>
@@ -3100,6 +3204,7 @@ function renderStaffRegistry() {
         </td>
         <td><span class="pill pill-blue">${st.role}</span></td>
         <td>${st.contact}</td>
+        <td><code style="background:rgba(99,102,241,0.06); color:var(--accent); padding:2px 6px; border-radius:4px; font-size:11.5px; font-family:monospace; font-weight:600;">${st.id} / ${pwd}</code></td>
         <td>
           <div style="display:flex; gap:6px">
             <button class="btn btn-sm" style="background-color: var(--accent-light); color: var(--accent);" onclick="editStaffRecord('${st.id}')" title="Edit permissions"><i class="ti ti-edit"></i> Edit</button>
@@ -3713,6 +3818,64 @@ function renderAuditPanel() {
       </tr>
     `).join('');
   }
+
+  // 3. Render Credentials Directory
+  renderCredentialsDirectory();
+}
+
+// -------------------------------------------------------------
+// CREDENTIALS DIRECTORY RENDERER
+// -------------------------------------------------------------
+function renderCredentialsDirectory() {
+  const credBody = document.getElementById('audit-credentials-body');
+  if (!credBody) return;
+
+  // Only admins can see this
+  if (State.auth.currentRole !== 'admin') {
+    credBody.innerHTML = `<tr><td colspan="4" class="center-col" style="color:var(--text-tertiary); padding:24px 0;"><i class="ti ti-lock" style="font-size:24px; display:block; margin-bottom:8px;"></i>Admin access required to view credentials.</td></tr>`;
+    return;
+  }
+
+  const searchVal = (document.getElementById('cred-search') || {}).value || '';
+  const filterVal = (document.getElementById('cred-filter') || {}).value || '';
+  const search = searchVal.toLowerCase();
+
+  let rows = [];
+
+  // Staff credentials
+  if (!filterVal || filterVal === 'staff') {
+    State.staff.forEach(st => {
+      const pwd = st.password || State.staffPasswords[st.id] || 'teacher123';
+      rows.push({ id: st.id, name: st.name, role: st.role || 'Staff', password: pwd, type: 'staff' });
+    });
+  }
+
+  // Student credentials
+  if (!filterVal || filterVal === 'student') {
+    State.students.forEach(s => {
+      const pwd = s.password || 'student123';
+      rows.push({ id: s.id, name: s.name, role: `${s.cls} – Sec ${s.sec}`, password: pwd, type: 'student' });
+    });
+  }
+
+  // Apply search
+  if (search) {
+    rows = rows.filter(r => r.id.toLowerCase().includes(search) || r.name.toLowerCase().includes(search));
+  }
+
+  if (rows.length === 0) {
+    credBody.innerHTML = `<tr><td colspan="4" class="center-col" style="color:var(--text-tertiary); padding:24px 0;">No records match your search.</td></tr>`;
+    return;
+  }
+
+  credBody.innerHTML = rows.map(row => `
+    <tr>
+      <td><code style="background:rgba(99,102,241,0.08); color:var(--accent); padding:2px 6px; border-radius:4px; font-size:12px; font-weight:700">${row.id}</code></td>
+      <td style="font-weight:600">${row.name}</td>
+      <td><span class="pill ${row.type === 'staff' ? 'pill-blue' : 'pill-green'}" style="font-size:10px">${row.role}</span></td>
+      <td><code style="background:rgba(16,185,129,0.08); color:#10b981; padding:2px 8px; border-radius:4px; font-size:12px; font-family:monospace; font-weight:700; letter-spacing:0.5px">${row.password}</code></td>
+    </tr>
+  `).join('');
 }
 
 // Emergency Reset Utility: Clears corrupted local caches and restores full VBNS database state
@@ -3881,38 +4044,37 @@ function submitPublicEnquiry(event) {
   showToast('Enquiry Submitted', "Thank you, we'll call you within 24 hours.", 'ti-circle-check-filled');
 }
 
-// Render active notice board bulletins onto the public landing page noticed board
 function renderPublicNotices() {
   const container = document.getElementById('public-notices-feed');
   if (!container) return;
 
   // Retrieve active announcements from state registers (get latest 3)
-  const list = [...State.notices].reverse().slice(0, 3);
+  const noticesArray = Array.isArray(State.notices) ? State.notices : [];
+  const list = [...noticesArray].reverse().slice(0, 3);
   if (list.length === 0) {
-    container.innerHTML = `
-      <div class="empty-preview" style="background: none; border: none; box-shadow: none; padding: 40px 0;">
-        <i class="ti ti-speakerphone" style="font-size: 32px; color: var(--text-tertiary);"></i>
-        <p style="margin-top: 8px; font-size: 13px; color: var(--text-secondary);">No active school notices found today.</p>
-      </div>
-    `;
-    return;
+    // Keep the static fallback notices if database has no notices, otherwise show empty notice board message
+    // If the database notice array is empty, we can render an empty message or keep the static markup
+    return; // Retain static fallback notices
   }
 
   container.innerHTML = list.map(item => {
     let pClass = 'normal';
-    if (item.priority.includes('Urgent')) pClass = 'urgent';
-    else if (item.priority.includes('Important')) pClass = 'important';
+    const priority = item.priority || 'Normal Broadcast';
+    if (priority.includes('Urgent')) pClass = 'urgent';
+    else if (priority.includes('Important')) pClass = 'important';
+
+    const pBadge = priority.split(' ')[0] || 'Notice';
 
     return `
       <div class="notice-item public-feed-card priority-${pClass}" style="margin-bottom: 12px; padding: 14px 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <h4 style="font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin: 0;">${item.title}</h4>
-          <span class="badge" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-secondary); background: var(--bg-tertiary); color: var(--text-primary);">${item.priority.split(' ')[0]}</span>
+          <h4 style="font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin: 0;">${item.title || 'Bulletin Posting'}</h4>
+          <span class="badge" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-secondary); background: var(--bg-tertiary); color: var(--text-primary);">${pBadge}</span>
         </div>
-        <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 6px 0;">${item.body}</p>
+        <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 6px 0;">${item.body || ''}</p>
         <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-tertiary); margin-top: 8px;">
-          <span>By: <b>${item.by}</b></span>
-          <span>Date: ${item.date}</span>
+          <span>By: <b>${item.by || 'Administration'}</b></span>
+          <span>Date: ${item.date || ''}</span>
         </div>
       </div>
     `;

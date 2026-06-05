@@ -367,8 +367,38 @@
                 <span class="card-subtitle">Latest postings for Parents & Students</span>
               </div>
               <div id="public-notices-feed" class="public-notices-feed-container">
-                <div class="loading-placeholder">
-                  <i class="ti ti-loader animate-spin"></i> Loading active notices...
+                <div class="notice-item public-feed-card priority-important" style="margin-bottom: 12px; padding: 14px 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <h4 style="font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin: 0;">Mandatory Parent-Teacher Meeting (PTM)</h4>
+                    <span class="badge" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-secondary); background: var(--bg-tertiary); color: var(--text-primary);">Important</span>
+                  </div>
+                  <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 6px 0;">Critical academic discussion regarding final board test timetables for Classes VI-X on 10th June 2026, 10:00 AM.</p>
+                  <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-tertiary); margin-top: 8px;">
+                    <span>By: <b>Principal Office</b></span>
+                    <span>Date: 2026-05-22</span>
+                  </div>
+                </div>
+                <div class="notice-item public-feed-card priority-normal" style="margin-bottom: 12px; padding: 14px 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <h4 style="font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin: 0;">Annual Sports Day Board Assembly</h4>
+                    <span class="badge" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-secondary); background: var(--bg-tertiary); color: var(--text-primary);">Normal</span>
+                  </div>
+                  <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 6px 0;">The Annual Sports Meet is scheduled for 15th December 2026. Grade athletic selections begin Monday.</p>
+                  <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-tertiary); margin-top: 8px;">
+                    <span>By: <b>Sports Admin Board</b></span>
+                    <span>Date: 2026-05-24</span>
+                  </div>
+                </div>
+                <div class="notice-item public-feed-card priority-urgent" style="margin-bottom: 12px; padding: 14px 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <h4 style="font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin: 0;">Urgent: CBSE Registration Compliance</h4>
+                    <span class="badge" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-secondary); background: var(--bg-tertiary); color: var(--text-primary);">Urgent</span>
+                  </div>
+                  <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 6px 0;">All Grade X students must submit three verified photographs and duplicate board forms by 30th May without fail.</p>
+                  <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-tertiary); margin-top: 8px;">
+                    <span>By: <b>Academic Director</b></span>
+                    <span>Date: 2026-05-20</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1649,6 +1679,7 @@
                   <th>Class / Section</th>
                   <th>Parent Contact</th>
                   <th>Phone Number</th>
+                  <th>Login Credentials</th>
                   <th>Balance Status</th>
                   <th>Action Operations</th>
                 </tr>
@@ -2170,6 +2201,13 @@
                 <option selected>Class X</option>
                 <option>Class IX</option>
                 <option>Class VIII</option>
+                <option>Class VII</option>
+                <option>Class VI</option>
+                <option>Class V</option>
+                <option>Class IV</option>
+                <option>Class III</option>
+                <option>Class II</option>
+                <option>Class I</option>
               </select>
               <input type="date" id="att-date" onchange="loadAttendanceRegister()" class="styled-date-picker" />
             </div>
@@ -2240,9 +2278,25 @@
       <!-- WEEKLY TIMETABLE TAB -->
       <section class="tab" id="tab-timetable">
         <div class="card glass">
-          <div class="card-header">
-            <h2 class="section-title"><i class="ti ti-calendar-time"></i> Weekly Curriculum Schedule (Class X-A)</h2>
-            <span class="card-subtitle">Mapped classroom periods and instructor lines</span>
+          <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h2 class="section-title"><i class="ti ti-calendar-time"></i> Weekly Curriculum Schedule</h2>
+              <span class="card-subtitle">Mapped classroom periods and instructor lines</span>
+            </div>
+            <div>
+              <select id="tt-class-sel" onchange="renderTimetableModule()" class="styled-select" style="min-width: 150px; width: auto;">
+                <option value="Class X-A" selected>Class X-A</option>
+                <option value="Class IX-A">Class IX-A</option>
+                <option value="Class VIII-A">Class VIII-A</option>
+                <option value="Class VII-A">Class VII-A</option>
+                <option value="Class VI-A">Class VI-A</option>
+                <option value="Class V-A">Class V-A</option>
+                <option value="Class IV-A">Class IV-A</option>
+                <option value="Class III-A">Class III-A</option>
+                <option value="Class II-A">Class II-A</option>
+                <option value="Class I-A">Class I-A</option>
+              </select>
+            </div>
           </div>
           <div class="table-wrap">
             <table class="premium-table grid-timetable text-left">
@@ -2461,6 +2515,7 @@
                     <th>Staff Name</th>
                     <th>Department / Role</th>
                     <th>Contact Info</th>
+                    <th>Login Credentials</th>
                     <th>Operations</th>
                   </tr>
                 </thead>
@@ -2832,7 +2887,36 @@
         </div>
 
         <div class="two-col" style="grid-template-columns: 1.2fr 0.8fr; display: grid; gap: 24px;">
-          <!-- Removed Credentials Directory -->
+          <!-- Credentials Directory Card -->
+          <div class="card glass" id="credentials-directory-card">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-lock-square"></i> Password &amp; Credentials Directory</h2>
+              <span class="card-subtitle">Secure lookup for all student and staff login IDs and passwords</span>
+            </div>
+            <div style="margin-bottom: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <input type="text" id="cred-search" placeholder="Search by name or ID…" oninput="renderCredentialsDirectory()" style="padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border-primary); background: var(--bg-tertiary); color: var(--text-primary); font-size: 13px; flex: 1; min-width: 150px;" />
+              <select id="cred-filter" onchange="renderCredentialsDirectory()" style="padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border-primary); background: var(--bg-tertiary); color: var(--text-primary); font-size: 13px;">
+                <option value="">All Users</option>
+                <option value="student">Students Only</option>
+                <option value="staff">Staff Only</option>
+              </select>
+            </div>
+            <div class="table-wrap" style="max-height: 420px; overflow-y: auto;">
+              <table class="premium-table text-left">
+                <thead>
+                  <tr>
+                    <th>User ID</th>
+                    <th>Full Name</th>
+                    <th>Role / Class</th>
+                    <th>Login Password</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-credentials-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           <!-- Homework History Archive Card -->
           <div class="card glass">
