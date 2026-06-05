@@ -365,7 +365,7 @@ async function hashPassword(password, salt) {
 
 function saveState() {
   localStorage.setItem('apex_school_crm_state', JSON.stringify(State));
-  fetch('http://localhost:3000/api/state', {
+  fetch('', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(State)
@@ -380,7 +380,7 @@ function saveState() {
 // Global Core App Initializer
 window.addEventListener('DOMContentLoaded', async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/state');
+    const response = await fetch('');
     if (response.ok) {
       State = await response.json();
     }
@@ -4480,4 +4480,5 @@ function handleAdClick(event) {
   // Scroll smoothly to Admissions page
   window.location.hash = '#admissions';
 }
+
 
