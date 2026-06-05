@@ -75,10 +75,59 @@ let State = {
     { id: 'TCH-004', name: 'Miss Priya Roy', role: 'Faculty Executive', sub: 'History, Civics', contact: '+91 98110 11223', status: 'On Duty', assignedClass: '' },
     { id: 'ADM-001', name: 'Mrs. Harpreet Kaur', role: 'Head Librarian', sub: 'Library Resource Director', contact: '+91 98110 44556', status: 'On Leave', assignedClass: '' },
     { id: 'ADM-002', name: 'Mr. Ramesh Negi', role: 'Physical Trainer', sub: 'Sports & Gymnasium Coordinator', contact: '+91 98110 77889', status: 'On Duty', assignedClass: '' }
-  ]
+  ],
+  homework: [],
+  auditLog: []
 };
 
 let activeLoginRole = 'admin'; // Internal tracker for login tabs
+
+// Global Dynamic Toast Notification System
+function showToast(title, message, icon = 'ti-info-circle') {
+  const wrapper = document.getElementById('toast-wrapper');
+  if (!wrapper) return;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  
+  let iconColor = 'var(--accent)';
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes('error') || lowerTitle.includes('failed')) {
+    iconColor = '#dc3545';
+  } else if (lowerTitle.includes('success') || lowerTitle.includes('complete') || lowerTitle.includes('submitted')) {
+    iconColor = '#28a745';
+  }
+
+  toast.innerHTML = `
+    <div class="toast-icon" style="color: ${iconColor};"><i class="ti ${icon}"></i></div>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+    <div class="toast-progress"></div>
+  `;
+
+  wrapper.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 10);
+
+  const progress = toast.querySelector('.toast-progress');
+  if (progress) {
+    progress.style.transition = 'width 4s linear';
+    setTimeout(() => {
+      progress.style.width = '0%';
+    }, 50);
+  }
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      toast.remove();
+    }, 400);
+  }, 4000);
+}
 
 // Seed High-Fidelity Data if LocalStorage is Empty (Self-Correcting Updates Included!)
 function seedDatabase() {
@@ -3782,7 +3831,7 @@ function submitPublicEnquiry(event) {
   if (addressEl) addressEl.value = '';
 
   // Show a gorgeous custom success message
-  showToast('Enquiry Submitted', `Thank you! Our admission team will contact you shortly regarding ${name}'s admission.`, 'ti-circle-check-filled');
+  showToast('Enquiry Submitted', "Thank you, we'll call you within 24 hours.", 'ti-circle-check-filled');
 }
 
 // Render active notice board bulletins onto the public landing page noticed board
