@@ -513,7 +513,7 @@ async function executeLogin() {
     const salt = activeLoginRole === 'admin' ? 'admin' : username.toUpperCase();
     const passwordHash = await hashPassword(passVal.trim(), salt);
 
-    const response = await fetch('http://localhost:3000/api/auth/login', {
+    const response = await fetch('https://firebaselogin.placeholder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, role: activeLoginRole, passwordHash })
@@ -4103,7 +4103,7 @@ async function resetDatabaseToDefault(event) {
   
   try {
     const passwordHash = await hashPassword(password.trim(), 'admin');
-    const response = await fetch('http://localhost:3000/api/auth/login', {
+    const response = await fetch('https://firebaselogin.placeholder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: 'admin', role: 'admin', passwordHash })
@@ -4480,3 +4480,4 @@ function handleAdClick(event) {
   // Scroll smoothly to Admissions page
   window.location.hash = '#admissions';
 }
+
