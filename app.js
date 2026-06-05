@@ -513,7 +513,7 @@ async function executeLogin() {
     const salt = activeLoginRole === 'admin' ? 'admin' : username.toUpperCase();
     const passwordHash = await hashPassword(passVal.trim(), salt);
 
-    const response = await fetch('https://firebaselogin.placeholder', {
+    const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gK', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, role: activeLoginRole, passwordHash })
@@ -4103,7 +4103,7 @@ async function resetDatabaseToDefault(event) {
   
   try {
     const passwordHash = await hashPassword(password.trim(), 'admin');
-    const response = await fetch('https://firebaselogin.placeholder', {
+    const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gK', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: 'admin', role: 'admin', passwordHash })
