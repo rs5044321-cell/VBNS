@@ -2229,7 +2229,7 @@ body.crm-active {
 /* Public Hero Section */
 .public-hero {
   position: relative;
-  min-height: 95vh;
+  min-height: auto;
   padding-top: 75px;
   display: flex;
   align-items: center;
