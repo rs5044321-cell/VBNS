@@ -231,34 +231,10 @@ let State = {
     { subject: 'Hindi', date: '2026-06-23', slot: 'Morning', duration: '3 Hours', maxMarks: 80, hall: 'Examination Hall C' },
     { subject: 'Computer Science', date: '2026-06-25', slot: 'Afternoon', duration: '2 Hours', maxMarks: 50, hall: 'Computer Lab 1' },
   ],
-  results: {
-    'SAC-001': { examName: 'Midterm Board Evaluation 2026', subjects: [{ sub: 'Mathematics', marks: 92, max: 100 }, { sub: 'Science', marks: 88, max: 100 }, { sub: 'English', marks: 95, max: 100 }, { sub: 'Social Studies', marks: 74, max: 80 }, { sub: 'Hindi', marks: 72, max: 80 }, { sub: 'Computer Science', marks: 48, max: 50 }] },
-    'SAC-002': { examName: 'Midterm Board Evaluation 2026', subjects: [{ sub: 'Mathematics', marks: 85, max: 100 }, { sub: 'Science', marks: 91, max: 100 }, { sub: 'English', marks: 87, max: 100 }, { sub: 'Social Studies', marks: 76, max: 80 }, { sub: 'Hindi', marks: 70, max: 80 }, { sub: 'Computer Science', marks: 45, max: 50 }] },
-    'SAC-003': { examName: 'Midterm Board Evaluation 2026', subjects: [{ sub: 'Mathematics', marks: 56, max: 100 }, { sub: 'Science', marks: 62, max: 100 }, { sub: 'English', marks: 70, max: 100 }, { sub: 'Social Studies', marks: 52, max: 80 }, { sub: 'Hindi', marks: 48, max: 80 }, { sub: 'Computer Science', marks: 32, max: 50 }] },
-    'SAC-004': { examName: 'Midterm Board Evaluation 2026', subjects: [{ sub: 'Mathematics', marks: 99, max: 100 }, { sub: 'Science', marks: 96, max: 100 }, { sub: 'English', marks: 91, max: 100 }, { sub: 'Social Studies', marks: 78, max: 80 }, { sub: 'Hindi', marks: 75, max: 80 }, { sub: 'Computer Science', marks: 49, max: 50 }] },
-    'SAC-005': { examName: 'Midterm Board Evaluation 2026', subjects: [{ sub: 'Mathematics', marks: 71, max: 100 }, { sub: 'Science', marks: 68, max: 100 }, { sub: 'English', marks: 79, max: 100 }, { sub: 'Social Studies', marks: 61, max: 80 }, { sub: 'Hindi', marks: 65, max: 80 }, { sub: 'Computer Science', marks: 38, max: 50 }] },
-    'SAC-006': { examName: 'Midterm Board Evaluation 2026', subjects: [{ sub: 'Mathematics', marks: 88, max: 100 }, { sub: 'Science', marks: 82, max: 100 }, { sub: 'English', marks: 85, max: 100 }, { sub: 'Social Studies', marks: 69, max: 80 }, { sub: 'Hindi', marks: 71, max: 80 }, { sub: 'Computer Science', marks: 42, max: 50 }] },
-    'SAC-007': { examName: 'Midterm Board Evaluation 2026', subjects: [{ sub: 'Mathematics', marks: 42, max: 100 }, { sub: 'Science', marks: 50, max: 100 }, { sub: 'English', marks: 58, max: 100 }, { sub: 'Social Studies', marks: 35, max: 80 }, { sub: 'Hindi', marks: 40, max: 80 }, { sub: 'Computer Science', marks: 25, max: 50 }] },
-  },
-  library: [
-    { id: 'LIB-302', title: 'Concepts of Physics (Vol 1)', author: 'Dr. H.C. Verma', cls: 'Class X', issuedTo: '', due: '', status: 'Available' },
-    { id: 'LIB-112', title: 'High School English Grammar', author: 'Wren & Martin', cls: 'Class X', issuedTo: 'Rohan Gupta (SAC-003)', due: '2026-05-20', status: 'Overdue' },
-    { id: 'LIB-098', title: 'Introduction to Algorithms', author: 'Cormen, Leiserson', cls: 'Class X', issuedTo: '-', due: '-', status: 'Available' }
-  ],
-  transport: [
-    { route: 'Route 1 - East Delhi', driver: 'Madan Lal', vehicle: 'DL-1PB-4521 (Bus)', stops: 'Preet Vihar, Laxmi Nagar, Anand Vihar', count: 42, status: 'Operational' },
-    { route: 'Route 2 - South Delhi', driver: 'Jaswant Singh', vehicle: 'DL-1PC-7890 (Bus)', stops: 'Saket, GK-2, Vasant Kunj, Lajpat Nagar', count: 35, status: 'Operational' },
-    { route: 'Route 3 - Noida Express', driver: 'Vijay Kumar', vehicle: 'UP-16T-1122 (Van)', stops: 'Sector 15, Sector 62, Indirapuram', count: 18, status: 'Maintenance' },
-    { route: 'Route 4 - North Campus', driver: 'Satish Yadav', vehicle: 'DL-1PD-3456 (Bus)', stops: 'Model Town, GTB Nagar, Civil Lines', count: 28, status: 'Operational' }
-  ],
-  staff: [
-    { id: 'TCH-001', name: 'Dr. Rajeev Sharma', role: 'Senior Faculty', sub: 'Mathematics, Statistics', contact: '+91 98110 22334', status: 'On Duty', assignedClass: 'Class X' },
-    { id: 'TCH-002', name: 'Mrs. Ananya Sen', role: 'Faculty Specialist', sub: 'Physics, Chemistry', contact: '+91 98110 55667', status: 'On Duty', assignedClass: 'Class IX' },
-    { id: 'TCH-003', name: 'Mr. Vivek Paul', role: 'Faculty Officer', sub: 'English Literature', contact: '+91 98110 88990', status: 'On Duty', assignedClass: 'Class VIII' },
-    { id: 'TCH-004', name: 'Miss Priya Roy', role: 'Faculty Executive', sub: 'History, Civics', contact: '+91 98110 11223', status: 'On Duty', assignedClass: '' },
-    { id: 'ADM-001', name: 'Mrs. Harpreet Kaur', role: 'Head Librarian', sub: 'Library Resource Director', contact: '+91 98110 44556', status: 'On Leave', assignedClass: '' },
-    { id: 'ADM-002', name: 'Mr. Ramesh Negi', role: 'Physical Trainer', sub: 'Sports & Gymnasium Coordinator', contact: '+91 98110 77889', status: 'On Duty', assignedClass: '' }
-  ],
+  results: {},   // Empty — add real results via ERP
+  library: [],   // Empty — add real books via Library module
+  transport: [], // Empty — add real routes via Transport module
+  staff: [],
   homework: [],
   auditLog: []
 };
@@ -435,41 +411,61 @@ async function hashPassword(password, salt) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// Debounce timer — prevents 37x redundant Firestore writes per user action
+let _saveDebounceTimer = null;
+
 function saveState() {
+  // Always write to localStorage immediately (fast, free, no limit concerns)
   localStorage.setItem('apex_school_crm_state', JSON.stringify(State));
-  if (!window.db) return;
+
+  // Debounce the Firestore sync: wait 800ms after last saveState() call
+  // This collapses bursts of rapid changes (e.g. bulk attendance) into one write
+  clearTimeout(_saveDebounceTimer);
+  _saveDebounceTimer = setTimeout(() => _syncToFirestore(), 800);
+}
+
+function _syncToFirestore() {
+  if (!window.db || !window.fsLib) return;
   try {
-    const { doc, setDoc, collection, getDocs } = window.fsLib;
+    const { doc, setDoc } = window.fsLib;
     const db = window.db;
 
-    // Save students - each as own document
+    // Students: each stored as own document (already correct — scalable)
     (State.students || []).forEach(student => {
       setDoc(doc(db, 'students', student.id), student)
-        .catch(e => console.warn('Student save failed:', e));
+        .catch(e => console.warn('Student save failed:', student.id, e));
     });
 
-    // Save everything else in one meta document
-    const meta = {
+    // FIX: Split the old monolithic "meta" document into separate Firestore collections
+    // This avoids the 1MB Firestore document size limit as the school grows
+
+    setDoc(doc(db, 'schoolMeta', 'config'), {
+      config: State.config || {},
+      staff: State.staff || [],
+      staffPasswords: State.staffPasswords || {},
+      payrollConfig: State.payrollConfig || {},
+      updatedAt: new Date().toISOString()
+    }).catch(e => console.warn('Config save failed:', e));
+
+    setDoc(doc(db, 'schoolMeta', 'finance'), {
       ledger: State.ledger || [],
       feeLog: State.feeLog || [],
       enquiries: State.enquiries || [],
-      notices: State.notices || [],
       smsLog: State.smsLog || [],
+      updatedAt: new Date().toISOString()
+    }).catch(e => console.warn('Finance save failed:', e));
+
+    setDoc(doc(db, 'schoolMeta', 'academic'), {
+      notices: State.notices || [],
+      homework: State.homework || [],
       attendance: State.attendance || {},
       staffAttendance: State.staffAttendance || {},
-      payrollConfig: State.payrollConfig || {},
-      staffPasswords: State.staffPasswords || {},
-      homework: State.homework || [],
-      auditLog: State.auditLog || [],
-      staff: State.staff || [],
-      config: State.config || {},
+      auditLog: (State.auditLog || []).slice(0, 100), // cap at 100 entries
       updatedAt: new Date().toISOString()
-    };
-    setDoc(doc(db, 'schoolData', 'meta'), meta)
-      .catch(e => console.warn('Meta save failed:', e));
+    }).catch(e => console.warn('Academic save failed:', e));
 
   } catch(e) {
-    console.warn('Firestore save error:', e);
+    console.warn('Firestore sync error:', e);
   }
 }
 
@@ -491,8 +487,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     window.app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
     window.db = getFirestore(window.app);
     window.firebaseAuth = getAuth(window.app);
+    // FIX: expose Firestore helpers so saveState() can write to Firebase
     window.fsLib = { doc, setDoc, getDoc, getDocs, collection };
-    console.log('✅ Firebase connected!');
+    console.log('✅ Firebase connected and fsLib registered!');
     // Load state from Firestore
     try {
       // Load each student from their own document
@@ -502,27 +499,61 @@ window.addEventListener('DOMContentLoaded', async () => {
         studentSnaps.forEach(d => State.students.push(d.data()));
       }
 
-      // Load meta data (ledger, fees, attendance, staff, etc)
-      const metaSnap = await getDoc(doc(window.db, 'schoolData', 'meta'));
-      if (metaSnap.exists()) {
-        const data = metaSnap.data();
-        State.ledger = data.ledger || State.ledger;
-        State.feeLog = data.feeLog || State.feeLog;
-        State.enquiries = data.enquiries || State.enquiries;
-        State.notices = data.notices || State.notices;
-        State.smsLog = data.smsLog || State.smsLog;
-        State.attendance = data.attendance || State.attendance;
-        State.staffAttendance = data.staffAttendance || State.staffAttendance;
-        State.payrollConfig = data.payrollConfig || State.payrollConfig;
-        State.staffPasswords = data.staffPasswords || State.staffPasswords;
-        State.homework = data.homework || State.homework;
-        State.auditLog = data.auditLog || State.auditLog;
-        if (data.staff && data.staff.length > 0) State.staff = data.staff;
-        if (data.config) State.config = { ...State.config, ...data.config };
+      // Load split meta collections (new structure)
+      const [configSnap, financeSnap, academicSnap] = await Promise.all([
+        getDoc(doc(window.db, 'schoolMeta', 'config')),
+        getDoc(doc(window.db, 'schoolMeta', 'finance')),
+        getDoc(doc(window.db, 'schoolMeta', 'academic'))
+      ]);
+
+      if (configSnap.exists()) {
+        const d = configSnap.data();
+        if (d.config) State.config = { ...State.config, ...d.config };
+        if (d.staff && d.staff.length > 0) State.staff = d.staff;
+        if (d.staffPasswords) State.staffPasswords = d.staffPasswords;
+        if (d.payrollConfig) State.payrollConfig = d.payrollConfig;
+      }
+      if (financeSnap.exists()) {
+        const d = financeSnap.data();
+        State.ledger = d.ledger || State.ledger;
+        State.feeLog = d.feeLog || State.feeLog;
+        State.enquiries = d.enquiries || State.enquiries;
+        State.smsLog = d.smsLog || State.smsLog;
+      }
+      if (academicSnap.exists()) {
+        const d = academicSnap.data();
+        State.notices = d.notices || State.notices;
+        State.homework = d.homework || State.homework;
+        State.attendance = d.attendance || State.attendance;
+        State.staffAttendance = d.staffAttendance || State.staffAttendance;
+        State.auditLog = d.auditLog || State.auditLog;
       }
 
-      if (studentSnaps.empty && !metaSnap.exists()) {
-        // No Firestore data yet — seed and push everything to Firebase
+      // Fallback: try old "schoolData/meta" document if new collections are empty
+      // (handles migration from old data structure on first run)
+      if (!configSnap.exists() && !financeSnap.exists() && !academicSnap.exists()) {
+        const oldMetaSnap = await getDoc(doc(window.db, 'schoolData', 'meta'));
+        if (oldMetaSnap.exists()) {
+          const data = oldMetaSnap.data();
+          State.ledger = data.ledger || State.ledger;
+          State.feeLog = data.feeLog || State.feeLog;
+          State.enquiries = data.enquiries || State.enquiries;
+          State.notices = data.notices || State.notices;
+          State.smsLog = data.smsLog || State.smsLog;
+          State.attendance = data.attendance || State.attendance;
+          State.staffAttendance = data.staffAttendance || State.staffAttendance;
+          State.payrollConfig = data.payrollConfig || State.payrollConfig;
+          State.staffPasswords = data.staffPasswords || State.staffPasswords;
+          State.homework = data.homework || State.homework;
+          State.auditLog = data.auditLog || State.auditLog;
+          if (data.staff && data.staff.length > 0) State.staff = data.staff;
+          if (data.config) State.config = { ...State.config, ...data.config };
+          console.log('⚠️ Loaded from old meta structure — will migrate on next save.');
+        }
+      }
+
+      const hasData = !studentSnaps.empty || configSnap.exists() || financeSnap.exists() || academicSnap.exists();
+      if (!hasData) {
         console.log('No Firestore data found — seeding and pushing to Firebase...');
         seedDatabase();
       } else {
@@ -4148,11 +4179,13 @@ function logActivity(actor, action, category, details) {
 
   State.auditLog.unshift(entry);
 
+  // Cap audit log at 100 entries to prevent unbounded growth
   if (State.auditLog.length > 100) {
     State.auditLog.pop();
   }
-
-  saveState();
+  // NOTE: saveState() is intentionally NOT called here.
+  // The caller (admitStudent, collectFee, etc.) always calls saveState() right after logActivity().
+  // Calling it here would cause a double-write on every action.
 }
 
 // -------------------------------------------------------------
