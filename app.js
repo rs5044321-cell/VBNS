@@ -484,35 +484,18 @@ async function hashPassword(password, salt) {
 }
 
 function saveState() {
-  // Always save to localStorage as backup
   localStorage.setItem('apex_school_crm_state', JSON.stringify(State));
-  // Save to Firestore if available
+  if (!window.db) return;
   try {
-    if (window.db) {
-      const { doc, setDoc } = window.fsLib;
-      const saveData = {
-        students: State.students || [],
-        ledger: State.ledger || [],
-        feeLog: State.feeLog || [],
-        enquiries: State.enquiries || [],
-        notices: State.notices || [],
-        smsLog: State.smsLog || [],
-        attendance: State.attendance || {},
-        staffAttendance: State.staffAttendance || {},
-        payrollConfig: State.payrollConfig || {},
-        staffPasswords: State.staffPasswords || {},
-        homework: State.homework || [],
-        auditLog: State.auditLog || [],
-        staff: State.staff || [],
-        config: State.config || {},
-        updatedAt: new Date().toISOString()
-      };
-      setDoc(doc(window.db, 'schoolData', 'state'), saveData)
-        .then(() => console.log('✅ Saved to Firestore'))
-        .catch(e => console.warn('Firestore save failed:', e));
-    }
+    const { collection, doc, setDoc } = window.fbFns;
+    State.students.forEach(student => {
+      setDoc(doc(window.fbDb, 'students', student.id), student)
+        .catch(e => console.warn('Firestore student save failed:', e));
+    });
   } catch(e) {
     console.warn('Firestore save error:', e);
+  }
+}    console.warn('Firestore save error:', e);
   }
 }
 
