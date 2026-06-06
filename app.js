@@ -575,7 +575,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         seedDatabase();
       } else {
         console.log('✅ Data loaded from Firestore!');
-        renderDashboard();
+        renderAll();
       }
     } catch(e) {
       console.warn('Firestore load failed, using localStorage:', e);
@@ -1439,18 +1439,7 @@ async function admitStudent() {
 
   logActivity('Super Admin', 'Student Admission', 'enrollment', `Enrolled new student file for ${name} (${nextId})`);
   
-  try {
-    // Register Default Student Password ('student123')
-    const salt = nextId.toUpperCase();
-    const passwordHash = await hashPassword('student123', salt);
-    await fetch('http://localhost:3000/api/auth/credentials', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: nextId, passwordHash })
-    });
-  } catch (err) {
-    console.error("Error saving student default credentials:", err);
-  }
+  // Student password stored in Firestore via saveState() below
 
   saveState();
 
@@ -3766,13 +3755,7 @@ async function addStaffRecord() {
       st.assignedClass = assignedClass;
       
       if (password) {
-        const salt = editingStaffId.toUpperCase();
-        const passwordHash = await hashPassword(password, salt);
-        await fetch('http://localhost:3000/api/auth/credentials', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: editingStaffId, passwordHash })
-        });
+        st.password = password;
       }
       if (State.payrollConfig[editingStaffId]) {
         State.payrollConfig[editingStaffId].base = baseSalary;
@@ -3811,13 +3794,7 @@ async function addStaffRecord() {
       status: 'Unpaid'
     };
 
-    const salt = staffId.toUpperCase();
-    const passwordHash = await hashPassword(password, salt);
-    await fetch('http://localhost:3000/api/auth/credentials', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: staffId, passwordHash })
-    });
+    newStaff.password = password;
 
     logActivity('Super Admin', 'Staff Registered', 'security', `Created new faculty registry for ${name} (${staffId})`);
     showToast('Staff Registered', `Faculty profile for ${name} created. ID: ${staffId}`, 'ti-briefcase');
@@ -3858,13 +3835,7 @@ async function removeStaffRecord(staffId) {
   State.staff.splice(index, 1);
   delete State.payrollConfig[staffId];
 
-  try {
-    await fetch(`http://localhost:3000/api/auth/credentials/${staffId}`, {
-      method: 'DELETE'
-    });
-  } catch (err) {
-    console.error("Error deleting staff credentials on server:", err);
-  }
+  // Credentials removed via saveState() below
 
   logActivity('Super Admin', 'Staff Member Removed', 'security', `Removed staff member ${st.name} (${staffId})`);
   saveState();
@@ -4367,17 +4338,13 @@ async function resetDatabaseToDefault(event) {
     
     const data = await response.json();
     if (response.ok && data.idToken) {
-      // Re-authenticated! Send reset call to backend
-      const resetRes = await fetch('http://localhost:3000/api/reset', { method: 'POST' });
-      if (resetRes.ok) {
-        sessionStorage.clear();
-        showToast('Database Reset', 'Database successfully restored to factory defaults.', 'ti-refresh');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-      } else {
-        showToast('Reset Failed', 'Server failed to reset the database state.', 'ti-alert-triangle');
-      }
+      // Re-authenticated! Reset localStorage and reload
+      localStorage.removeItem('apex_school_crm_state');
+      sessionStorage.clear();
+      showToast('Database Reset', 'Database successfully restored to factory defaults.', 'ti-refresh');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } else {
       showToast('Reset Failed', 'Invalid admin password. Database reset denied.', 'ti-lock');
     }
