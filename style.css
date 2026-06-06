@@ -4565,3 +4565,10 @@ body.crm-active #public-website {
     grid-template-columns: 1fr !important;
   }
 }
+@media (max-width: 768px) {
+  .public-hero {
+    min-height: 60vh;
+    padding-top: 60px;
+    scroll-margin-top: 60px;
+  }
+}
