@@ -550,7 +550,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         studentSnaps.forEach(d => State.students.push(d.data()));
       }
 
-      // Load meta data (ledger, fees, etc)
+      // Load meta data (ledger, fees, attendance, staff, etc)
       const metaSnap = await getDoc(doc(window.db, 'schoolData', 'meta'));
       if (metaSnap.exists()) {
         const data = metaSnap.data();
@@ -570,9 +570,12 @@ window.addEventListener('DOMContentLoaded', async () => {
       }
 
       if (studentSnaps.empty && !metaSnap.exists()) {
+        // No Firestore data yet — seed and push everything to Firebase
+        console.log('No Firestore data found — seeding and pushing to Firebase...');
         seedDatabase();
       } else {
         console.log('✅ Data loaded from Firestore!');
+        renderAll();
       }
     } catch(e) {
       console.warn('Firestore load failed, using localStorage:', e);
