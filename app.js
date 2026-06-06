@@ -575,7 +575,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         seedDatabase();
       } else {
         console.log('✅ Data loaded from Firestore!');
-        renderAll();
+        renderDashboard();
       }
     } catch(e) {
       console.warn('Firestore load failed, using localStorage:', e);
