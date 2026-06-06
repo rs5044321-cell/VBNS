@@ -520,14 +520,13 @@ function saveState() {
     console.warn('Firestore save error:', e);
   }
 }
-  }
 
 // Global Core App Initializer
 window.addEventListener('DOMContentLoaded', async () => {
   // Initialize Firebase and load data from Firestore
   try {
     const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const { getFirestore, doc, setDoc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const { getFirestore, doc, setDoc, getDoc, getDocs, collection } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
     const firebaseConfig = {
       apiKey: "AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gKU",
@@ -540,14 +539,21 @@ window.addEventListener('DOMContentLoaded', async () => {
     window.app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
     window.db = getFirestore(window.app);
     window.firebaseAuth = getAuth(window.app);
-    window.fsLib = { doc, setDoc, getDoc };
+    window.fsLib = { doc, setDoc, getDoc, getDocs, collection };
     console.log('✅ Firebase connected!');
     // Load state from Firestore
     try {
-      const snap = await getDoc(doc(window.db, 'schoolData', 'state'));
-      if (snap.exists() && snap.data().students && snap.data().students.length > 0) {
-        const data = snap.data();
-        State.students = data.students || State.students;
+      // Load each student from their own document
+      const studentSnaps = await getDocs(collection(window.db, 'students'));
+      if (!studentSnaps.empty) {
+        State.students = [];
+        studentSnaps.forEach(d => State.students.push(d.data()));
+      }
+
+      // Load meta data (ledger, fees, etc)
+      const metaSnap = await getDoc(doc(window.db, 'schoolData', 'meta'));
+      if (metaSnap.exists()) {
+        const data = metaSnap.data();
         State.ledger = data.ledger || State.ledger;
         State.feeLog = data.feeLog || State.feeLog;
         State.enquiries = data.enquiries || State.enquiries;
@@ -561,9 +567,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         State.auditLog = data.auditLog || State.auditLog;
         if (data.staff && data.staff.length > 0) State.staff = data.staff;
         if (data.config) State.config = { ...State.config, ...data.config };
-        console.log('✅ Data loaded from Firestore!');
-      } else {
+      }
+
+      if (studentSnaps.empty && !metaSnap.exists()) {
         seedDatabase();
+      } else {
+        console.log('✅ Data loaded from Firestore!');
       }
     } catch(e) {
       console.warn('Firestore load failed, using localStorage:', e);
