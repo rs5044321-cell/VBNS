@@ -133,6 +133,7 @@
         <li><a href="#admissions" class="nav-link" onclick="navigatePublic('admissions', event)">Admissions</a></li>
         <li><a href="#gallery" class="nav-link" onclick="navigatePublic('gallery', event)">Gallery</a></li>
         <li><a href="#contact" class="nav-link" onclick="navigatePublic('contact', event)">Contact</a></li>
+        <li><button id="lang-toggle-btn" class="btn btn-secondary" onclick="toggleLanguage()" style="margin-right:8px; font-size:13px; padding: 6px 12px;">🇮🇳 हिंदी</button></li>
         <li><button class="btn btn-primary portal-access-btn" onclick="openLoginOverlay()">Login Portal <i class="ti ti-key"></i></button></li>
       </ul>
     </div>
@@ -1474,6 +1475,8 @@
       <div class="sb-item" data-roles="admin teacher" onclick="nav('transport', this)"><i class="ti ti-bus"></i>Transport Routes</div>
       <div class="sb-item" data-roles="admin" onclick="nav('staff', this)"><i class="ti ti-id"></i>Staff Registry</div>
       
+      <div class="sb-section" data-roles="admin teacher student">भाषा / Language</div>
+      <div class="sb-item" data-roles="admin teacher student" onclick="toggleLanguage()"><i class="ti ti-language"></i><span id="sb-lang-label">Switch to हिंदी</span></div>
       <div class="sb-section" data-roles="admin">Settings</div>
       <div class="sb-item" data-roles="admin" onclick="nav('settings', this)"><i class="ti ti-settings-automation"></i>Settings</div>
       <div class="sb-item" data-roles="admin" onclick="nav('audit', this)"><i class="ti ti-shield-lock"></i>Audit &amp; Security</div>

@@ -1,5 +1,125 @@
 /* VBNS - Premium Core Application Logic */
 
+// ============================================================
+// BILINGUAL SYSTEM - Hindi / English
+// ============================================================
+let currentLang = localStorage.getItem('vbns_lang') || 'en';
+
+const translations = {
+  en: {
+    'Login Portal': 'Login Portal', 'Access Portal': 'Access Portal',
+    'Admin': 'Admin', 'Faculty': 'Faculty', 'Student': 'Student',
+    'Admin Username': 'Admin Username', 'Password': 'Password',
+    'Dashboard': 'Dashboard', 'New Admission': 'New Admission',
+    'Student Directory': 'Student Directory', 'ID Cards': 'ID Cards',
+    'Admit Cards': 'Admit Cards', 'Fee Collection': 'Fee Collection',
+    'Ledger System': 'Ledger System', 'Fee Report': 'Fee Report',
+    'Staff Payroll': 'Staff Payroll', 'Send SMS': 'Send SMS',
+    'Notice Board': 'Notice Board', 'Homework Board': 'Homework Board',
+    'Enquiries': 'Enquiries', 'Student Attendance': 'Student Attendance',
+    'Staff Attendance': 'Staff Attendance', 'Timetable': 'Timetable',
+    'Exam & Results': 'Exam & Results', 'Library Logs': 'Library Logs',
+    'Transport Routes': 'Transport Routes', 'Staff Registry': 'Staff Registry',
+    'Settings': 'Settings', 'Monthly Revenue': 'Monthly Revenue',
+    'Pending Dues': 'Pending Dues', 'SMS Balance': 'SMS Balance',
+    'Total Students': 'Total Students', 'Command Operations': 'Command Operations',
+    'Home': 'Home', 'About': 'About', 'Academics': 'Academics',
+    'Admissions': 'Admissions', 'Gallery': 'Gallery', 'Contact': 'Contact',
+    'Safe Campus': 'Safe Campus', 'Experienced Teachers': 'Experienced Teachers',
+    'Smart Learning': 'Smart Learning', 'Enroll Your Child Today': 'Enroll Your Child Today',
+    'Visit Our Campus': 'Visit Our Campus', 'Collect Fee': 'Collect Fee',
+  },
+  hi: {
+    'Login Portal': '\u0932\u0949\u0917\u0907\u0928 \u092a\u094b\u0930\u094d\u091f\u0932',
+    'Access Portal': '\u092a\u094b\u0930\u094d\u091f\u0932 \u062a\u094d\u0935\u0930\u093f\u0924',
+    'Admin': '\u092a\u094d\u0930\u0936\u093e\u0938\u0915',
+    'Faculty': '\u0936\u093f\u0915\u094d\u0937\u0915',
+    'Student': '\u091b\u093e\u0924\u094d\u0930',
+    'Admin Username': '\u092a\u094d\u0930\u0936\u093e\u0938\u0915 \u0928\u093e\u092e',
+    'Password': '\u092a\u093e\u0938\u0935\u0930\u094d\u0921',
+    'Dashboard': '\u0921\u0948\u0936\u092c\u094b\u0930\u094d\u0921',
+    'New Admission': '\u0928\u092f\u093e \u092a\u094d\u0930\u0935\u0947\u0936',
+    'Student Directory': '\u091b\u093e\u0924\u094d\u0930 \u0928\u093f\u0930\u094d\u0926\u0947\u0936\u093f\u0915\u093e',
+    'ID Cards': '\u092a\u0939\u091a\u093e\u0928 \u092a\u0924\u094d\u0930',
+    'Admit Cards': '\u092a\u094d\u0930\u0935\u0947\u0936 \u092a\u0924\u094d\u0930',
+    'Fee Collection': '\u0936\u0941\u0932\u094d\u0915 \u0938\u0902\u0917\u094d\u0930\u0939',
+    'Ledger System': '\u0916\u093e\u0924\u093e \u092c\u0939\u0940',
+    'Fee Report': '\u0936\u0941\u0932\u094d\u0915 \u0930\u093f\u092a\u094b\u0930\u094d\u091f',
+    'Staff Payroll': '\u0935\u0947\u0924\u0928 \u092a\u094d\u0930\u0628\u0902\u0927\u0928',
+    'Send SMS': 'SMS \u092d\u0947\u091c\u0947\u0902',
+    'Notice Board': '\u0938\u0942\u091a\u0928\u093e \u092a\u091f\u0932',
+    'Homework Board': '\u0917\u0943\u0939\u0915\u093e\u0930\u094d\u092f \u092a\u091f\u0932',
+    'Enquiries': '\u092a\u0942\u091b\u0924\u093e\u091b',
+    'Student Attendance': '\u091b\u093e\u0924\u094d\u0930 \u0909\u092a\u0938\u094d\u0925\u093f\u0924\u093f',
+    'Staff Attendance': '\u0915\u0930\u094d\u092e\u091a\u093e\u0930\u0940 \u0909\u092a\u0938\u094d\u0925\u093f\u0924\u093f',
+    'Timetable': '\u0938\u092e\u092f \u0938\u093e\u0930\u0923\u0940',
+    'Exam & Results': '\u092a\u0930\u0940\u0915\u094d\u0937\u093e \u0914\u0930 \u092a\u0930\u093f\u0923\u093e\u092e',
+    'Library Logs': '\u092a\u0941\u0938\u094d\u0924\u0915\u093e\u0932\u092f',
+    'Transport Routes': '\u092a\u0930\u093f\u0935\u0939\u0928 \u092e\u093e\u0930\u094d\u0917',
+    'Staff Registry': '\u0915\u0930\u094d\u092e\u091a\u093e\u0930\u0940 \u0930\u091c\u093f\u0938\u094d\u091f\u0930',
+    'Settings': '\u0938\u0947\u091f\u093f\u0902\u0917\u094d\u0938',
+    'Monthly Revenue': '\u092e\u093e\u0938\u093f\u0915 \u0906\u092f',
+    'Pending Dues': '\u092c\u0915\u093e\u092f\u093e \u0930\u093e\u0936\u093f',
+    'SMS Balance': 'SMS \u092c\u0948\u0932\u0947\u0902\u0938',
+    'Total Students': '\u0915\u0941\u0932 \u091b\u093e\u0924\u094d\u0930',
+    'Command Operations': '\u0924\u094d\u0935\u0930\u093f\u0924 \u0915\u093e\u0930\u094d\u092f',
+    'Home': '\u0939\u094b\u092e',
+    'About': '\u0939\u092e\u093e\u0930\u0947 \u092c\u093e\u0930\u0947 \u092e\u0947\u0902',
+    'Academics': '\u0936\u093f\u0915\u094d\u0937\u093e',
+    'Admissions': '\u092a\u094d\u0930\u0935\u0947\u0936',
+    'Gallery': '\u0917\u0948\u0932\u0930\u0940',
+    'Contact': '\u0938\u0902\u092a\u0930\u094d\u0915',
+    'Safe Campus': '\u0938\u0941\u0930\u0915\u094d\u0937\u093f\u0924 \u092a\u0930\u093f\u0938\u0930',
+    'Experienced Teachers': '\u0905\u0928\u0941\u092d\u0935\u0940 \u0936\u093f\u0915\u094d\u0937\u0915',
+    'Smart Learning': '\u0938\u094d\u092e\u093e\u0930\u094d\u091f \u0936\u093f\u0915\u094d\u0937\u093e',
+    'Enroll Your Child Today': '\u0906\u091c \u0939\u0940 \u092a\u094d\u0930\u0935\u0947\u0936 \u0932\u0947\u0902',
+    'Visit Our Campus': '\u092a\u0930\u093f\u0938\u0930 \u0926\u0947\u0916\u0947\u0902',
+    'Collect Fee': '\u0936\u0941\u0932\u094d\u0915 \u0932\u0947\u0902',
+  }
+};
+
+function t(key) {
+  return (translations[currentLang] && translations[currentLang][key]) || key;
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'en' ? 'hi' : 'en';
+  localStorage.setItem('vbns_lang', currentLang);
+  applyLanguage();
+}
+
+function applyLanguage() {
+  const isHindi = currentLang === 'hi';
+  // Update lang toggle buttons
+  const langBtn = document.getElementById('lang-toggle-btn');
+  if (langBtn) langBtn.innerHTML = isHindi ? '&#127468;&#127463; English' : '&#127470;&#127475; &#2361;&#2367;&#2306;&#2342;&#2368;';
+  const sbLang = document.getElementById('sb-lang-label');
+  if (sbLang) sbLang.textContent = isHindi ? 'Switch to English' : 'Switch to \u0939\u093f\u0902\u0926\u0940';
+  // Translate sidebar items
+  document.querySelectorAll('.sb-item').forEach(el => {
+    const lastNode = Array.from(el.childNodes).find(n => n.nodeType === 3 && n.textContent.trim());
+    if (lastNode) {
+      const key = lastNode.textContent.trim();
+      if (translations.en[key] || translations.hi[key]) {
+        lastNode.textContent = t(key);
+      }
+    }
+  });
+  // Translate nav links on public site
+  document.querySelectorAll('.nav-link').forEach(el => {
+    const key = el.textContent.trim();
+    if (translations.en[key]) el.textContent = t(key);
+  });
+  // Translate feature badges
+  document.querySelectorAll('.feature-badge span, .hero-feature span').forEach(el => {
+    const key = el.textContent.trim();
+    if (translations.en[key]) el.textContent = t(key);
+  });
+}
+// ============================================================
+
+
+
 // Centralized State Container
 let State = {
   config: {
@@ -451,6 +571,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Apply Date and settings configuration
   renderDateDisplay();
   applySettingsConfig();
+  applyLanguage();
   
   // Set theme preference
   const savedTheme = localStorage.getItem('apex_theme') || 'dark';
