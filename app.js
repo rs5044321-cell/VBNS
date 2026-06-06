@@ -241,7 +241,7 @@ let State = {
     'SAC-007': { examName: 'Midterm Board Evaluation 2026', subjects: [{ sub: 'Mathematics', marks: 42, max: 100 }, { sub: 'Science', marks: 50, max: 100 }, { sub: 'English', marks: 58, max: 100 }, { sub: 'Social Studies', marks: 35, max: 80 }, { sub: 'Hindi', marks: 40, max: 80 }, { sub: 'Computer Science', marks: 25, max: 50 }] },
   },
   library: [
-    { id: 'LIB-302', title: 'Concepts of Physics (Vol 1)', author: 'Dr. H.C. Verma', cls: 'Class X', issuedTo: 'Aarav Sharma (SAC-001)', due: '2026-06-05', status: 'Issued' },
+    { id: 'LIB-302', title: 'Concepts of Physics (Vol 1)', author: 'Dr. H.C. Verma', cls: 'Class X', issuedTo: '', due: '', status: 'Available' },
     { id: 'LIB-112', title: 'High School English Grammar', author: 'Wren & Martin', cls: 'Class X', issuedTo: 'Rohan Gupta (SAC-003)', due: '2026-05-20', status: 'Overdue' },
     { id: 'LIB-098', title: 'Introduction to Algorithms', author: 'Cormen, Leiserson', cls: 'Class X', issuedTo: '-', due: '-', status: 'Available' }
   ],
@@ -377,11 +377,7 @@ function seedDatabase() {
           State.staffAttendance = {};
         }
         if (!State.homework) {
-          State.homework = [
-            { id: 'HW-001', cls: 'Class X', subject: 'Mathematics', title: 'Quadratic Equations Practice', desc: 'Solve questions 1 to 15 from exercise 4.2 in the textbook. Show all workings clearly.', dueDate: '2026-05-28', createdDate: '2026-05-24', by: 'Dr. Rajeev Sharma' },
-            { id: 'HW-002', cls: 'Class X', subject: 'Science', title: 'Chemical Reactions Report', desc: 'Write a 2-page report on redox reactions with real-life examples and chemical formulas.', dueDate: '2026-05-29', createdDate: '2026-05-24', by: 'Mrs. Ananya Sen' },
-            { id: 'HW-003', cls: 'Class IX', subject: 'English', title: 'Grammar Exercises', desc: 'Complete active/passive voice worksheets distributed in class.', dueDate: '2026-05-27', createdDate: '2026-05-24', by: 'Mr. Vivek Paul' }
-          ];
+          State.homework = [];
         }
         if (!State.auditLog) {
           State.auditLog = [
@@ -397,58 +393,18 @@ function seedDatabase() {
     }
   }
 
-  // Initial Seed
-  State.students = [
-    { id: 'SAC-001', name: 'Aarav Sharma', cls: 'Class X', sec: 'A', parent: 'Ramesh Sharma', phone: '9812345001', dob: '2010-03-15', address: '14 MG Road, New Delhi', fee: 45000, balance: 0, status: 'Paid', enrolledDate: '2025-04-10', password: 'student123' },
-    { id: 'SAC-002', name: 'Priya Mehta', cls: 'Class X', sec: 'B', parent: 'Suresh Mehta', phone: '9812345002', dob: '2010-07-22', address: '8 Lajpat Nagar, Delhi', fee: 45000, balance: 15000, status: 'Partial', enrolledDate: '2025-04-12', password: 'student123' },
-    { id: 'SAC-003', name: 'Rohan Gupta', cls: 'Class IX', sec: 'A', parent: 'Vikram Gupta', phone: '9812345003', dob: '2011-01-10', address: '22 Karol Bagh, Delhi', fee: 40000, balance: 40000, status: 'Pending', enrolledDate: '2025-04-15', password: 'student123' },
-    { id: 'SAC-004', name: 'Sneha Patel', cls: 'Class VIII', sec: 'A', parent: 'Anand Patel', phone: '9812345004', dob: '2012-05-30', address: '6 Dwarka Sector 5', fee: 35000, balance: 0, status: 'Paid', enrolledDate: '2025-04-18', password: 'student123' },
-    { id: 'SAC-005', name: 'Karan Singh', cls: 'Class X', sec: 'B', parent: 'Harjinder Singh', phone: '9812345005', dob: '2010-09-18', address: '3 Punjabi Bagh', fee: 45000, balance: 25000, status: 'Partial', enrolledDate: '2025-04-20', password: 'student123' },
-    { id: 'SAC-006', name: 'Ananya Verma', cls: 'Class VIII', sec: 'C', parent: 'Deepak Verma', phone: '9812345006', dob: '2012-11-05', address: '19 Rohini Sector 3', fee: 35000, balance: 0, status: 'Paid', enrolledDate: '2025-04-22', password: 'student123' },
-    { id: 'SAC-007', name: 'Arjun Nair', cls: 'Class VII', sec: 'A', parent: 'Suresh Nair', phone: '9812345007', dob: '2013-04-14', address: '45 Vasant Kunj', fee: 35000, balance: 35000, status: 'Pending', enrolledDate: '2025-04-25', password: 'student123' },
-    { id: 'SAC-008', name: 'Dev Tiwari', cls: 'Class VI', sec: 'A', parent: 'Rajesh Tiwari', phone: '9922334455', dob: '2014-08-10', address: 'Maharajganj Town, UP', fee: 30000, balance: 0, status: 'Paid', enrolledDate: '2025-04-25', password: 'student123' },
-    { id: 'SAC-009', name: 'Vihaan Shah', cls: 'Class V', sec: 'A', parent: 'Ketan Shah', phone: '9812345009', dob: '2015-02-12', address: 'Shyamdeurwa Market', fee: 30000, balance: 10000, status: 'Partial', enrolledDate: '2025-04-25', password: 'student123' },
-    { id: 'SAC-010', name: 'Kabir Verma', cls: 'Class IV', sec: 'A', parent: 'Deepak Verma', phone: '9812345010', dob: '2016-05-18', address: 'Karol Bagh, Delhi', fee: 25000, balance: 25000, status: 'Pending', enrolledDate: '2025-04-25', password: 'student123' },
-    { id: 'SAC-011', name: 'Aaradhya Iyer', cls: 'Class III', sec: 'A', parent: 'Sundar Iyer', phone: '9812345011', dob: '2017-09-05', address: 'Sector 15, Noida', fee: 25000, balance: 0, status: 'Paid', enrolledDate: '2025-04-25', password: 'student123' },
-    { id: 'SAC-012', name: 'Ishaan Bhat', cls: 'Class II', sec: 'A', parent: 'Sunil Bhat', phone: '9812345012', dob: '2018-11-20', address: 'Ghat Road, Maharajganj', fee: 20000, balance: 10000, status: 'Partial', enrolledDate: '2025-04-25', password: 'student123' },
-    { id: 'SAC-013', name: 'Riya Joshi', cls: 'Class I', sec: 'A', parent: 'Mohan Joshi', phone: '9911223344', dob: '2019-04-14', address: 'Shyamdeurwa Central', fee: 20000, balance: 20000, status: 'Pending', enrolledDate: '2025-04-25', password: 'student123' }
-  ];
+  // Initial Seed - Empty (add real students via New Admission)
+  State.students = [];
 
-  State.feeLog = [
-    { receipt: 'RCP-1040', studentId: 'SAC-001', name: 'Aarav Sharma', type: 'Tuition Fee', amount: 45000, mode: 'UPI / Netbanking', date: '2026-05-02', remarks: 'Full Annual tuition clearance' },
-    { receipt: 'RCP-1041', studentId: 'SAC-002', name: 'Priya Mehta', type: 'Tuition Fee', amount: 30000, mode: 'Cash Receipt', date: '2026-05-10', remarks: 'First installment payment' },
-    { receipt: 'RCP-1042', studentId: 'SAC-004', name: 'Sneha Patel', type: 'Tuition Fee', amount: 50000, mode: 'UPI / Netbanking', date: '2026-05-18', remarks: 'Full tuition complete' },
-    { receipt: 'RCP-1043', studentId: 'SAC-005', name: 'Karan Singh', type: 'Tuition Fee', amount: 30000, mode: 'Credit / Debit Card', date: '2026-05-22', remarks: 'Term 1 partial collect' }
-  ];
+  State.feeLog = [];
 
-  State.ledger = [
-    { voucher: 'VOU-1001', date: '2026-04-01', desc: 'Opening Financial Reserve Allocation', credit: 250000, debit: 0, balance: 250000 },
-    { voucher: 'VOU-1002', date: '2026-05-02', desc: 'Tuition Collection — Aarav Sharma (SAC-001)', credit: 45000, debit: 0, balance: 295000 },
-    { voucher: 'VOU-1003', date: '2026-05-05', desc: 'Purchase of Chemistry Lab Reagents & Flasks', credit: 0, debit: 4500, balance: 290500 },
-    { voucher: 'VOU-1004', date: '2026-05-10', desc: 'Tuition Collection — Priya Mehta (SAC-002)', credit: 30000, debit: 0, balance: 320500 },
-    { voucher: 'VOU-1005', date: '2026-05-15', desc: 'Official School Website Hosting Renewal', credit: 0, debit: 1800, balance: 318700 },
-    { voucher: 'VOU-1006', date: '2026-05-18', desc: 'Tuition Collection — Sneha Patel (SAC-004)', credit: 50000, debit: 0, balance: 368700 },
-    { voucher: 'VOU-1007', date: '2026-05-20', desc: 'Faculty Monthly Salaries (Mid-Term Clearing)', credit: 0, debit: 180000, balance: 188700 },
-    { voucher: 'VOU-1008', date: '2026-05-22', desc: 'Tuition Collection — Karan Singh (SAC-005)', credit: 30000, debit: 0, balance: 218700 },
-    { voucher: 'VOU-1009', date: '2026-05-23', desc: 'Electrical Maintenance — Library AC Unit Repair', credit: 0, debit: 5700, balance: 213000 }
-  ];
+  State.ledger = [];
 
-  State.enquiries = [
-    { name: 'Riya Joshi', cls: 'Class I', parent: 'Mohan Joshi', phone: '9911223344', source: 'Walk-In Office Visit', status: 'Interested' },
-    { name: 'Dev Tiwari', cls: 'Class VI', parent: 'Rajesh Tiwari', phone: '9922334455', source: 'Digital Web Portal Form', status: 'Follow-Up' },
-    { name: 'Sana Khan', cls: 'Class X', parent: 'Dr. Tariq Khan', phone: '9899887766', source: 'Direct Phone Callback', status: 'Closed' }
-  ];
+  State.enquiries = [];
 
-  State.smsLog = [
-    { to: 'All Parents (247 Recipients)', msg: 'Dear Parent, this is to inform that the mid-term evaluations reports are now published in the central portal. — VBNS', date: '2026-05-15', time: '10:15 AM', credits: 247 },
-    { to: 'Defaulters (Outstanding Balance)', msg: 'Dear Parent, a gentle reminder that your child\'s outstanding annual fee installment is overdue. Please ignore if paid. — VBNS', date: '2026-05-20', time: '11:45 AM', credits: 3 }
-  ];
+  State.smsLog = [];
 
-  State.notices = [
-    { title: 'Annual Sports Day Board Assembly', body: 'The Annual Sports Meet is scheduled for 15th December 2026. Grade athletic selections begin Monday.', date: '2026-05-24', priority: 'Normal Broadcast', by: 'Sports Admin Board' },
-    { title: 'Mandatory Parent-Teacher Meeting (PTM)', body: 'Critical academic discussion regarding final board test timetables for Classes VI-X on 10th June 2026, 10:00 AM.', date: '2026-05-22', priority: 'Important Bulletin', by: 'Principal Office' },
-    { title: 'Urgent: CBSE Registration Compliance', body: 'All Grade X students must submit three verified photographs and duplicate board forms by 30th May without fail.', date: '2026-05-20', priority: 'Urgent Announcement', by: 'Academic Director' }
-  ];
+  State.notices = [];
 
   // Initialize Default Staff Passwords and Salaries
   State.staff.forEach(st => {
@@ -462,11 +418,7 @@ function seedDatabase() {
     else st.assignedClass = '';
   });
 
-  State.homework = [
-    { id: 'HW-001', cls: 'Class X', subject: 'Mathematics', title: 'Quadratic Equations Practice', desc: 'Solve questions 1 to 15 from exercise 4.2 in the textbook. Show all workings clearly.', dueDate: '2026-05-28', createdDate: '2026-05-24', by: 'Dr. Rajeev Sharma' },
-    { id: 'HW-002', cls: 'Class X', subject: 'Science', title: 'Chemical Reactions Report', desc: 'Write a 2-page report on redox reactions with real-life examples and chemical formulas.', dueDate: '2026-05-29', createdDate: '2026-05-24', by: 'Mrs. Ananya Sen' },
-    { id: 'HW-003', cls: 'Class IX', subject: 'English', title: 'Grammar Exercises', desc: 'Complete active/passive voice worksheets distributed in class.', dueDate: '2026-05-27', createdDate: '2026-05-24', by: 'Mr. Vivek Paul' }
-  ];
+  State.homework = [];
 
   State.auditLog = [
     { timestamp: new Date().toLocaleString('en-IN'), actor: 'System Initializer', action: 'System Seed', category: 'system', details: 'Initialized VBNS CRM system state registers' }
