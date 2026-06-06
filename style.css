@@ -4350,3 +4350,218 @@ body.crm-active #public-website {
   display: none !important;
 }
 
+/* =====================================================
+   MOBILE RESPONSIVE FIXES - vbns.in
+   ===================================================== */
+
+@media (max-width: 768px) {
+
+  /* --- NAVBAR --- */
+  .public-nav .nav-container {
+    padding: 0 16px;
+    height: 65px;
+  }
+  .nav-school-name {
+    font-size: 13px !important;
+  }
+  .nav-school-tag {
+    display: none !important;
+  }
+  .nav-logo img {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  /* Hide lang button text on mobile */
+  #lang-toggle-btn {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+  }
+
+  /* --- HERO SECTION --- */
+  .public-hero {
+    min-height: auto !important;
+    padding-top: 65px !important;
+    padding-bottom: 30px !important;
+  }
+  .public-hero .hero-container {
+    padding: 24px 16px !important;
+  }
+  .hero-split-layout {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .hero-left {
+    align-items: center !important;
+    text-align: center !important;
+  }
+  .public-hero .hero-title {
+    font-size: 28px !important;
+    letter-spacing: -0.5px !important;
+  }
+  .public-hero .hero-subtitle {
+    font-size: 14px !important;
+    text-align: center !important;
+  }
+  .public-hero .hero-ctas {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+    align-items: center !important;
+  }
+  .public-hero .btn-lg {
+    width: 100% !important;
+    max-width: 280px !important;
+    justify-content: center !important;
+    padding: 12px 20px !important;
+  }
+  .hero-right {
+    display: flex !important;
+    justify-content: center !important;
+  }
+  .hero-image-wrapper-card {
+    max-width: 280px !important;
+    margin: 0 auto !important;
+  }
+  .hero-image-card {
+    animation: none !important;
+  }
+  .hero-features-row {
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .hero-feature {
+    font-size: 11px !important;
+    padding: 4px 10px !important;
+  }
+  .hero-badge {
+    font-size: 10px !important;
+  }
+  .hero-rating-row {
+    justify-content: center !important;
+    font-size: 12px !important;
+  }
+
+  /* --- NOTICE BAR --- */
+  .notice-bar {
+    font-size: 11px !important;
+    padding: 6px 12px !important;
+  }
+
+  /* --- SECTIONS --- */
+  .section-header-premium {
+    padding: 0 16px !important;
+  }
+  .section-tagline {
+    font-size: 11px !important;
+  }
+  .section-headline {
+    font-size: 24px !important;
+  }
+  .section-desc {
+    font-size: 13px !important;
+  }
+
+  /* --- STATS STRIP --- */
+  .stats-strip-premium {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+    padding: 24px 16px !important;
+  }
+  .stat-number {
+    font-size: 28px !important;
+  }
+
+  /* --- WHY CHOOSE --- */
+  .why-choose-grid {
+    grid-template-columns: 1fr !important;
+    padding: 0 16px !important;
+  }
+
+  /* --- ADMISSIONS --- */
+  .admission-steps-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .admission-cta-box {
+    padding: 24px 16px !important;
+  }
+  .admission-cta-box h2 {
+    font-size: 22px !important;
+  }
+  .admission-cta-actions {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .admission-cta-actions .btn {
+    width: 100% !important;
+    max-width: 260px !important;
+    justify-content: center !important;
+  }
+
+  /* --- CONTACT --- */
+  .contact-grid-premium {
+    grid-template-columns: 1fr !important;
+    padding: 0 16px !important;
+  }
+  .contact-form-premium input,
+  .contact-form-premium textarea,
+  .contact-form-premium select {
+    font-size: 14px !important;
+  }
+
+  /* --- FOOTER --- */
+  .footer-split-teal {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    padding: 24px 16px !important;
+  }
+  .footer-copyright-teal {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 8px !important;
+    padding: 12px 16px !important;
+    font-size: 12px !important;
+  }
+
+  /* --- MOBILE STICKY FOOTER --- */
+  .mobile-sticky-footer {
+    display: flex !important;
+  }
+  body {
+    padding-bottom: 60px !important;
+  }
+
+  /* --- GALLERY --- */
+  .gallery-grid-six {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* --- ACADEMICS --- */
+  .academics-grid-premium {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* --- ABOUT --- */
+  .about-split-premium {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .about-image-stack {
+    max-width: 280px !important;
+    margin: 0 auto !important;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 380px) {
+  .public-hero .hero-title {
+    font-size: 24px !important;
+  }
+  .stats-strip-premium {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .gallery-grid-six {
+    grid-template-columns: 1fr !important;
+  }
+}
