@@ -569,6 +569,43 @@ async function executeLogin() {
 
   try {
     // Salt is 'admin' for admin, or uppercase username/ID for others
+    // Only use Firebase Auth for admin, use local auth for student/teacher
+    if (activeLoginRole !== 'admin') {
+      // Local authentication for student and teacher
+      const key = username.toUpperCase();
+      let authenticatedUser = null;
+      if (activeLoginRole === 'teacher') {
+        const staffMember = State.staff.find(st => st.id.toUpperCase() === key);
+        if (staffMember) {
+          const storedPass = staffMember.password || (State.staffPasswords && State.staffPasswords[staffMember.id]) || 'teacher123';
+          if (passVal.trim() === storedPass) authenticatedUser = staffMember;
+        }
+      } else if (activeLoginRole === 'student') {
+        const studentMember = State.students.find(s => s.id.toUpperCase() === key);
+        if (studentMember) {
+          const storedPass = studentMember.password || 'student123';
+          if (passVal.trim() === storedPass) authenticatedUser = studentMember;
+        }
+      }
+      if (authenticatedUser) {
+        State.auth.currentRole = activeLoginRole;
+        State.auth.currentUser = authenticatedUser;
+        sessionStorage.setItem('apex_auth_role', activeLoginRole);
+        sessionStorage.setItem('apex_auth_user', JSON.stringify(authenticatedUser));
+        logActivity(authenticatedUser.name, 'User Login', 'security', `Successfully authorized as ${activeLoginRole.toUpperCase()}`);
+        applySessionAccessLayout();
+        const defaultTab = activeLoginRole === 'student' ? 'fees' : 'dashboard';
+        nav(defaultTab);
+        document.getElementById('login-username').value = '';
+        document.getElementById('login-password').value = '';
+        showToast('Login Granted', `Welcome back, ${authenticatedUser.name}!`, 'ti-circle-key-filled');
+      } else {
+        errorEl.textContent = 'Incorrect ID or password. Please try again.';
+        errorEl.style.display = 'block';
+      }
+      return;
+    }
+
     const salt = activeLoginRole === 'admin' ? 'admin' : username.toUpperCase();
     const passwordHash = passVal;
 
