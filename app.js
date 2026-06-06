@@ -487,17 +487,40 @@ function saveState() {
   localStorage.setItem('apex_school_crm_state', JSON.stringify(State));
   if (!window.db) return;
   try {
-    const { collection, doc, setDoc } = window.fbFns;
-    State.students.forEach(student => {
-      setDoc(doc(window.fbDb, 'students', student.id), student)
-        .catch(e => console.warn('Firestore student save failed:', e));
+    const { doc, setDoc, collection, getDocs } = window.fsLib;
+    const db = window.db;
+
+    // Save students - each as own document
+    (State.students || []).forEach(student => {
+      setDoc(doc(db, 'students', student.id), student)
+        .catch(e => console.warn('Student save failed:', e));
     });
+
+    // Save everything else in one meta document
+    const meta = {
+      ledger: State.ledger || [],
+      feeLog: State.feeLog || [],
+      enquiries: State.enquiries || [],
+      notices: State.notices || [],
+      smsLog: State.smsLog || [],
+      attendance: State.attendance || {},
+      staffAttendance: State.staffAttendance || {},
+      payrollConfig: State.payrollConfig || {},
+      staffPasswords: State.staffPasswords || {},
+      homework: State.homework || [],
+      auditLog: State.auditLog || [],
+      staff: State.staff || [],
+      config: State.config || {},
+      updatedAt: new Date().toISOString()
+    };
+    setDoc(doc(db, 'schoolData', 'meta'), meta)
+      .catch(e => console.warn('Meta save failed:', e));
+
   } catch(e) {
     console.warn('Firestore save error:', e);
   }
-}    console.warn('Firestore save error:', e);
-  }
 }
+  }
 
 // Global Core App Initializer
 window.addEventListener('DOMContentLoaded', async () => {
