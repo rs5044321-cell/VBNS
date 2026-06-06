@@ -581,9 +581,21 @@ async function executeLogin() {
           if (passVal.trim() === storedPass) authenticatedUser = staffMember;
         }
       } else if (activeLoginRole === 'student') {
-        const studentMember = State.students.find(s => s.id.toUpperCase() === key);
+        // Match by auto-generated ID: first3LettersOfName + vbns + enrollmentNumber
+        const studentMember = State.students.find(s => {
+          const namePart = s.name.replace(/\s+/g, '').substring(0, 3).toLowerCase();
+          const idNum = s.id.replace(/[^0-9]/g, '').padStart(3, '0');
+          const generatedId = namePart + 'vbns' + idNum;
+          return generatedId === username.toLowerCase();
+        });
         if (studentMember) {
-          const storedPass = studentMember.password || 'student123';
+          // Password: first3LettersOfName + DOB in ddmmyyyy
+          const namePart = studentMember.name.replace(/\s+/g, '').substring(0, 3).toLowerCase();
+          const dob = studentMember.dob || '';
+          const dobParts = dob.split('-'); // yyyy-mm-dd
+          const dobFormatted = dobParts.length === 3 ? dobParts[2] + dobParts[1] + dobParts[0] : '';
+          const generatedPass = namePart + dobFormatted;
+          const storedPass = studentMember.password && studentMember.password !== 'student123' ? studentMember.password : generatedPass;
           if (passVal.trim() === storedPass) authenticatedUser = studentMember;
         }
       }
@@ -661,10 +673,19 @@ async function executeLogin() {
         }
       }
     } else if (localRole === 'student') {
-      const studentMember = State.students.find(s => s.id.toUpperCase() === key);
+      const studentMember = State.students.find(s => {
+        const namePart = s.name.replace(/\s+/g, '').substring(0, 3).toLowerCase();
+        const idNum = s.id.replace(/[^0-9]/g, '').padStart(3, '0');
+        const generatedId = namePart + 'vbns' + idNum;
+        return generatedId === username.toLowerCase();
+      });
       if (studentMember) {
-        // Check stored password field first, then default
-        const storedPass = studentMember.password || 'student123';
+        const namePart = studentMember.name.replace(/\s+/g, '').substring(0, 3).toLowerCase();
+        const dob = studentMember.dob || '';
+        const dobParts = dob.split('-');
+        const dobFormatted = dobParts.length === 3 ? dobParts[2] + dobParts[1] + dobParts[0] : '';
+        const generatedPass = namePart + dobFormatted;
+        const storedPass = studentMember.password && studentMember.password !== 'student123' ? studentMember.password : generatedPass;
         if (passVal.trim() === storedPass) {
           authenticatedUser = studentMember;
         }
