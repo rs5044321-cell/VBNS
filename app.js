@@ -3028,23 +3028,23 @@ async function openStaffAttendanceWithGeoCheck() {
     return;
   }
 
+  // Admin can mark attendance from anywhere
+  if (State.auth.currentRole === 'admin') {
+    loadStaffAttendanceRegister();
+    return;
+  }
+
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       const dist = getDistanceMeters(pos.coords.latitude, pos.coords.longitude, SCHOOL_GEO.lat, SCHOOL_GEO.lng);
       if (dist <= SCHOOL_GEO.radiusMeters) {
         loadStaffAttendanceRegister();
       } else {
-        showStaffAttGeoLocked(`You are currently <b>${Math.round(dist)} metres</b> away from Vandey Bharti National Intermediate College, Mahamda.<br><br>Staff attendance can only be marked when you are physically inside the school compound (<b>${SCHOOL_GEO.radiusMeters}m radius</b>).`, 'ti-map-pin-off');
+        showStaffAttGeoLocked(`You are currently <b>${Math.round(dist)} metres</b> away from Vandey Bharti National School, Shyamdeurwa.<br><br>Staff attendance can only be marked when you are physically inside the school compound (<b>${SCHOOL_GEO.radiusMeters}m radius</b>).`, 'ti-map-pin-off');
       }
     },
     (err) => {
-      // If location is denied, admins can still override for offline use
-      if (State.auth.currentRole === 'admin') {
-        showToast('Location Bypassed', 'GPS unavailable. Admin override: loading attendance register.', 'ti-shield-lock');
-        loadStaffAttendanceRegister();
-      } else {
-        showStaffAttGeoLocked('Location permission was denied. Please allow location access in your browser to mark staff attendance. This ensures attendance is recorded only from within school premises.', 'ti-location-off');
-      }
+      showStaffAttGeoLocked('Location permission was denied. Please allow location access in your browser to mark staff attendance. This ensures attendance is recorded only from within school premises.', 'ti-location-off');
     },
     { timeout: 8000, maximumAge: 60000, enableHighAccuracy: true }
   );
