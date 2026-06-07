@@ -700,7 +700,7 @@ async function executeLogin() {
         // Match by admin-set username (stored on staff object)
         const staffMember = State.staff.find(st =>
           (st.username && st.username === username.toLowerCase()) ||
-          st.id.toUpperCase() === username.toUpperCase() // fallback: still allow ID login
+          st.id.toUpperCase() === username.toUpperCase()
         );
         if (staffMember) {
           const storedPass = staffMember.password || '';
@@ -729,13 +729,15 @@ async function executeLogin() {
         }
       }
       if (authenticatedUser) {
-        State.auth.currentRole = activeLoginRole;
+        // If staff member is marked as accountant, override role
+        const effectiveRole = (activeLoginRole === 'teacher' && authenticatedUser.isAccountant) ? 'accountant' : activeLoginRole;
+        State.auth.currentRole = effectiveRole;
         State.auth.currentUser = authenticatedUser;
-        sessionStorage.setItem('apex_auth_role', activeLoginRole);
+        sessionStorage.setItem('apex_auth_role', effectiveRole);
         sessionStorage.setItem('apex_auth_user', JSON.stringify(authenticatedUser));
-        logActivity(authenticatedUser.name, 'User Login', 'security', `Successfully authorized as ${activeLoginRole.toUpperCase()}`);
+        logActivity(authenticatedUser.name, 'User Login', 'security', `Successfully authorized as ${effectiveRole.toUpperCase()}`);
         applySessionAccessLayout();
-        const defaultTab = activeLoginRole === 'student' ? 'fees' : 'dashboard';
+        const defaultTab = effectiveRole === 'student' ? 'fees' : effectiveRole === 'accountant' ? 'report' : 'dashboard';
         nav(defaultTab);
         document.getElementById('login-username').value = '';
         document.getElementById('login-password').value = '';
@@ -823,17 +825,18 @@ async function executeLogin() {
     }
 
     if (authenticatedUser) {
-      State.auth.currentRole = localRole;
+      const effectiveRole2 = (localRole === 'teacher' && authenticatedUser.isAccountant) ? 'accountant' : localRole;
+      State.auth.currentRole = effectiveRole2;
       State.auth.currentUser = authenticatedUser;
       
-      sessionStorage.setItem('apex_auth_role', localRole);
+      sessionStorage.setItem('apex_auth_role', effectiveRole2);
       sessionStorage.setItem('apex_auth_user', JSON.stringify(authenticatedUser));
 
-      logActivity(authenticatedUser.name, 'User Login', 'security', `Successfully authorized as ${localRole.toUpperCase()}`);
+      logActivity(authenticatedUser.name, 'User Login', 'security', `Successfully authorized as ${effectiveRole2.toUpperCase()}`);
 
       applySessionAccessLayout();
       
-      const defaultTab = localRole === 'student' ? 'fees' : 'dashboard';
+      const defaultTab = effectiveRole2 === 'student' ? 'fees' : effectiveRole2 === 'accountant' ? 'report' : 'dashboard';
       nav(defaultTab);
       
       document.getElementById('login-username').value = '';
@@ -993,10 +996,13 @@ function applySessionAccessLayout() {
 function nav(tabId, sidebarElement) {
   const currentRole = State.auth.currentRole || 'student';
   
-  // Student view limits: Students can access Fees, Notice Board, Student Attendance, Exam Results, Exam Schedule, ID Cards, Admit Cards, and Homework
+  // Student view limits
   const studentClearance = ['fees', 'notice', 'attendance', 'results', 'exam', 'idcards', 'admit', 'homework'];
   
-  // Dynamic Faculty view limits: Controlled dynamically per logged-in staff member!
+  // Accountant view: fees, ledger, reports, notices, SMS
+  const accountantClearance = ['dashboard', 'fees', 'ledger', 'report', 'notice', 'sms', 'enquiry'];
+
+  // Dynamic Faculty view limits
   let teacherClearance = ['dashboard', 'homework'];
   if (currentRole === 'teacher') {
     const activeStaff = State.auth.currentUser;
@@ -1010,6 +1016,7 @@ function nav(tabId, sidebarElement) {
   const accessAllowances = {
     admin: ['dashboard', 'admission', 'directory', 'idcards', 'admit', 'fees', 'ledger', 'report', 'payroll', 'sms', 'notice', 'enquiry', 'attendance', 'staffattendance', 'timetable', 'exam', 'results', 'library', 'transport', 'staff', 'settings', 'homework', 'audit'],
     teacher: teacherClearance,
+    accountant: accountantClearance,
     student: studentClearance
   };
 
