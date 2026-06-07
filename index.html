@@ -1487,7 +1487,7 @@
       <div class="sb-section" data-roles="admin">Finance</div>
       <div class="sb-item" data-roles="admin student" onclick="nav('fees', this)"><i class="ti ti-cash"></i>Fee Collection</div>
       <div class="sb-item" data-roles="admin" onclick="nav('ledger', this)"><i class="ti ti-book-2"></i>Ledger System</div>
-      <div class="sb-item" data-roles="admin" onclick="nav('report', this)"><i class="ti ti-chart-pie"></i>Fee Report</div>
+      <div class="sb-item" data-roles="admin accountant" onclick="nav('report', this)"><i class="ti ti-chart-pie"></i>Fee Report</div>
       <div class="sb-item" data-roles="admin" onclick="nav('payroll', this)"><i class="ti ti-wallet"></i>Staff Payroll</div>
       
       <div class="sb-section" data-roles="admin teacher">Communication</div>
@@ -2007,6 +2007,17 @@
           <div class="stat-card">
             <div class="stat-num color-blue" id="rpt-count">0</div>
             <div class="stat-lbl">Registered Accounts</div>
+          </div>
+        </div>
+
+        <!-- Class-wise dues panel — admin and accountant only -->
+        <div class="card glass" data-roles="admin accountant" style="margin-bottom:20px;">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-report-money"></i> Class-Wise Fee Status</h2>
+            <span class="card-subtitle">Paid, due, and defaulters broken down per class</span>
+          </div>
+          <div id="rpt-classwise-panel" style="padding:16px;">
+            <!-- Rendered dynamically by renderFeeReport() -->
           </div>
         </div>
         
@@ -2663,6 +2674,13 @@
                   <label>Portal Login Password *</label>
                   <input type="text" id="staff-password" placeholder="Set a strong password" autocomplete="off" />
                 </div>
+              </div>
+              <div class="form-row">
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                  <input type="checkbox" id="staff-is-accountant" style="width:16px; height:16px; accent-color:var(--accent);" />
+                  <span>Mark as <b>Accountant</b> — gives access to Fees, Ledger, Reports, Notices &amp; SMS only</span>
+                </label>
+              </div>
                 <div class="form-row">
                   <label>Assigned Salary (<span class="curr-sym">₹</span>) *</label>
                   <input type="number" id="staff-base-salary" value="40000" />

@@ -2139,7 +2139,6 @@ function renderFeeReport() {
   const totalBilled = State.students.reduce((sum, s) => sum + s.fee, 0);
   const totalPending = State.students.reduce((sum, s) => sum + s.balance, 0);
   const totalCollected = totalBilled - totalPending;
-
   const collectionRatio = totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 0;
 
   document.getElementById('rpt-collected').textContent = formatCurrency(totalCollected);
@@ -2150,20 +2149,43 @@ function renderFeeReport() {
   const tbody = document.getElementById('rpt-body');
   if (!tbody) return;
 
-  // Group calculations by classroom grade
-  const classesList = ['Class I', 'Class II', 'Class III', 'Class IV', 'Class V', 'Class VI', 'Class VII', 'Class VIII', 'Class IX', 'Class X'];
+  const classesList = ['Class I','Class II','Class III','Class IV','Class V','Class VI','Class VII','Class VIII','Class IX','Class X'];
   const breakdown = classesList.map(grade => {
     const studentsInClass = State.students.filter(s => s.cls === grade);
     if (studentsInClass.length === 0) return null;
-
     const count = studentsInClass.length;
     const billed = studentsInClass.reduce((sum, s) => sum + s.fee, 0);
     const pending = studentsInClass.reduce((sum, s) => sum + s.balance, 0);
     const collected = billed - pending;
     const ratio = billed > 0 ? Math.round((collected / billed) * 100) : 0;
-
-    return { grade, count, billed, collected, pending, ratio };
+    // List defaulters (students with balance > 0)
+    const defaulters = studentsInClass.filter(s => s.balance > 0).map(s => `${s.name} (${formatCurrency(s.balance)} due)`).join(', ');
+    return { grade, count, billed, collected, pending, ratio, defaulters };
   }).filter(item => item !== null);
+
+  // Class-wise summary panel — shown to admin and accountant
+  const role = State.auth.currentRole;
+  const summaryPanel = document.getElementById('rpt-classwise-panel');
+  if (summaryPanel && (role === 'admin' || role === 'accountant')) {
+    if (breakdown.length === 0) {
+      summaryPanel.innerHTML = `<p style="color:var(--text-tertiary); padding:12px;">No student data yet.</p>`;
+    } else {
+      summaryPanel.innerHTML = breakdown.map(item => `
+        <div style="border:1px solid var(--border-primary); border-radius:var(--border-radius-md); padding:14px; background:var(--bg-secondary); margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <b style="font-size:14px;">${item.grade}</b>
+            <span class="pill ${item.ratio >= 90 ? 'pill-green' : item.ratio >= 50 ? 'pill-amber' : 'pill-red'}">${item.ratio}% Collected</span>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; font-size:12px; margin-bottom:6px;">
+            <div><span style="color:var(--text-secondary)">Students</span><br><b>${item.count}</b></div>
+            <div><span style="color:var(--color-success)">Paid</span><br><b>${formatCurrency(item.collected)}</b></div>
+            <div><span style="color:var(--color-danger)">Due</span><br><b>${formatCurrency(item.pending)}</b></div>
+          </div>
+          ${item.defaulters ? `<div style="font-size:11px; color:var(--color-danger); margin-top:4px;"><b>Defaulters:</b> ${item.defaulters}</div>` : `<div style="font-size:11px; color:var(--color-success);">✅ All fees cleared</div>`}
+        </div>
+      `).join('');
+    }
+  }
 
   if (breakdown.length === 0) {
     tbody.innerHTML = `<tr><td colspan="6" class="center-col" style="color:var(--text-tertiary)">No classroom files to compute.</td></tr>`;
@@ -2174,17 +2196,14 @@ function renderFeeReport() {
     let pillClass = 'pill-red';
     if (item.ratio >= 90) pillClass = 'pill-green';
     else if (item.ratio >= 50) pillClass = 'pill-amber';
-    
     return `
       <tr>
         <td><b>${item.grade}</b></td>
         <td>${item.count} Accounts</td>
         <td class="text-right">${formatCurrency(item.billed)}</td>
-        <td class="text-right" style="color: var(--color-success)">${formatCurrency(item.collected)}</td>
-        <td class="text-right" style="color: var(--color-danger)">${formatCurrency(item.pending)}</td>
-        <td>
-          <span class="pill ${pillClass}">${item.ratio}% FULFILLED</span>
-        </td>
+        <td class="text-right" style="color:var(--color-success)">${formatCurrency(item.collected)}</td>
+        <td class="text-right" style="color:var(--color-danger)">${formatCurrency(item.pending)}</td>
+        <td><span class="pill ${pillClass}">${item.ratio}% FULFILLED</span></td>
       </tr>
     `;
   }).join('');
@@ -3777,7 +3796,7 @@ function renderStaffRegistry() {
           <div style="font-weight:600; color:var(--text-primary); display:flex; align-items:center; gap:8px">${st.name} ${assignedClassStr}</div>
           <small style="color:var(--text-tertiary); font-size:10px; display:block; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${accessStr}">${accessStr}</small>
         </td>
-        <td><span class="pill pill-blue">${st.role}</span></td>
+        <td><span class="pill ${st.isAccountant ? 'pill-amber' : 'pill-blue'}">${st.isAccountant ? '💼 ACCOUNTANT' : st.role}</span></td>
         <td>${st.contact}</td>
         <td><code style="background:rgba(99,102,241,0.06); color:var(--accent); padding:2px 6px; border-radius:4px; font-size:11.5px; font-family:monospace; font-weight:600;">${st.id} / ${pwd}</code></td>
         <td>
@@ -3848,6 +3867,7 @@ async function addStaffRecord() {
   const contact = phoneEl.value.trim();
   const password = pwEl.value.trim();
   const username = unEl ? unEl.value.trim() : '';
+  const isAccountant = document.getElementById('staff-is-accountant')?.checked || false;
   const baseSalary = parseFloat(salEl.value) || 30000;
   const assignedClass = classEl.value;
 
@@ -3878,6 +3898,7 @@ async function addStaffRecord() {
       st.access = access;
       st.assignedClass = assignedClass;
       if (username) st.username = username.toLowerCase();
+      st.isAccountant = isAccountant;
       if (password) {
         st.password = password;
       }
@@ -3908,8 +3929,9 @@ async function addStaffRecord() {
       status: 'On Duty',
       access: access,
       assignedClass: assignedClass,
-      username: username.toLowerCase(), // admin-set login username
-      password: password                // admin-set login password
+      username: username.toLowerCase(),
+      password: password,
+      isAccountant: isAccountant
     };
 
     State.staff.push(newStaff);
@@ -3937,6 +3959,8 @@ async function addStaffRecord() {
   if (unEl) unEl.value = '';
   pwEl.value = '';
   pwEl.placeholder = '';
+  const accBox = document.getElementById('staff-is-accountant');
+  if (accBox) accBox.checked = false;
   salEl.value = '40000';
   classEl.value = 'Class X';
   
