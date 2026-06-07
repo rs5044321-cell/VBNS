@@ -2414,25 +2414,55 @@
 
       <!-- EXAM RESULTS TAB -->
       <section class="tab" id="tab-results">
-        <div class="card glass">
-          <div class="card-header search-bar-header">
-            <div class="header-left">
-              <h2 class="section-title"><i class="ti ti-award"></i> Master Student Gradebook</h2>
-              <span class="card-subtitle">Log, review, and print individual academic scores</span>
+        <div class="two-col">
+          <!-- LEFT: View gradebook -->
+          <div class="card glass">
+            <div class="card-header search-bar-header">
+              <div class="header-left">
+                <h2 class="section-title"><i class="ti ti-award"></i> Master Student Gradebook</h2>
+                <span class="card-subtitle">Log, review, and print individual academic scores</span>
+              </div>
+              <div class="header-actions" id="results-stu-wrapper">
+                <select id="res-stu" class="styled-select" onchange="loadStudentResults()" style="min-width: 250px;"></select>
+                <button class="btn btn-primary" onclick="loadStudentResults()">
+                  <i class="ti ti-file-text"></i> Load Gradebook Report
+                </button>
+              </div>
             </div>
-            <div class="header-actions" id="results-stu-wrapper">
-              <select id="res-stu" class="styled-select" onchange="loadStudentResults()" style="min-width: 250px;"></select>
-              <button class="btn btn-primary" onclick="loadStudentResults()">
-                <i class="ti ti-file-text"></i> Load Gradebook Report
-              </button>
+            <div id="results-table" class="gradebook-report-card">
+              <div class="empty-preview">
+                <div class="empty-preview-content">
+                  <i class="ti ti-award"></i>
+                  <p>Select a student profile from the selector above to compile and render their exam result registry.</p>
+                </div>
+              </div>
             </div>
           </div>
-          <div id="results-table" class="gradebook-report-card">
-            <div class="empty-preview">
-              <div class="empty-preview-content">
-                <i class="ti ti-award"></i>
-                <p>Select a student profile from the selector above to compile and render their exam result registry.</p>
+
+          <!-- RIGHT: Enter/Edit marks — admin and teacher only -->
+          <div class="card glass" data-roles="admin teacher">
+            <div class="card-header">
+              <h2 class="section-title"><i class="ti ti-pencil"></i> Enter / Edit Marks</h2>
+              <span class="card-subtitle">Admin or staff can enter marks for any student</span>
+            </div>
+            <div class="form-container">
+              <div class="form-row">
+                <label>Select Student *</label>
+                <select id="grade-stu" class="styled-select"></select>
               </div>
+              <div class="form-row">
+                <label>Exam / Test Name *</label>
+                <input type="text" id="grade-exam-name" placeholder="E.g., Midterm Exam 2026" />
+              </div>
+              <div id="grade-subjects-list">
+                <!-- Subject rows added dynamically -->
+              </div>
+              <button class="btn btn-sm" onclick="addGradeSubjectRow()" style="margin-bottom:12px;">
+                <i class="ti ti-plus"></i> Add Subject
+              </button>
+              <button class="btn btn-primary" onclick="saveGradebook()" style="width:100%;">
+                <i class="ti ti-device-floppy"></i> Save Marks to Gradebook
+              </button>
             </div>
           </div>
         </div>

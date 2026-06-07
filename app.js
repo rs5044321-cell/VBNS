@@ -1130,6 +1130,8 @@ function nav(tabId, sidebarElement) {
     case 'results':
       lockStudentDropdownToRole('res-stu', 'results-stu-wrapper');
       loadStudentResults();
+      populateGradeStudentDropdown();
+      initGradeSubjectRows();
       break;
     case 'library':
       renderLibraryCirculation();
@@ -3445,12 +3447,129 @@ function loadStudentResults() {
       </table>
     </div>
     
-    <div style="display:flex; justify-content:flex-end; margin-top:20px">
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px">
+      ${(State.auth.currentRole === 'admin' || State.auth.currentRole === 'teacher') ? `
+      <button class="btn btn-primary" onclick="prefillGradebookEditor('${student.id}')">
+        <i class="ti ti-pencil"></i> Edit Marks
+      </button>` : ''}
       <button class="btn" onclick="printCard('results-table')">
         <i class="ti ti-printer"></i> Print Gradebook Report
       </button>
     </div>
   `;
+}
+
+// -------------------------------------------------------------
+// GRADEBOOK ENTRY — Admin & Teacher can enter/edit marks
+// -------------------------------------------------------------
+function prefillGradebookEditor(studentId) {
+  const results = (State.results || {})[studentId];
+  if (!results) return;
+
+  // Set student in entry dropdown
+  const stuSel = document.getElementById('grade-stu');
+  if (stuSel) stuSel.value = studentId;
+
+  // Set exam name
+  const examEl = document.getElementById('grade-exam-name');
+  if (examEl) examEl.value = results.examName || '';
+
+  // Clear and refill subject rows
+  const list = document.getElementById('grade-subjects-list');
+  if (list) {
+    list.innerHTML = '';
+    results.subjects.forEach(s => {
+      addGradeSubjectRow();
+      const row = list.lastElementChild;
+      const inputs = row.querySelectorAll('input');
+      inputs[0].value = s.sub;
+      inputs[1].value = s.max;
+      inputs[2].value = s.marks;
+    });
+  }
+
+  // Scroll to entry form
+  const entryCard = document.querySelector('#tab-results .two-col > .card:last-child');
+  if (entryCard) entryCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  showToast('Edit Mode', `Loaded marks for editing — click Save when done.`, 'ti-pencil');
+}
+
+
+  const sel = document.getElementById('grade-stu');
+  if (!sel) return;
+  sel.innerHTML = State.students.map(s =>
+    `<option value="${s.id}">${s.name} (${s.id}) — ${s.cls}</option>`
+  ).join('');
+}
+
+function initGradeSubjectRows() {
+  const list = document.getElementById('grade-subjects-list');
+  if (!list || list.children.length > 0) return;
+  // Start with 5 blank subject rows
+  for (let i = 0; i < 5; i++) addGradeSubjectRow();
+}
+
+function addGradeSubjectRow() {
+  const list = document.getElementById('grade-subjects-list');
+  if (!list) return;
+  const idx = list.children.length + 1;
+  const row = document.createElement('div');
+  row.style.cssText = 'display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:8px; margin-bottom:8px; align-items:center;';
+  row.innerHTML = `
+    <input type="text" placeholder="Subject name (e.g. Mathematics)" style="padding:8px; border:1px solid var(--border-primary); border-radius:var(--border-radius-sm); background:var(--bg-secondary); color:var(--text-primary); font-size:13px;" />
+    <input type="number" placeholder="Max" min="1" value="100" style="padding:8px; border:1px solid var(--border-primary); border-radius:var(--border-radius-sm); background:var(--bg-secondary); color:var(--text-primary); font-size:13px;" />
+    <input type="number" placeholder="Scored" min="0" value="" style="padding:8px; border:1px solid var(--border-primary); border-radius:var(--border-radius-sm); background:var(--bg-secondary); color:var(--text-primary); font-size:13px;" />
+    <button onclick="this.parentElement.remove()" style="background:rgba(239,68,68,0.1); border:none; color:var(--color-danger); border-radius:var(--border-radius-sm); padding:8px; cursor:pointer; font-size:14px;">✕</button>
+  `;
+  list.appendChild(row);
+}
+
+function saveGradebook() {
+  const role = State.auth.currentRole;
+  if (role === 'student') {
+    showToast('Access Denied', 'Only admin or staff can enter marks.', 'ti-lock');
+    return;
+  }
+
+  const stuSel = document.getElementById('grade-stu');
+  const examName = document.getElementById('grade-exam-name').value.trim();
+  const list = document.getElementById('grade-subjects-list');
+
+  if (!stuSel || !examName) {
+    showToast('Validation Error', 'Select a student and enter the exam name.', 'ti-alert-circle');
+    return;
+  }
+
+  const studentId = stuSel.value;
+  const subjects = [];
+
+  Array.from(list.children).forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const sub = inputs[0].value.trim();
+    const max = parseInt(inputs[1].value) || 100;
+    const marks = parseInt(inputs[2].value);
+    if (sub && !isNaN(marks)) {
+      subjects.push({ sub, max, marks });
+    }
+  });
+
+  if (subjects.length === 0) {
+    showToast('Validation Error', 'Add at least one subject with marks.', 'ti-alert-circle');
+    return;
+  }
+
+  if (!State.results) State.results = {};
+  State.results[studentId] = { examName, subjects };
+
+  logActivity(State.auth.currentUser?.name || role, 'Gradebook Updated', 'academic',
+    `Marks entered for student ${studentId} — Exam: ${examName}`);
+  saveState();
+
+  // Refresh the view dropdown and reload
+  const viewSel = document.getElementById('res-stu');
+  if (viewSel) { viewSel.value = studentId; loadStudentResults(); }
+
+  showToast('Marks Saved', `Gradebook updated for ${stuSel.options[stuSel.selectedIndex].text}`, 'ti-circle-check');
 }
 
 // -------------------------------------------------------------
