@@ -336,7 +336,7 @@ function seedDatabase() {
           });
         }
         if (!State.config.teacherAccess) {
-          State.config.teacherAccess = ['dashboard', 'directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
+          State.config.teacherAccess = ['dashboard', 'directory', 'fees', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
         }
         State.staff.forEach(st => {
           if (!st.access) {
@@ -1029,7 +1029,7 @@ function nav(tabId, sidebarElement) {
     if (activeStaff && activeStaff.access) {
       teacherClearance = ['dashboard', 'homework', ...activeStaff.access];
     } else {
-      teacherClearance = ['dashboard', 'homework', 'directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
+      teacherClearance = ['dashboard', 'homework', 'directory', 'fees', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
     }
   }
 
@@ -1748,8 +1748,87 @@ function printCard(printTargetId) {
 // MODULE 6: FEE COLLECTION PORTAL
 // -------------------------------------------------------------
 function renderFeeCollectionModule() {
+  const role = State.auth.currentRole;
+
+  if (role === 'teacher') {
+    // Teacher sees only their class fee summary
+    const teacher = State.auth.currentUser;
+    const assignedClass = teacher?.assignedClass || '';
+    const classStudents = State.students.filter(s => s.cls === assignedClass);
+
+    const totalFee = classStudents.reduce((sum, s) => sum + (s.fee || 0), 0);
+    const totalPaid = classStudents.reduce((sum, s) => sum + ((s.fee || 0) - (s.balance || 0)), 0);
+    const totalDue = classStudents.reduce((sum, s) => sum + (s.balance || 0), 0);
+    const paidCount = classStudents.filter(s => s.status === 'Paid').length;
+    const pendingCount = classStudents.filter(s => s.status === 'Pending').length;
+    const partialCount = classStudents.filter(s => s.status === 'Partial').length;
+
+    const collectCard = document.getElementById('fees-collect-card');
+    if (collectCard) collectCard.style.display = 'none';
+
+    const receiptBox = document.getElementById('fee-receipt-box');
+    if (receiptBox) {
+      receiptBox.innerHTML = `
+        <div class="card-header">
+          <h2 class="section-title"><i class="ti ti-report-money"></i> ${assignedClass} — Fee Summary</h2>
+          <span class="card-subtitle">Fee status of your assigned class students</span>
+        </div>
+        <div style="padding:16px; display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px;">
+          <div style="background:var(--bg-secondary); border-radius:10px; padding:14px; text-align:center;">
+            <div style="font-size:11px; color:var(--text-secondary); font-weight:600; text-transform:uppercase;">Total Students</div>
+            <div style="font-size:24px; font-weight:700; color:var(--text-primary); margin-top:4px;">${classStudents.length}</div>
+          </div>
+          <div style="background:var(--bg-secondary); border-radius:10px; padding:14px; text-align:center;">
+            <div style="font-size:11px; color:var(--text-secondary); font-weight:600; text-transform:uppercase;">Total Annual Fee</div>
+            <div style="font-size:20px; font-weight:700; color:var(--text-primary); margin-top:4px;">${formatCurrency(totalFee)}</div>
+          </div>
+          <div style="background:rgba(56,161,105,0.1); border-radius:10px; padding:14px; text-align:center;">
+            <div style="font-size:11px; color:var(--text-secondary); font-weight:600; text-transform:uppercase;">Amount Collected</div>
+            <div style="font-size:20px; font-weight:700; color:var(--color-success,#38a169); margin-top:4px;">${formatCurrency(totalPaid)}</div>
+          </div>
+          <div style="background:rgba(229,62,62,0.1); border-radius:10px; padding:14px; text-align:center;">
+            <div style="font-size:11px; color:var(--text-secondary); font-weight:600; text-transform:uppercase;">Outstanding Due</div>
+            <div style="font-size:20px; font-weight:700; color:var(--color-danger,#e53e3e); margin-top:4px;">${formatCurrency(totalDue)}</div>
+          </div>
+          <div style="background:rgba(56,161,105,0.1); border-radius:10px; padding:14px; text-align:center;">
+            <div style="font-size:11px; color:var(--text-secondary); font-weight:600; text-transform:uppercase; margin-bottom:4px;">Fully Paid</div>
+            <div style="font-size:22px; font-weight:700; color:var(--color-success,#38a169);">${paidCount}</div>
+          </div>
+          <div style="background:rgba(245,158,11,0.1); border-radius:10px; padding:14px; text-align:center;">
+            <div style="font-size:11px; color:var(--text-secondary); font-weight:600; text-transform:uppercase; margin-bottom:4px;">Partial</div>
+            <div style="font-size:22px; font-weight:700; color:var(--color-warning,#d97706);">${partialCount}</div>
+          </div>
+          <div style="background:rgba(229,62,62,0.1); border-radius:10px; padding:14px; text-align:center;">
+            <div style="font-size:11px; color:var(--text-secondary); font-weight:600; text-transform:uppercase; margin-bottom:4px;">Pending</div>
+            <div style="font-size:22px; font-weight:700; color:var(--color-danger,#e53e3e);">${pendingCount}</div>
+          </div>
+        </div>
+        <div style="padding:0 16px 16px;">
+          <table class="premium-table text-left" style="width:100%">
+            <thead><tr><th>ID</th><th>Student</th><th>Annual Fee</th><th>Paid</th><th>Due</th><th>Status</th></tr></thead>
+            <tbody>
+              ${classStudents.map(s => {
+                const paid = (s.fee || 0) - (s.balance || 0);
+                return \`<tr>
+                  <td><b>\${s.id}</b></td>
+                  <td>\${s.name}</td>
+                  <td>\${formatCurrency(s.fee || 0)}</td>
+                  <td style="color:var(--color-success,#38a169); font-weight:600">\${formatCurrency(paid)}</td>
+                  <td style="color:\${s.balance > 0 ? 'var(--color-danger,#e53e3e)' : 'var(--color-success,#38a169)'}; font-weight:600">\${formatCurrency(s.balance || 0)}</td>
+                  <td><span class="pill \${s.status === 'Paid' ? 'pill-green' : s.status === 'Pending' ? 'pill-red' : 'pill-amber'}">\${s.status}</span></td>
+                </tr>\`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+    renderFeeCollectionLogsTable();
+    return;
+  }
+
   renderFeeCollectionLogsTable();
-  if (State.auth.currentRole === 'student') {
+  if (role === 'student') {
     const student = State.auth.currentUser;
     const studentLogs = State.feeLog.filter(l => l.studentId === student.id);
     if (studentLogs.length > 0) {
@@ -2220,7 +2299,7 @@ function renderFeeReport() {
   const tbody = document.getElementById('rpt-body');
   if (!tbody) return;
 
-  const classesList = ['Class I','Class II','Class III','Class IV','Class V','Class VI','Class VII','Class VIII','Class IX','Class X'];
+  const classesList = ['Playway','L.KG.','U.KG.','Class 1','Class 2','Class 3','Class 4','Class 5','Class 6','Class 7','Class 8','Class 9','Class 10'];
   const breakdown = classesList.map(grade => {
     const studentsInClass = State.students.filter(s => s.cls === grade);
     if (studentsInClass.length === 0) return null;
