@@ -2941,7 +2941,7 @@ function loadAttendanceRegister() {
 
   // Restore defaults for Admin / Teachers
   document.getElementById('student-att-controls-wrapper').style.display = 'flex';
-  subtitleEl.textContent = "Select academic parameters to mark classroom attendances";
+  subtitleEl.textContent = "Select class and date to mark or view attendance";
   document.getElementById('student-att-table-header').innerHTML = `
     <th>Roll ID</th>
     <th>Student Name</th>
@@ -2969,17 +2969,46 @@ function loadAttendanceRegister() {
 
   const grade = gradeSelect.value;
   const dateStr = dateInput.value;
+  const statsContainer = document.getElementById('student-att-stats-summary');
+  const studentsInClass = State.students.filter(s => s.cls === grade);
+
+  // If no date selected, show cumulative summary for all students in class
+  if (!dateStr) {
+    if (statsContainer) statsContainer.style.display = 'none';
+    if (studentsInClass.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="center-col" style="color:var(--text-tertiary); padding:32px 0;">No students in ${grade}. Add students via New Admission first.</td></tr>`;
+      return;
+    }
+    document.getElementById('student-att-table-header').innerHTML = `
+      <th>Roll ID</th><th>Student Name</th>
+      <th class="center-col">Total Days</th>
+      <th class="center-col">Present</th>
+      <th class="center-col">Absent</th>
+    `;
+    tbody.innerHTML = studentsInClass.map(s => {
+      const st = getStudentAttendanceStats(s.id);
+      const pct = st.total > 0 ? Math.round(st.present / st.total * 100) : 0;
+      const color = pct >= 75 ? 'var(--color-success,#38a169)' : pct > 0 ? 'var(--color-warning,#d97706)' : 'var(--text-secondary)';
+      return `<tr>
+        <td><b>${s.id}</b></td>
+        <td><b>${s.name}</b></td>
+        <td class="center-col">${st.total}</td>
+        <td class="center-col" style="color:var(--color-success,#38a169); font-weight:600">${st.present} <small>(${pct}%)</small></td>
+        <td class="center-col" style="color:var(--color-danger,#e53e3e); font-weight:600">${st.absent}</td>
+      </tr>`;
+    }).join('');
+    return;
+  }
+
   const listKey = `${grade}_${dateStr}`;
   let records = State.attendance[listKey];
 
-  const statsContainer = document.getElementById('student-att-stats-summary');
-  const studentsInClass = State.students.filter(s => s.cls === grade);
   if (studentsInClass.length === 0) {
     if (statsContainer) statsContainer.style.display = 'none';
     tbody.innerHTML = `
       <tr>
         <td colspan="5" class="center-col" style="color:var(--text-tertiary); padding: 32px 0;">
-          No students registered in ${grade}.
+          No students registered in ${grade}. Add students via New Admission first.
         </td>
       </tr>
     `;
