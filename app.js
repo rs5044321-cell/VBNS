@@ -572,6 +572,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   renderDateDisplay();
   applySettingsConfig();
   applyLanguage();
+  // Render teacher attendance panel if teacher role
+  if (State.auth.currentRole === 'teacher') {
+    setTimeout(() => renderTeacherAttendanceStatus(), 500);
+  }
   
   // Set theme preference
   const savedTheme = localStorage.getItem('apex_theme') || 'dark';
@@ -2278,20 +2282,25 @@ function renderStaffPayroll() {
       State.payrollConfig[st.id] = conf;
     }
 
-    // Dynamic Attendance Deduction: 1 Day Absent = 1 Day Pay Cut (Base Salary / 30)
+    // Dynamic Attendance Deduction
     let absencesCount = 0;
-    const dailySalary = conf.base / 30;
-    
-    // Count absences across marked staff attendance registers
+    let lateCount = 0;
+    const dailySalary = conf.base / 26; // 26 working days
+    const halfDaySalary = dailySalary / 2;
+
+    // Count absences and late arrivals
     Object.values(State.staffAttendance).forEach(dayList => {
       const rec = dayList.find(r => r.id === st.id);
-      if (rec && rec.status === 'Absent') {
-        absencesCount++;
+      if (rec) {
+        if (rec.status === 'Absent') absencesCount++;
+        if (rec.status === 'Late' || rec.lateDeduction) lateCount++;
       }
     });
 
     const stats = getStaffAttendanceStats(st.id);
-    const attendanceDeduct = Math.round(absencesCount * dailySalary);
+    const absenceDeduct = Math.round(absencesCount * dailySalary);
+    const lateDeduct = Math.round(lateCount * halfDaySalary); // Half day for late
+    const attendanceDeduct = absenceDeduct + lateDeduct;
     const netPayout = Math.max(conf.base + conf.allowance - attendanceDeduct - conf.deductions, 0);
 
     const statusPill = conf.status === 'Paid' ? 
@@ -2312,7 +2321,7 @@ function renderStaffPayroll() {
           -${formatCurrency(attendanceDeduct)}
           <br>
           <small style="color: var(--text-tertiary); font-size: 10px;">
-            (${stats.present}P / ${stats.absent}A / ${stats.leave}L)
+            ${stats.present}P / ${stats.absent}A / ${lateCount}Late / ${stats.leave}L
           </small>
         </td>
         <td class="text-right" style="color: var(--color-danger)">-${formatCurrency(conf.deductions)}</td>
@@ -2954,7 +2963,13 @@ function saveAttendanceRegister() {
 // School: Vandey Bharti National Intermediate College, Mahamda, Partawal, Maharajganj – 273303
 // Coordinates: 27.3423° N, 83.4971° E  |  Radius: 40 metres (strict school-compound boundary)
 // ---------------------------------------------------------------
-const SCHOOL_GEO = { lat: 27.3423, lng: 83.4971, radiusMeters: 40 };
+const SCHOOL_GEO = {
+  lat: 26.943528,      // Vandey Bharti National School, Shyamdeurwa
+  lng: 83.549833,
+  radiusMeters: 40,    // 40 meter radius
+  lateAfter: '08:35',  // After this time = Late
+  absentAfter: '14:00' // After 2 PM = auto Absent
+};
 
 function getDistanceMeters(lat1, lng1, lat2, lng2) {
   const R = 6371000;
@@ -4012,6 +4027,228 @@ function updateStaffPassword(staffId, newPassword) {
   saveState();
   showToast('Password Updated', `Access credentials for ${staffId} updated successfully.`, 'ti-circle-key-filled');
 }
+
+
+// -------------------------------------------------------------
+// TEACHER SELF-MARKING GEO-ATTENDANCE SYSTEM
+// -------------------------------------------------------------
+
+function openTeacherSelfAttendance() {
+  // Only teachers can use this
+  if (State.auth.currentRole !== 'teacher') return;
+  const teacher = State.auth.currentUser;
+  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const timeStr = now.toTimeString().substring(0, 5); // HH:MM
+
+  // Check if after 2PM - too late to mark
+  if (timeStr >= SCHOOL_GEO.absentAfter) {
+    showToast('Too Late', 'Attendance cannot be marked after 2:00 PM. You have been marked Absent.', 'ti-clock-off');
+    autoMarkTeacherAbsent(teacher, today);
+    return;
+  }
+
+  // Check if already marked today
+  const records = State.staffAttendance[today] || [];
+  const existing = records.find(r => r.id === teacher.id);
+  if (existing && (existing.status === 'Present' || existing.status === 'Late')) {
+    showToast('Already Marked', `Your attendance is already marked as ${existing.status} for today at ${existing.markedAt || ''}.`, 'ti-circle-check');
+    renderTeacherAttendanceStatus();
+    return;
+  }
+
+  // Show geo-checking UI
+  const panel = document.getElementById('teacher-self-att-panel');
+  if (panel) {
+    panel.innerHTML = `
+      <div style="text-align:center; padding:32px;">
+        <i class="ti ti-map-pin" style="font-size:36px; color:var(--accent); display:block; margin-bottom:12px;"></i>
+        <div style="font-weight:600; margin-bottom:6px;">Verifying your location...</div>
+        <div style="font-size:13px; color:var(--text-secondary);">Please allow location access when prompted.</div>
+      </div>`;
+  }
+
+  if (!navigator.geolocation) {
+    showToast('GPS Unavailable', 'Your device does not support location services.', 'ti-location-off');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const dist = getDistanceMeters(pos.coords.latitude, pos.coords.longitude, SCHOOL_GEO.lat, SCHOOL_GEO.lng);
+      if (dist > SCHOOL_GEO.radiusMeters) {
+        if (panel) panel.innerHTML = `
+          <div style="text-align:center; padding:32px; background:rgba(239,68,68,0.04); border-radius:12px; border:1px solid rgba(239,68,68,0.15);">
+            <i class="ti ti-map-pin-off" style="font-size:36px; color:var(--color-danger); display:block; margin-bottom:12px;"></i>
+            <div style="font-weight:700; color:var(--color-danger); margin-bottom:8px;">Outside School Zone</div>
+            <div style="font-size:13px; color:var(--text-secondary);">You are <b>${Math.round(dist)} metres</b> away from school.<br>Attendance can only be marked within <b>${SCHOOL_GEO.radiusMeters}m</b> of school premises.</div>
+          </div>`;
+        showToast('Location Error', `You are ${Math.round(dist)}m from school. Must be within ${SCHOOL_GEO.radiusMeters}m.`, 'ti-map-pin-off');
+        return;
+      }
+
+      // Within range - determine status
+      const isLate = timeStr > SCHOOL_GEO.lateAfter;
+      const status = isLate ? 'Late' : 'Present';
+      confirmTeacherAttendance(teacher, today, timeStr, status, dist);
+    },
+    (err) => {
+      if (panel) panel.innerHTML = `
+        <div style="text-align:center; padding:24px; background:rgba(239,68,68,0.04); border-radius:12px;">
+          <i class="ti ti-location-off" style="font-size:32px; color:var(--color-danger); display:block; margin-bottom:8px;"></i>
+          <div style="font-weight:600; color:var(--color-danger);">Location Access Denied</div>
+          <div style="font-size:13px; color:var(--text-secondary); margin-top:6px;">Please allow location access in your browser settings and try again.</div>
+        </div>`;
+      showToast('Location Denied', 'Please allow location access to mark attendance.', 'ti-location-off');
+    },
+    { timeout: 10000, maximumAge: 0, enableHighAccuracy: true }
+  );
+}
+
+function confirmTeacherAttendance(teacher, today, timeStr, status, dist) {
+  const panel = document.getElementById('teacher-self-att-panel');
+  const isLate = status === 'Late';
+  const color = isLate ? 'var(--color-warning)' : 'var(--color-success)';
+  const icon = isLate ? 'ti-clock-exclamation' : 'ti-circle-check';
+  const msg = isLate
+    ? `You are arriving <b>late</b> (after ${SCHOOL_GEO.lateAfter}). This will result in a <b>half-day salary deduction</b>.`
+    : `You are arriving <b>on time</b>. Your full salary will be credited.`;
+
+  if (panel) panel.innerHTML = `
+    <div style="text-align:center; padding:24px; background:rgba(16,185,129,0.04); border-radius:12px; border:1px solid rgba(16,185,129,0.15);">
+      <i class="ti ${icon}" style="font-size:36px; color:${color}; display:block; margin-bottom:12px;"></i>
+      <div style="font-size:18px; font-weight:700; color:${color}; margin-bottom:8px;">${status}</div>
+      <div style="font-size:13px; color:var(--text-secondary); margin-bottom:4px;">Time: <b>${timeStr}</b> &nbsp;|&nbsp; Distance from school: <b>${Math.round(dist)}m</b></div>
+      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:16px;">${msg}</div>
+      <button class="btn btn-primary" onclick="submitTeacherAttendance('${teacher.id}', '${today}', '${timeStr}', '${status}')" style="width:100%; max-width:260px;">
+        <i class="ti ti-check"></i> Confirm & Submit Attendance
+      </button>
+    </div>`;
+}
+
+function submitTeacherAttendance(teacherId, today, timeStr, status) {
+  if (!State.staffAttendance[today]) State.staffAttendance[today] = [];
+  const records = State.staffAttendance[today];
+  const existingIdx = records.findIndex(r => r.id === teacherId);
+  const teacher = State.staff.find(st => st.id === teacherId) || State.auth.currentUser;
+
+  const record = {
+    id: teacherId,
+    name: teacher ? teacher.name : teacherId,
+    role: teacher ? teacher.role : 'Teacher',
+    status: status,
+    markedAt: timeStr,
+    markedBy: 'self',
+    lateDeduction: status === 'Late'
+  };
+
+  if (existingIdx >= 0) {
+    records[existingIdx] = record;
+  } else {
+    records.push(record);
+  }
+
+  saveState();
+  logActivity(teacher ? teacher.name : teacherId, 'Self-Marked Attendance', 'security', `Marked ${status} at ${timeStr} via geo-verification`);
+
+  const panel = document.getElementById('teacher-self-att-panel');
+  if (panel) panel.innerHTML = `
+    <div style="text-align:center; padding:24px; background:rgba(16,185,129,0.06); border-radius:12px; border:1px solid rgba(16,185,129,0.2);">
+      <i class="ti ti-circle-check" style="font-size:40px; color:var(--color-success); display:block; margin-bottom:12px;"></i>
+      <div style="font-size:18px; font-weight:700; color:var(--color-success); margin-bottom:6px;">Attendance Submitted!</div>
+      <div style="font-size:13px; color:var(--text-secondary);">Status: <b>${status}</b> &nbsp;|&nbsp; Time: <b>${timeStr}</b></div>
+      ${status === 'Late' ? '<div style="font-size:12px; color:var(--color-warning); margin-top:8px;">⚠️ Half-day deduction will be applied in payroll.</div>' : ''}
+    </div>`;
+
+  showToast('Attendance Submitted', `Your attendance has been marked as ${status} for today.`, 'ti-circle-check');
+}
+
+function autoMarkTeacherAbsent(teacher, today) {
+  if (!State.staffAttendance[today]) State.staffAttendance[today] = [];
+  const records = State.staffAttendance[today];
+  const existingIdx = records.findIndex(r => r.id === teacher.id);
+  if (existingIdx < 0) {
+    records.push({
+      id: teacher.id,
+      name: teacher.name,
+      role: teacher.role || 'Teacher',
+      status: 'Absent',
+      markedAt: 'Auto',
+      markedBy: 'system'
+    });
+    saveState();
+  }
+}
+
+function renderTeacherAttendanceStatus() {
+  const panel = document.getElementById('teacher-self-att-panel');
+  if (!panel) return;
+  const teacher = State.auth.currentUser;
+  if (!teacher) return;
+  const today = new Date().toISOString().split('T')[0];
+  const records = State.staffAttendance[today] || [];
+  const rec = records.find(r => r.id === teacher.id);
+
+  if (rec) {
+    const color = rec.status === 'Present' ? 'var(--color-success)' : rec.status === 'Late' ? 'var(--color-warning)' : 'var(--color-danger)';
+    panel.innerHTML = `
+      <div style="text-align:center; padding:20px; background:rgba(16,185,129,0.04); border-radius:12px;">
+        <div style="font-size:16px; font-weight:700; color:${color}; margin-bottom:4px;">Today: ${rec.status}</div>
+        <div style="font-size:12px; color:var(--text-secondary);">Marked at ${rec.markedAt || 'N/A'} ${rec.markedBy === 'self' ? '(Self)' : '(Admin)'}</div>
+        ${rec.status === 'Late' ? '<div style="font-size:11px; color:var(--color-warning); margin-top:6px;">⚠️ Half-day salary deduction applied</div>' : ''}
+      </div>`;
+  } else {
+    const now = new Date();
+    const timeStr = now.toTimeString().substring(0, 5);
+    const tooLate = timeStr >= SCHOOL_GEO.absentAfter;
+    panel.innerHTML = `
+      <div style="text-align:center; padding:20px;">
+        ${tooLate
+          ? '<div style="color:var(--color-danger); font-weight:600; margin-bottom:8px;">⚠️ Attendance window closed (after 2 PM)</div>'
+          : `<button class="btn btn-primary" onclick="openTeacherSelfAttendance()" style="width:100%; max-width:280px; padding:12px;">
+              <i class="ti ti-map-pin"></i> Mark My Attendance
+             </button>
+             <div style="font-size:11px; color:var(--text-secondary); margin-top:8px;">Must be within ${SCHOOL_GEO.radiusMeters}m of school. On time before ${SCHOOL_GEO.lateAfter}.</div>`
+        }
+      </div>`;
+  }
+}
+// -------------------------------------------------------------
+
+// Auto-mark absent after 2PM for teachers who haven't marked attendance
+function checkAutoAbsentTeachers() {
+  const now = new Date();
+  const timeStr = now.toTimeString().substring(0, 5);
+  if (timeStr < SCHOOL_GEO.absentAfter) return; // Not yet 2PM
+
+  const today = now.toISOString().split('T')[0];
+  if (!State.staffAttendance[today]) State.staffAttendance[today] = [];
+  const records = State.staffAttendance[today];
+  let changed = false;
+
+  State.staff.forEach(st => {
+    const existing = records.find(r => r.id === st.id);
+    if (!existing) {
+      records.push({
+        id: st.id,
+        name: st.name,
+        role: st.role || 'Teacher',
+        status: 'Absent',
+        markedAt: 'Auto-2PM',
+        markedBy: 'system'
+      });
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    saveState();
+    console.log('Auto-marked absent for unmarked staff at 2PM');
+  }
+}
+
+// Run auto-absent check every 5 minutes
+setInterval(checkAutoAbsentTeachers, 5 * 60 * 1000);
 
 // -------------------------------------------------------------
 // MODULE 21: SYSTEM CORE CONFIGURATION & SETTINGS
