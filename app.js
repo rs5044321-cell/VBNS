@@ -3799,7 +3799,7 @@ function renderStaffRegistry() {
         </td>
         <td><span class="pill ${st.isAccountant ? 'pill-amber' : 'pill-blue'}">${st.isAccountant ? '💼 ACCOUNTANT' : st.role}</span></td>
         <td>${st.contact}</td>
-        <td><code style="background:rgba(99,102,241,0.06); color:var(--accent); padding:2px 6px; border-radius:4px; font-size:11.5px; font-family:monospace; font-weight:600;">${st.id} / ${pwd}</code></td>
+        <td><code style="background:rgba(99,102,241,0.06); color:var(--accent); padding:2px 6px; border-radius:4px; font-size:11.5px; font-family:monospace; font-weight:600;">${st.username || st.id} / ${pwd}</code></td>
         <td>
           <div style="display:flex; gap:6px">
             <button class="btn btn-sm" style="background-color: var(--accent-light); color: var(--accent);" onclick="editStaffRecord('${st.id}')" title="Edit permissions"><i class="ti ti-edit"></i> Edit</button>
