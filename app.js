@@ -326,7 +326,7 @@ function seedDatabase() {
         if (!State.staffPasswords || Object.keys(State.staffPasswords).length === 0) {
           State.staffPasswords = {};
           State.staff.forEach(st => {
-            const stNP2 = (st.name||'').replace(/\s+/g,'').substring(0,3).toLowerCase(); State.staffPasswords[st.id] = stNP2 + 'vbns@123';
+            // Password set by admin only - no auto-generation
           });
         }
         if (!State.payrollConfig || Object.keys(State.payrollConfig).length === 0) {
@@ -384,8 +384,7 @@ function seedDatabase() {
 
   // Initialize Default Staff Passwords and Salaries
   State.staff.forEach(st => {
-    const stNP2 = (st.name||'').replace(/\s+/g,'').substring(0,3).toLowerCase(); State.staffPasswords[st.id] = stNP2 + 'vbns@123';
-    st.password = (st.name||'').replace(/\s+/g,'').substring(0,3).toLowerCase() + 'vbns@123';
+    // Password set by admin only - no auto-generation
     State.payrollConfig[st.id] = { base: st.role.includes('Senior') ? 45000 : 35000, allowance: 3000, deductions: 0, status: 'Unpaid' };
     st.access = ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
     if (st.id === 'TCH-001') st.assignedClass = 'Class X';
@@ -697,17 +696,18 @@ async function executeLogin() {
       const key = username.toUpperCase();
       let authenticatedUser = null;
       if (activeLoginRole === 'teacher') {
-        // Match by admin-set username (stored on staff object)
+        // Match by staff ID or username
         const staffMember = State.staff.find(st =>
           (st.username && st.username === username.toLowerCase()) ||
           st.id.toUpperCase() === username.toUpperCase()
         );
         if (staffMember) {
-          const storedPass = staffMember.password || '';
+          // Check password from BOTH sources - staffPasswords dict takes priority
+          const storedPass = State.staffPasswords[staffMember.id] || staffMember.password || '';
           if (passVal.trim() === storedPass) authenticatedUser = staffMember;
           else showToast('Wrong Password', 'Incorrect password. Contact admin.', 'ti-lock');
         } else {
-          showToast('Not Found', 'Username not found. Contact admin.', 'ti-user-off');
+          showToast('Not Found', 'Staff ID not found. Contact admin.', 'ti-user-off');
         }
       } else if (activeLoginRole === 'student') {
         // Match by auto-generated ID: first3LettersOfName + vbns + enrollmentNumber
@@ -795,13 +795,14 @@ async function executeLogin() {
         authenticatedUser = { name: "CRM Super Admin", id: "admin" };
       }
     } else if (localRole === 'teacher') {
-      // Match by admin-set username or fallback to staff ID
+      // Match by staff ID or username
       const staffMember = State.staff.find(st =>
         (st.username && st.username === username.toLowerCase()) ||
         st.id.toUpperCase() === username.toUpperCase()
       );
       if (staffMember) {
-        const storedPass = staffMember.password || '';
+        // Check both sources - staffPasswords takes priority
+        const storedPass = State.staffPasswords[staffMember.id] || staffMember.password || '';
         if (passVal.trim() === storedPass) authenticatedUser = staffMember;
       }
     } else if (localRole === 'student') {
@@ -3788,7 +3789,7 @@ function renderStaffRegistry() {
     const accessStr = st.access ? st.access.join(', ') : 'Default Academic';
     const assignedClassStr = st.assignedClass ? `<span class="pill pill-green" style="font-size: 10px; padding: 2px 6px;">${st.assignedClass}</span>` : `<span class="pill pill-amber" style="font-size: 10px; padding: 2px 6px;">None</span>`;
     const stNamePart = (st.name || '').replace(/\s+/g, '').substring(0, 3).toLowerCase();
-    const pwd = st.password || State.staffPasswords[st.id] || (stNamePart + 'vbns@123');
+    const pwd = State.staffPasswords[st.id] || st.password || 'Not set - contact admin';
     return `
       <tr>
         <td><b>${st.id}</b></td>
@@ -3901,6 +3902,7 @@ async function addStaffRecord() {
       st.isAccountant = isAccountant;
       if (password) {
         st.password = password;
+        State.staffPasswords[editingStaffId] = password; // Keep in sync
       }
       if (State.payrollConfig[editingStaffId]) {
         State.payrollConfig[editingStaffId].base = baseSalary;
@@ -3942,9 +3944,11 @@ async function addStaffRecord() {
       status: 'Unpaid'
     };
 
+    // Save password to BOTH places to keep in sync
     newStaff.password = password;
+    State.staffPasswords[staffId] = password;
 
-    logActivity('Super Admin', 'Staff Registered', 'security', `Created new faculty registry for ${name} (${staffId})`);
+    logActivity('Super Admin', 'Staff Registered', 'security', `Created new faculty registry for ${name} (${staffId}) with custom credentials`);
     showToast('Staff Registered', `Faculty profile for ${name} created. ID: ${staffId}`, 'ti-briefcase');
   }
 
@@ -4000,7 +4004,10 @@ function updateStaffPassword(staffId, newPassword) {
     renderStaffRegistry();
     return;
   }
+  // Save to BOTH staffPasswords AND staff object to keep in sync
   State.staffPasswords[staffId] = newPassword.trim();
+  const staffMember = State.staff.find(st => st.id === staffId);
+  if (staffMember) staffMember.password = newPassword.trim();
   logActivity('Super Admin', 'Staff Password Updated', 'security', `Updated credentials for staff member ${staffId}`);
   saveState();
   showToast('Password Updated', `Access credentials for ${staffId} updated successfully.`, 'ti-circle-key-filled');
