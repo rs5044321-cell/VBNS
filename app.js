@@ -361,6 +361,7 @@ function seedDatabase() {
           ];
         }
         
+        migrateOldClassNames();
         saveState();
         return;
       }
@@ -468,6 +469,54 @@ function _syncToFirestore() {
   }
 }
 
+
+// One-time migration: fix old Roman numeral class names to new format
+function migrateOldClassNames() {
+  const classMap = {
+    'Class X': 'Class 10', 'Class IX': 'Class 9', 'Class VIII': 'Class 8',
+    'Class VII': 'Class 7', 'Class VI': 'Class 6', 'Class V': 'Class 5',
+    'Class IV': 'Class 4', 'Class III': 'Class 3', 'Class II': 'Class 2',
+    'Class I': 'Class 1',
+    'Class X-A': 'Class 10-A', 'Class IX-A': 'Class 9-A', 'Class VIII-A': 'Class 8-A',
+    'Class VII-A': 'Class 7-A', 'Class VI-A': 'Class 6-A', 'Class V-A': 'Class 5-A',
+    'Class IV-A': 'Class 4-A', 'Class III-A': 'Class 3-A', 'Class II-A': 'Class 2-A',
+    'Class I-A': 'Class 1-A'
+  };
+  let changed = false;
+
+  // Fix students
+  State.students.forEach(s => {
+    if (classMap[s.cls]) { s.cls = classMap[s.cls]; changed = true; }
+    if (classMap[s.sec]) { s.sec = classMap[s.sec]; changed = true; }
+  });
+
+  // Fix staff assigned class
+  State.staff.forEach(st => {
+    if (classMap[st.assignedClass]) { st.assignedClass = classMap[st.assignedClass]; changed = true; }
+  });
+
+  // Fix attendance keys
+  const oldKeys = Object.keys(State.attendance);
+  oldKeys.forEach(key => {
+    let newKey = key;
+    Object.keys(classMap).forEach(old => {
+      if (newKey.startsWith(old + '_')) {
+        newKey = classMap[old] + '_' + newKey.split('_')[1];
+      }
+    });
+    if (newKey !== key) {
+      State.attendance[newKey] = State.attendance[key];
+      delete State.attendance[key];
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    saveState();
+    console.log('✅ Class names migrated to new format');
+  }
+}
+
 // Global Core App Initializer
 window.addEventListener('DOMContentLoaded', async () => {
   // Initialize Firebase and load data from Firestore
@@ -557,6 +606,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         seedDatabase();
       } else {
         console.log('✅ Data loaded from Firestore!');
+      migrateOldClassNames();
         renderDashboard();
       }
     } catch(e) {
