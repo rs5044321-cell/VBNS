@@ -123,7 +123,7 @@ function applyLanguage() {
 // Centralized State Container
 let State = {
   config: {
-    schoolName: 'VBNS',
+    schoolName: 'VBNIC',
     address: 'Shyamdeurwa, Maharajganj – 273301',
     phone: '+91 91201 93467',
     prefix: 'SAC',
@@ -318,8 +318,8 @@ function seedDatabase() {
         }
         
         // Force update school name if still the old default
-        if (State.config.schoolName === 'Sunrise Academy' || State.config.schoolName === 'VBNS') {
-          State.config.schoolName = 'VBNS';
+        if (State.config.schoolName === 'Sunrise Academy' || State.config.schoolName === 'VBNIC') {
+          State.config.schoolName = 'VBNIC';
         }
         
         // SELF-CORRECTION: Populate operational blocks if missing on existing localStorage instances
@@ -1162,7 +1162,7 @@ function nav(tabId, sidebarElement) {
   };
   
   const titleEl = document.getElementById('topbar-title');
-  if (titleEl) titleEl.textContent = titles[tabId] || 'VBNS';
+  if (titleEl) titleEl.textContent = titles[tabId] || 'VBNIC';
 
   const sb = document.getElementById('sidebar');
   if (sb) sb.classList.remove('open');
@@ -4537,7 +4537,7 @@ function renderSettingsValues() {
 function applySettingsConfig() {
   const nameInput = document.getElementById('set-name');
   if (nameInput) {
-    State.config.schoolName = nameInput.value.trim() || 'VBNS';
+    State.config.schoolName = nameInput.value.trim() || 'VBNIC';
     State.config.address = document.getElementById('set-address').value.trim() || 'Address';
     State.config.phone = document.getElementById('set-phone').value.trim() || 'Phone';
     State.config.prefix = document.getElementById('set-prefix').value.trim() || 'SAC';
