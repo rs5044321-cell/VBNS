@@ -1856,7 +1856,7 @@ function renderFeeCollectionLogsTable() {
 
   tbody.innerHTML = logs.map(l => {
     // Delete action button only for Admin
-    const deleteCell = currentRole === 'admin' ? 
+    const deleteCell = (currentRole === 'admin' || currentRole === 'accountant') ? 
       `<td><button class="btn btn-sm btn-danger" onclick="removeFeeLog('${l.receipt}'); event.stopPropagation();"><i class="ti ti-trash"></i> Delete</button></td>` : '';
 
     return `
