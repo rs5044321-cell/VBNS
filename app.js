@@ -568,6 +568,24 @@ window.addEventListener('DOMContentLoaded', async () => {
         State.enquiries = d.enquiries || State.enquiries;
         State.smsLog = d.smsLog || State.smsLog;
       }
+
+      // Load enquiries from dedicated collection (public submissions go here)
+      try {
+        const enqSnaps = await getDocs(collection(window.db, 'enquiries'));
+        if (!enqSnaps.empty) {
+          const firestoreEnqs = [];
+          enqSnaps.forEach(d => firestoreEnqs.push(d.data()));
+          // Merge with existing enquiries, avoid duplicates by timestamp
+          const existingTimestamps = new Set(State.enquiries.map(e => e.timestamp).filter(Boolean));
+          firestoreEnqs.forEach(enq => {
+            if (!existingTimestamps.has(enq.timestamp)) {
+              State.enquiries.push(enq);
+            }
+          });
+        }
+      } catch(e) {
+        console.warn('Enquiries collection load failed:', e);
+      }
       if (academicSnap.exists()) {
         const d = academicSnap.data();
         State.notices = d.notices || State.notices;
@@ -5064,14 +5082,31 @@ function submitPublicEnquiry(event) {
   }
 
   // Push record into enquiries database
-  State.enquiries.push({
+  const newEnquiry = {
     name: name,
     cls: cls,
     parent: parent,
     phone: phone,
+    address: address || '',
     source: formId === 'public-admissions-form' ? 'Digital Admissions Page Form' : 'Digital Contact Page Form',
-    status: 'Interested'
-  });
+    status: 'Interested',
+    date: new Date().toISOString().split('T')[0],
+    timestamp: new Date().toISOString()
+  };
+  State.enquiries.push(newEnquiry);
+
+  // Write directly to Firestore enquiries collection (works even for unauthenticated visitors)
+  if (window.db && window.fsLib) {
+    try {
+      const { doc, setDoc, collection } = window.fsLib;
+      const enqId = 'ENQ-' + Date.now();
+      setDoc(doc(window.db, 'enquiries', enqId), { ...newEnquiry, id: enqId })
+        .then(() => console.log('✅ Enquiry saved to Firebase:', enqId))
+        .catch(e => console.warn('Enquiry Firebase write failed:', e));
+    } catch(e) {
+      console.warn('Enquiry direct write error:', e);
+    }
+  }
 
   // Log in CRM activity history
   logActivity('Public Website Visitor', 'Online Enquiry Logged', 'system', `Submitted admission enquiry form for candidate child: ${name}`);
