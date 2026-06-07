@@ -3208,7 +3208,7 @@ function saveAttendanceRegister() {
 // Coordinates: 27.3423° N, 83.4971° E  |  Radius: 40 metres (strict school-compound boundary)
 // ---------------------------------------------------------------
 const SCHOOL_GEO = {
-  lat: 26.943528,      // Vandey Bharti National School, Shyamdeurwa
+  lat: 26.943528,      // Vandey Bharti National Intermediate College, Shyamdeurwa
   lng: 83.549833,
   radiusMeters: 40,    // 40 meter radius
   lateAfter: '08:35',  // After this time = Late
@@ -3269,7 +3269,7 @@ async function openStaffAttendanceWithGeoCheck() {
       if (dist <= SCHOOL_GEO.radiusMeters) {
         loadStaffAttendanceRegister();
       } else {
-        showStaffAttGeoLocked(`You are currently <b>${Math.round(dist)} metres</b> away from Vandey Bharti National School, Shyamdeurwa.<br><br>Staff attendance can only be marked when you are physically inside the school compound (<b>${SCHOOL_GEO.radiusMeters}m radius</b>).`, 'ti-map-pin-off');
+        showStaffAttGeoLocked(`You are currently <b>${Math.round(dist)} metres</b> away from Vandey Bharti National Intermediate College, Shyamdeurwa.<br><br>Staff attendance can only be marked when you are physically inside the school compound (<b>${SCHOOL_GEO.radiusMeters}m radius</b>).`, 'ti-map-pin-off');
       }
     },
     (err) => {
