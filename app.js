@@ -1020,7 +1020,7 @@ function nav(tabId, sidebarElement) {
   const studentClearance = ['fees', 'notice', 'attendance', 'results', 'exam', 'idcards', 'admit', 'homework'];
   
   // Accountant view: fees, ledger, reports, notices, SMS
-  const accountantClearance = ['dashboard', 'fees', 'ledger', 'report', 'notice', 'sms', 'enquiry'];
+  const accountantClearance = ['dashboard', 'admission', 'fees', 'ledger', 'report', 'notice', 'sms', 'enquiry'];
 
   // Dynamic Faculty view limits
   let teacherClearance = ['dashboard', 'homework'];
@@ -1547,24 +1547,53 @@ function renderDirectoryList() {
   tbody.innerHTML = filtered.map(s => {
     const deleteBtn = currentRole === 'admin' ? 
       `<button class="btn btn-sm btn-danger" onclick="removeStudent('${s.id}')" title="Delete Profile"><i class="ti ti-trash"></i> Delete</button>` : '';
-    const namePart = (s.name || '').replace(/\s+/g, '').substring(0, 3).toLowerCase();
-    const dob = s.dob || '';
-    const dobParts = dob.split('-');
-    const dobFormatted = dobParts.length === 3 ? dobParts[2] + dobParts[1] + dobParts[0] : '';
-    const pwd = (s.password && s.password !== 'student123') ? s.password : (namePart + dobFormatted || 'Set DOB to generate');
+
+    // Fee calculations
+    const annualFee = s.fee || 0;
+    const balance = s.balance || 0;
+    const paid = annualFee - balance;
+
+    // Attendance calculation
+    const att = State.attendance || {};
+    let present = 0, total = 0;
+    Object.values(att).forEach(dayRecord => {
+      if (dayRecord[s.id] !== undefined) {
+        total++;
+        if (dayRecord[s.id] === 'P') present++;
+      }
+    });
+    const attPct = total > 0 ? Math.round((present / total) * 100) : null;
+    const attDisplay = total > 0 ? `${attPct}% (${present}/${total})` : '—';
+    const attColor = attPct === null ? 'var(--text-secondary)' : attPct >= 75 ? 'var(--color-success,#38a169)' : 'var(--color-danger,#e53e3e)';
+
+    // Marks from results
+    const results = State.results && State.results[s.id];
+    let marksDisplay = '—';
+    if (results) {
+      const allMarks = Object.values(results).flatMap(exam => Object.values(exam));
+      if (allMarks.length > 0) {
+        const avg = Math.round(allMarks.reduce((a, b) => a + b, 0) / allMarks.length);
+        marksDisplay = avg + '%';
+      }
+    }
+
+    // DOB formatting
+    const dobStr = s.dob ? new Date(s.dob).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}) : '—';
 
     return `
       <tr>
         <td><b>${s.id}</b></td>
-        <td>${s.name}</td>
+        <td><b>${s.name}</b></td>
         <td>${s.cls} — Sec ${s.sec}</td>
-        <td>${s.parent}</td>
-        <td>${s.phone}</td>
-        <td><code style="background:rgba(99,102,241,0.06); color:var(--accent); padding:2px 6px; border-radius:4px; font-size:11.5px; font-family:monospace; font-weight:600;">${s.id} / ${pwd}</code></td>
-        <td>
-          <span class="pill ${s.status === 'Paid' ? 'pill-green' : s.status === 'Pending' ? 'pill-red' : 'pill-amber'}">${s.status}</span>
-        </td>
-        <td style="display: flex; gap: 6px;">
+        <td><span style="font-size:12px">${s.parent}<br><small style="color:var(--text-secondary)">${s.phone}</small></span></td>
+        <td style="font-weight:600">${formatCurrency(annualFee)}</td>
+        <td style="color:var(--color-success,#38a169); font-weight:600">${formatCurrency(paid)}</td>
+        <td style="color:${balance > 0 ? 'var(--color-danger,#e53e3e)' : 'var(--color-success,#38a169)'}; font-weight:600">${formatCurrency(balance)}</td>
+        <td><span class="pill ${s.status === 'Paid' ? 'pill-green' : s.status === 'Pending' ? 'pill-red' : 'pill-amber'}">${s.status}</span></td>
+        <td style="color:${attColor}; font-weight:600; font-size:12px">${attDisplay}</td>
+        <td style="font-weight:600">${marksDisplay}</td>
+        <td style="font-size:12px">${dobStr}</td>
+        <td style="display:flex; gap:4px; flex-wrap:wrap;">
           <button class="btn btn-sm" onclick="inspectStudentProfile('${s.id}')" title="Inspect Record">
             <i class="ti ti-external-link"></i> Inspect
           </button>
@@ -1578,6 +1607,13 @@ function renderDirectoryList() {
 function filterDirectory() {
   renderDirectoryList();
 }
+
+function filterFeeLog() {
+  const search = (document.getElementById('fee-log-search')?.value || '').toLowerCase();
+  const cls = document.getElementById('fee-log-class')?.value || '';
+  renderFeeCollectionLogsTable(search, cls);
+}
+
 
 function inspectStudentProfile(studentId) {
   const s = State.students.find(x => x.id === studentId);
@@ -1854,12 +1890,14 @@ function collectFee() {
   document.getElementById('fee-remarks').value = '';
 }
 
-function renderFeeCollectionLogsTable() {
+function renderFeeCollectionLogsTable(searchFilter, classFilter) {
   const tbody = document.getElementById('fee-log-body');
   if (!tbody) return;
 
   const currentRole = State.auth.currentRole;
-  
+  const search = (searchFilter || document.getElementById('fee-log-search')?.value || '').toLowerCase();
+  const cls = classFilter || document.getElementById('fee-log-class')?.value || '';
+
   // Filter logs for logged-in students to ensure security
   let logs = State.feeLog;
   if (currentRole === 'student') {
@@ -1867,15 +1905,27 @@ function renderFeeCollectionLogsTable() {
     logs = State.feeLog.filter(l => l.studentId === student.id);
   }
 
+  // Apply search and class filters
+  if (search) {
+    logs = logs.filter(l => l.name.toLowerCase().includes(search) || l.studentId.toLowerCase().includes(search));
+  }
+  if (cls) {
+    logs = logs.filter(l => {
+      const stu = State.students.find(s => s.id === l.studentId);
+      return stu && stu.cls === cls;
+    });
+  }
+
   logs = [...logs].reverse();
 
   if (logs.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" class="center-col" style="color:var(--text-tertiary)">No transactions reported.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="center-col" style="color:var(--text-tertiary)">No transactions found.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = logs.map(l => {
-    // Delete action button only for Admin
+    const stu = State.students.find(s => s.id === l.studentId);
+    const stuClass = stu ? stu.cls : '—';
     const deleteCell = (currentRole === 'admin' || currentRole === 'accountant') ? 
       `<td><button class="btn btn-sm btn-danger" onclick="removeFeeLog('${l.receipt}'); event.stopPropagation();"><i class="ti ti-trash"></i> Delete</button></td>` : '';
 
@@ -1883,6 +1933,7 @@ function renderFeeCollectionLogsTable() {
       <tr onclick="viewReceipt('${l.receipt}')" style="cursor: pointer" title="Click to view receipt">
         <td><b>${l.receipt}</b></td>
         <td>${l.name} (${l.studentId})</td>
+        <td style="font-size:12px">${stuClass}</td>
         <td>${l.type}</td>
         <td>${l.mode}</td>
         <td>${l.date}</td>

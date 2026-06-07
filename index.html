@@ -1477,7 +1477,7 @@
       <div class="sb-item active" data-roles="admin teacher accountant" onclick="nav('dashboard', this)"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
       
       <div class="sb-section" data-roles="admin teacher">Students</div>
-      <div class="sb-item" data-roles="admin" onclick="nav('admission', this)"><i class="ti ti-user-plus"></i>New Admission</div>
+      <div class="sb-item" data-roles="admin accountant" onclick="nav('admission', this)"><i class="ti ti-user-plus"></i>New Admission</div>
       <div class="sb-item" data-roles="admin teacher" onclick="nav('directory', this)"><i class="ti ti-users"></i>Student Directory</div>
       <div class="sb-item" data-roles="admin student" onclick="nav('idcards', this)"><i class="ti ti-id-badge"></i>ID Cards</div>
       <div class="sb-item" data-roles="admin student" onclick="nav('admit', this)"><i class="ti ti-certificate"></i>Admit Cards</div>
@@ -1765,11 +1765,15 @@
                   <th>ID</th>
                   <th>Student Name</th>
                   <th>Class / Section</th>
-                  <th>Parent Contact</th>
-                  <th>Phone Number</th>
-                  <th>Login Credentials</th>
-                  <th>Balance Status</th>
-                  <th>Action Operations</th>
+                  <th>Parent / Phone</th>
+                  <th>Annual Fee</th>
+                  <th>Amount Paid</th>
+                  <th>Due Balance</th>
+                  <th>Fee Status</th>
+                  <th>Attendance</th>
+                  <th>Marks %</th>
+                  <th>DOB</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody id="dir-body">
@@ -1923,9 +1927,27 @@
         </div>
         
         <div class="card glass" style="margin-top:20px">
-          <div class="card-header">
-            <h2 class="section-title"><i class="ti ti-history"></i> Fee Transaction Logs</h2>
-            <span class="card-subtitle">Historical records of recent school fees logged</span>
+          <div class="card-header search-bar-header">
+            <div class="header-left">
+              <h2 class="section-title"><i class="ti ti-history"></i> Fee Transaction Logs</h2>
+              <span class="card-subtitle">Historical records of recent school fees logged</span>
+            </div>
+            <div class="header-actions" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <div class="search-input-wrapper">
+                <i class="ti ti-search"></i>
+                <input id="fee-log-search" placeholder="Search by name or ID..." oninput="filterFeeLog()" />
+              </div>
+              <select id="fee-log-class" onchange="filterFeeLog()" class="styled-select">
+                <option value="">All Classes</option>
+                <option>Class I</option><option>Class II</option><option>Class III</option>
+                <option>Class IV</option><option>Class V</option><option>Class VI</option>
+                <option>Class VII</option><option>Class VIII</option><option>Class IX</option>
+                <option>Class X</option>
+              </select>
+              <button class="btn btn-sm" onclick="filterFeeLog()" style="flex-shrink:0;">
+                <i class="ti ti-search"></i> Search
+              </button>
+            </div>
           </div>
           <div class="table-wrap">
             <table class="premium-table text-left">
@@ -1933,6 +1955,7 @@
                 <tr>
                   <th>Voucher ID</th>
                   <th>Student Name</th>
+                  <th>Class</th>
                   <th>Fee Type</th>
                   <th>Mode</th>
                   <th>Transaction Date</th>
@@ -3093,7 +3116,7 @@
 <div id="toast-wrapper"></div>
 
 <!-- Local Script File -->
-<script src="app.js?v=10.0"></script>
+<script src="app.js?v=11.0"></script>
 </body>
 </html>
 
