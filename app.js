@@ -3520,7 +3520,7 @@ function prefillGradebookEditor(studentId) {
   showToast('Edit Mode', `Loaded marks for editing — click Save when done.`, 'ti-pencil');
 }
 
-
+function populateGradeStudentDropdown() {
   const sel = document.getElementById('grade-stu');
   if (!sel) return;
   sel.innerHTML = State.students.map(s =>
