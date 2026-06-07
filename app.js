@@ -993,6 +993,21 @@ function applySessionAccessLayout() {
 
   // Draw dashboard operational triggers
   renderQuickActionsPanel();
+
+  // Show/hide role-based content panels
+  document.querySelectorAll('[data-roles]').forEach(el => {
+    const roles = el.getAttribute('data-roles').split(' ');
+    if (roles.includes(role)) {
+      el.style.display = '';
+    } else {
+      el.style.display = 'none';
+    }
+  });
+
+  // Render teacher attendance panel
+  if (role === 'teacher') {
+    setTimeout(() => renderTeacherAttendanceStatus(), 300);
+  }
 }
 
 // -------------------------------------------------------------
