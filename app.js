@@ -1809,14 +1809,16 @@ function renderFeeCollectionModule() {
             <tbody>
               ${classStudents.map(s => {
                 const paid = (s.fee || 0) - (s.balance || 0);
-                return \`<tr>
-                  <td><b>\${s.id}</b></td>
-                  <td>\${s.name}</td>
-                  <td>\${formatCurrency(s.fee || 0)}</td>
-                  <td style="color:var(--color-success,#38a169); font-weight:600">\${formatCurrency(paid)}</td>
-                  <td style="color:\${s.balance > 0 ? 'var(--color-danger,#e53e3e)' : 'var(--color-success,#38a169)'}; font-weight:600">\${formatCurrency(s.balance || 0)}</td>
-                  <td><span class="pill \${s.status === 'Paid' ? 'pill-green' : s.status === 'Pending' ? 'pill-red' : 'pill-amber'}">\${s.status}</span></td>
-                </tr>\`;
+                const dueColor = s.balance > 0 ? 'var(--color-danger,#e53e3e)' : 'var(--color-success,#38a169)';
+                const pillClass = s.status === 'Paid' ? 'pill-green' : s.status === 'Pending' ? 'pill-red' : 'pill-amber';
+                return '<tr>' +
+                  '<td><b>' + s.id + '</b></td>' +
+                  '<td>' + s.name + '</td>' +
+                  '<td>' + formatCurrency(s.fee || 0) + '</td>' +
+                  '<td style="color:var(--color-success,#38a169);font-weight:600">' + formatCurrency(paid) + '</td>' +
+                  '<td style="color:' + dueColor + ';font-weight:600">' + formatCurrency(s.balance || 0) + '</td>' +
+                  '<td><span class="pill ' + pillClass + '">' + s.status + '</span></td>' +
+                  '</tr>';
               }).join('')}
             </tbody>
           </table>
