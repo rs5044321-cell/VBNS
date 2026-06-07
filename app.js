@@ -4204,28 +4204,43 @@ function renderTeacherAttendanceStatus() {
   const records = State.staffAttendance[today] || [];
   const rec = records.find(r => r.id === teacher.id);
 
-  if (rec) {
+  const now = new Date();
+  const timeStr = now.toTimeString().substring(0, 5);
+  const tooLate = timeStr >= SCHOOL_GEO.absentAfter;
+
+  // Only hide button if teacher self-marked (not admin-marked)
+  if (rec && rec.markedBy === 'self') {
     const color = rec.status === 'Present' ? 'var(--color-success)' : rec.status === 'Late' ? 'var(--color-warning)' : 'var(--color-danger)';
     panel.innerHTML = `
-      <div style="text-align:center; padding:20px; background:rgba(16,185,129,0.04); border-radius:12px;">
-        <div style="font-size:16px; font-weight:700; color:${color}; margin-bottom:4px;">Today: ${rec.status}</div>
-        <div style="font-size:12px; color:var(--text-secondary);">Marked at ${rec.markedAt || 'N/A'} ${rec.markedBy === 'self' ? '(Self)' : '(Admin)'}</div>
-        ${rec.status === 'Late' ? '<div style="font-size:11px; color:var(--color-warning); margin-top:6px;">⚠️ Half-day salary deduction applied</div>' : ''}
+      <div style="text-align:center; padding:20px; background:rgba(16,185,129,0.04); border-radius:12px; border:1px solid rgba(16,185,129,0.15);">
+        <i class="ti ti-circle-check" style="font-size:32px; color:${color}; display:block; margin-bottom:8px;"></i>
+        <div style="font-size:16px; font-weight:700; color:${color}; margin-bottom:4px;">✅ Today: ${rec.status}</div>
+        <div style="font-size:12px; color:var(--text-secondary);">Self-marked at <b>${rec.markedAt || 'N/A'}</b> via GPS verification</div>
+        ${rec.status === 'Late' ? '<div style="font-size:11px; color:var(--color-warning); margin-top:8px;">⚠️ Half-day salary deduction will apply in payroll.</div>' : ''}
       </div>`;
   } else {
-    const now = new Date();
-    const timeStr = now.toTimeString().substring(0, 5);
-    const tooLate = timeStr >= SCHOOL_GEO.absentAfter;
-    panel.innerHTML = `
-      <div style="text-align:center; padding:20px;">
-        ${tooLate
-          ? '<div style="color:var(--color-danger); font-weight:600; margin-bottom:8px;">⚠️ Attendance window closed (after 2 PM)</div>'
-          : `<button class="btn btn-primary" onclick="openTeacherSelfAttendance()" style="width:100%; max-width:280px; padding:12px;">
-              <i class="ti ti-map-pin"></i> Mark My Attendance
-             </button>
-             <div style="font-size:11px; color:var(--text-secondary); margin-top:8px;">Must be within ${SCHOOL_GEO.radiusMeters}m of school. On time before ${SCHOOL_GEO.lateAfter}.</div>`
-        }
-      </div>`;
+    // Show mark button — admin marking doesn't count as self-mark
+    if (tooLate) {
+      panel.innerHTML = `
+        <div style="text-align:center; padding:20px; background:rgba(239,68,68,0.04); border-radius:12px; border:1px solid rgba(239,68,68,0.12);">
+          <i class="ti ti-clock-off" style="font-size:32px; color:var(--color-danger); display:block; margin-bottom:8px;"></i>
+          <div style="font-weight:600; color:var(--color-danger); margin-bottom:4px;">Attendance Window Closed</div>
+          <div style="font-size:12px; color:var(--text-secondary);">Attendance cannot be marked after ${SCHOOL_GEO.absentAfter}. You have been marked Absent.</div>
+        </div>`;
+      autoMarkTeacherAbsent(teacher, today);
+    } else {
+      const adminNote = rec ? `<div style="font-size:11px; color:var(--color-warning); margin-bottom:12px;">⚠️ Admin marked you as ${rec.status} — you can override by self-marking via GPS.</div>` : '';
+      panel.innerHTML = `
+        <div style="text-align:center; padding:20px;">
+          ${adminNote}
+          <button class="btn btn-primary" onclick="openTeacherSelfAttendance()" style="width:100%; max-width:300px; padding:14px; font-size:15px; border-radius:12px;">
+            <i class="ti ti-map-pin"></i> Mark My Attendance
+          </button>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:10px;">
+            📍 Must be within <b>${SCHOOL_GEO.radiusMeters}m</b> of school &nbsp;|&nbsp; ⏰ On time before <b>${SCHOOL_GEO.lateAfter}</b>
+          </div>
+        </div>`;
+    }
   }
 }
 // -------------------------------------------------------------
