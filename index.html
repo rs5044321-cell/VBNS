@@ -14,7 +14,31 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
   <!-- Local Stylesheet -->
   <link rel="stylesheet" href="style.css?v=6.0">
-<!-- Firebase is initialized in app.js to avoid duplicate instances -->
+<!-- Firebase Backend -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gKU",
+    authDomain: "vbns-school.firebaseapp.com",
+    projectId: "vbns-school",
+    storageBucket: "vbns-school.firebasestorage.app",
+    messagingSenderId: "690235835836",
+    appId: "1:690235835836:web:3a562a5801051b190297b9"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  window.fbAuth = getAuth(app);
+  window.fbDb   = getFirestore(app);
+  window.fbFns  = {
+    signInWithEmailAndPassword, signOut, onAuthStateChanged,
+    collection, addDoc, getDocs, query, orderBy,
+    serverTimestamp, doc, getDoc
+  };
+  console.log("✅ Firebase connected!");
+</script>
   <!-- SEO: Open Graph Tags -->
   <meta property="og:title" content="Vandey Bharti National School">
   <meta property="og:description" content="Best school in Shyamdeurwa, Maharajganj offering Playway to Class 10 education with discipline, smart learning and overall development. Admissions open 2026.">
@@ -2602,8 +2626,12 @@
               </div>
               <div class="form-grid-2">
                 <div class="form-row">
-                  <label>Staff Portal Password *</label>
-                  <input type="text" id="staff-password" value="teacher123" />
+                  <label>Portal Login Username *</label>
+                  <input type="text" id="staff-username" placeholder="E.g., nippo.singh or TCH002" autocomplete="off" />
+                </div>
+                <div class="form-row">
+                  <label>Portal Login Password *</label>
+                  <input type="text" id="staff-password" placeholder="Set a strong password" autocomplete="off" />
                 </div>
                 <div class="form-row">
                   <label>Assigned Salary (<span class="curr-sym">₹</span>) *</label>

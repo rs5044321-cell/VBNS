@@ -326,7 +326,7 @@ function seedDatabase() {
         if (!State.staffPasswords || Object.keys(State.staffPasswords).length === 0) {
           State.staffPasswords = {};
           State.staff.forEach(st => {
-            State.staffPasswords[st.id] = 'teacher123';
+            const stNP2 = (st.name||'').replace(/\s+/g,'').substring(0,3).toLowerCase(); State.staffPasswords[st.id] = stNP2 + 'vbns@123';
           });
         }
         if (!State.payrollConfig || Object.keys(State.payrollConfig).length === 0) {
@@ -384,8 +384,8 @@ function seedDatabase() {
 
   // Initialize Default Staff Passwords and Salaries
   State.staff.forEach(st => {
-    State.staffPasswords[st.id] = 'teacher123';
-    st.password = 'teacher123';
+    const stNP2 = (st.name||'').replace(/\s+/g,'').substring(0,3).toLowerCase(); State.staffPasswords[st.id] = stNP2 + 'vbns@123';
+    st.password = (st.name||'').replace(/\s+/g,'').substring(0,3).toLowerCase() + 'vbns@123';
     State.payrollConfig[st.id] = { base: st.role.includes('Senior') ? 45000 : 35000, allowance: 3000, deductions: 0, status: 'Unpaid' };
     st.access = ['directory', 'notice', 'attendance', 'timetable', 'exam', 'results', 'library', 'transport'];
     if (st.id === 'TCH-001') st.assignedClass = 'Class X';
@@ -664,9 +664,9 @@ function setLoginRole(role) {
     document.getElementById('login-username').placeholder = 'E.g., admin';
   } else if (role === 'teacher') {
     userRow.style.display = 'block';
-    passRow.style.display = 'block';
-    userLbl.textContent = 'Faculty Officer ID';
-    document.getElementById('login-username').placeholder = 'E.g., TCH-001';
+    passRow.style.display = 'block'; // Password required — set by admin
+    userLbl.textContent = 'Staff Portal Username';
+    document.getElementById('login-username').placeholder = 'Enter your portal username';
   } else if (role === 'student') {
     userRow.style.display = 'block';
     passRow.style.display = 'block';
@@ -697,10 +697,17 @@ async function executeLogin() {
       const key = username.toUpperCase();
       let authenticatedUser = null;
       if (activeLoginRole === 'teacher') {
-        const staffMember = State.staff.find(st => st.id.toUpperCase() === key);
+        // Match by admin-set username (stored on staff object)
+        const staffMember = State.staff.find(st =>
+          (st.username && st.username === username.toLowerCase()) ||
+          st.id.toUpperCase() === username.toUpperCase() // fallback: still allow ID login
+        );
         if (staffMember) {
-          const storedPass = staffMember.password || (State.staffPasswords && State.staffPasswords[staffMember.id]) || 'teacher123';
+          const storedPass = staffMember.password || '';
           if (passVal.trim() === storedPass) authenticatedUser = staffMember;
+          else showToast('Wrong Password', 'Incorrect password. Contact admin.', 'ti-lock');
+        } else {
+          showToast('Not Found', 'Username not found. Contact admin.', 'ti-user-off');
         }
       } else if (activeLoginRole === 'student') {
         // Match by auto-generated ID: first3LettersOfName + vbns + enrollmentNumber
@@ -786,13 +793,14 @@ async function executeLogin() {
         authenticatedUser = { name: "CRM Super Admin", id: "admin" };
       }
     } else if (localRole === 'teacher') {
-      const staffMember = State.staff.find(st => st.id.toUpperCase() === key);
+      // Match by admin-set username or fallback to staff ID
+      const staffMember = State.staff.find(st =>
+        (st.username && st.username === username.toLowerCase()) ||
+        st.id.toUpperCase() === username.toUpperCase()
+      );
       if (staffMember) {
-        // Check stored password field first, then staffPasswords dict, then default
-        const storedPass = staffMember.password || (State.staffPasswords && State.staffPasswords[staffMember.id]) || 'teacher123';
-        if (passVal.trim() === storedPass) {
-          authenticatedUser = staffMember;
-        }
+        const storedPass = staffMember.password || '';
+        if (passVal.trim() === storedPass) authenticatedUser = staffMember;
       }
     } else if (localRole === 'student') {
       const studentMember = State.students.find(s => {
@@ -1404,7 +1412,7 @@ async function admitStudent() {
     balance: annualFee, 
     status: 'Pending',
     enrolledDate: currentDateStr,
-    password: 'student123'
+    password: (name.replace(/\s+/g, '').substring(0, 3).toLowerCase()) + (dob ? dob.split('-').reverse().join('') : '')
   };
 
   State.students.push(newStudent);
@@ -1445,7 +1453,7 @@ async function admitStudent() {
         <div><span style="color:var(--text-secondary)">Admission Date:</span> <b>${currentDateStr}</b></div>
       </div>
       <div style="margin-top:16px; padding:10px; border-radius:var(--border-radius-sm); background-color:var(--color-success-bg); color:var(--color-success); font-size:11px; font-weight:600; display:flex; align-items:center; gap:8px">
-        <i class="ti ti-circle-check"></i> Student registered successfully! (Default Password: student123)
+        <i class="ti ti-circle-check"></i> Student registered! Login ID: ${nextId} | Password: ${name.replace(/\s+/g, '').substring(0,3).toLowerCase() + (dob ? dob.split('-').reverse().join('') : 'setDOB')}
       </div>
     </div>
   `;
@@ -1510,7 +1518,11 @@ function renderDirectoryList() {
   tbody.innerHTML = filtered.map(s => {
     const deleteBtn = currentRole === 'admin' ? 
       `<button class="btn btn-sm btn-danger" onclick="removeStudent('${s.id}')" title="Delete Profile"><i class="ti ti-trash"></i> Delete</button>` : '';
-    const pwd = s.password || 'student123';
+    const namePart = (s.name || '').replace(/\s+/g, '').substring(0, 3).toLowerCase();
+    const dob = s.dob || '';
+    const dobParts = dob.split('-');
+    const dobFormatted = dobParts.length === 3 ? dobParts[2] + dobParts[1] + dobParts[0] : '';
+    const pwd = (s.password && s.password !== 'student123') ? s.password : (namePart + dobFormatted || 'Set DOB to generate');
 
     return `
       <tr>
@@ -3630,7 +3642,8 @@ function renderStaffRegistry() {
   tbody.innerHTML = State.staff.map(st => {
     const accessStr = st.access ? st.access.join(', ') : 'Default Academic';
     const assignedClassStr = st.assignedClass ? `<span class="pill pill-green" style="font-size: 10px; padding: 2px 6px;">${st.assignedClass}</span>` : `<span class="pill pill-amber" style="font-size: 10px; padding: 2px 6px;">None</span>`;
-    const pwd = st.password || State.staffPasswords[st.id] || 'teacher123';
+    const stNamePart = (st.name || '').replace(/\s+/g, '').substring(0, 3).toLowerCase();
+    const pwd = st.password || State.staffPasswords[st.id] || (stNamePart + 'vbns@123');
     return `
       <tr>
         <td><b>${st.id}</b></td>
@@ -3699,6 +3712,7 @@ async function addStaffRecord() {
   const subEl = document.getElementById('staff-sub');
   const phoneEl = document.getElementById('staff-phone');
   const pwEl = document.getElementById('staff-password');
+  const unEl = document.getElementById('staff-username'); // NEW: username field
   const salEl = document.getElementById('staff-base-salary');
   const classEl = document.getElementById('staff-assigned-class');
 
@@ -3707,11 +3721,12 @@ async function addStaffRecord() {
   const sub = subEl.value.trim() || 'N/A';
   const contact = phoneEl.value.trim();
   const password = pwEl.value.trim();
+  const username = unEl ? unEl.value.trim() : '';
   const baseSalary = parseFloat(salEl.value) || 30000;
   const assignedClass = classEl.value;
 
-  if (!name || !role || !contact || (!editingStaffId && !password)) {
-    showToast('Validation Error', 'Fill name, role, contact, and password fields.', 'ti-alert-circle');
+  if (!name || !role || !contact || (!editingStaffId && (!password || !username))) {
+    showToast('Validation Error', 'Fill name, role, contact, username and password fields.', 'ti-alert-circle');
     return;
   }
 
@@ -3736,7 +3751,7 @@ async function addStaffRecord() {
       st.contact = contact;
       st.access = access;
       st.assignedClass = assignedClass;
-      
+      if (username) st.username = username.toLowerCase();
       if (password) {
         st.password = password;
       }
@@ -3766,7 +3781,9 @@ async function addStaffRecord() {
       contact,
       status: 'On Duty',
       access: access,
-      assignedClass: assignedClass
+      assignedClass: assignedClass,
+      username: username.toLowerCase(), // admin-set login username
+      password: password                // admin-set login password
     };
 
     State.staff.push(newStaff);
@@ -3791,7 +3808,8 @@ async function addStaffRecord() {
   roleEl.value = '';
   subEl.value = '';
   phoneEl.value = '';
-  pwEl.value = 'teacher123';
+  if (unEl) unEl.value = '';
+  pwEl.value = '';
   pwEl.placeholder = '';
   salEl.value = '40000';
   classEl.value = 'Class X';
@@ -4265,7 +4283,8 @@ function renderCredentialsDirectory() {
   // Staff credentials
   if (!filterVal || filterVal === 'staff') {
     State.staff.forEach(st => {
-      const pwd = st.password || State.staffPasswords[st.id] || 'teacher123';
+      const stNamePart = (st.name || '').replace(/\s+/g, '').substring(0, 3).toLowerCase();
+      const pwd = `Username: ${st.username || st.id} | Pass: ${st.password || 'not set'}`;
       rows.push({ id: st.id, name: st.name, role: st.role || 'Staff', password: pwd, type: 'staff' });
     });
   }
@@ -4273,7 +4292,11 @@ function renderCredentialsDirectory() {
   // Student credentials
   if (!filterVal || filterVal === 'student') {
     State.students.forEach(s => {
-      const pwd = s.password || 'student123';
+      const namePart = (s.name || '').replace(/\s+/g, '').substring(0, 3).toLowerCase();
+    const dob = s.dob || '';
+    const dobParts = dob.split('-');
+    const dobFormatted = dobParts.length === 3 ? dobParts[2] + dobParts[1] + dobParts[0] : '';
+    const pwd = (s.password && s.password !== 'student123') ? s.password : (namePart + dobFormatted || 'Set DOB to generate');
       rows.push({ id: s.id, name: s.name, role: `${s.cls} – Sec ${s.sec}`, password: pwd, type: 'student' });
     });
   }
