@@ -1177,6 +1177,21 @@ function nav(tabId, sidebarElement) {
       break;
     case 'idcards':
       lockStudentDropdownToRole('id-student-sel', 'id-student-sel-wrapper');
+      // Lock Academic Session field for students
+      const idYearField = document.getElementById('id-year');
+      if (idYearField) {
+        if (State.auth.currentRole === 'student') {
+          idYearField.readOnly = true;
+          idYearField.style.opacity = '0.6';
+          idYearField.style.cursor = 'not-allowed';
+          idYearField.title = 'Locked to current academic session';
+        } else {
+          idYearField.readOnly = false;
+          idYearField.style.opacity = '';
+          idYearField.style.cursor = '';
+          idYearField.title = '';
+        }
+      }
       renderIDCard();
       break;
     case 'admit':
@@ -2679,44 +2694,24 @@ function renderNoticeList() {
   if (!container) return;
 
   const currentRole = State.auth.currentRole;
-  const canEdit = currentRole === 'admin' || currentRole === 'teacher';
   const list = [...State.notices].reverse();
-
   if (list.length === 0) {
-    container.innerHTML = `
-      <div class="empty-preview" style="padding: 32px; text-align:center;">
-        <i class="ti ti-bell-off" style="font-size:36px; color:var(--text-tertiary); display:block; margin-bottom:10px;"></i>
-        <p style="color:var(--text-tertiary)">No notices published yet. Use the form above to post the first announcement.</p>
-      </div>`;
+    container.innerHTML = `<div class="empty-preview"><p>No notice board postings generated.</p></div>`;
     return;
   }
 
-  const countBadge = `<div style="padding: 8px 16px 4px; font-size:11px; color:var(--text-tertiary); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">
-    ${list.length} Notice${list.length > 1 ? 's' : ''} Published
-  </div>`;
-
-  const cards = list.map((item, index) => {
-    const realIndex = State.notices.length - 1 - index;
+  container.innerHTML = list.map((item, index) => {
     let pClass = 'normal';
     if (item.priority.includes('Urgent')) pClass = 'urgent';
     else if (item.priority.includes('Important')) pClass = 'important';
 
-    const editedTag = item.editedAt ? `<span style="font-size:10px; color:var(--text-tertiary); margin-left:6px;">(edited ${item.editedAt})</span>` : '';
-
-    const actionBtns = canEdit ? `
-      <div style="position:absolute; right:12px; bottom:10px; display:flex; gap:6px;">
-        <button class="btn btn-sm" style="font-size:10px; padding:3px 8px; background:var(--accent-light); color:var(--accent);" onclick="editNotice(${realIndex})">
-          <i class="ti ti-pencil"></i> Edit
-        </button>
-        <button class="btn btn-sm btn-danger" style="font-size:10px; padding:3px 8px" onclick="removeNotice(${realIndex})">
-          <i class="ti ti-trash"></i> Delete
-        </button>
-      </div>` : '';
+    const deleteBtn = (currentRole === 'admin' || currentRole === 'teacher') ? 
+      `<button class="btn btn-sm btn-danger" style="position: absolute; right: 16px; bottom: 12px; font-size:10px; padding:3px 8px" onclick="removeNotice(${State.notices.length - 1 - index})"><i class="ti ti-trash"></i> Delete</button>` : '';
 
     return `
-      <div class="notice-card" style="padding-bottom: 44px; position:relative;">
+      <div class="notice-card" style="padding-bottom: 40px;">
         <div class="notice-title-row">
-          <h4>${item.title}${editedTag}</h4>
+          <h4>${item.title}</h4>
           <span class="badge-priority ${pClass}">${item.priority.split(' ')[0]}</span>
         </div>
         <p>${item.body}</p>
@@ -2724,12 +2719,10 @@ function renderNoticeList() {
           <span>Author: <b>${item.by}</b></span>
           <span>Date: ${item.date}</span>
         </div>
-        ${actionBtns}
+        ${deleteBtn}
       </div>
     `;
   }).join('');
-
-  container.innerHTML = countBadge + cards;
 }
 
 function postNoticeBoardBulletin() {
@@ -2760,7 +2753,6 @@ function postNoticeBoardBulletin() {
   logActivity(user.name || 'System Admin', 'Notice Published', 'system', `Published campus bulletin announcement: ${title}`);
   saveState();
   renderNoticeList();
-  renderPublicNotices();
 
   showToast('Notice Published', 'Bulletin posted on the notice board.', 'ti-speakerphone');
 
@@ -2780,77 +2772,6 @@ function removeNotice(realIndex) {
   saveState();
   renderNoticeList();
   showToast('Notice Deleted', 'Announcement bulletin removed.', 'ti-trash');
-}
-
-// -------------------------------------------------------------
-// NOTICE EDIT FUNCTIONS
-// -------------------------------------------------------------
-let _editingNoticeIndex = null;
-
-function editNotice(realIndex) {
-  const nt = State.notices[realIndex];
-  if (!nt) return;
-  _editingNoticeIndex = realIndex;
-
-  const titleEl = document.getElementById('nt-title');
-  const bodyEl = document.getElementById('nt-body');
-  const priorityEl = document.getElementById('nt-priority');
-  const submitBtn = document.getElementById('nt-submit-btn');
-
-  if (titleEl) titleEl.value = nt.title;
-  if (bodyEl) bodyEl.value = nt.body;
-  if (priorityEl) priorityEl.value = nt.priority;
-  if (submitBtn) {
-    submitBtn.innerHTML = '<i class="ti ti-device-floppy"></i> Save Changes';
-    submitBtn.onclick = saveNoticeEdit;
-    submitBtn.style.background = 'var(--color-warning)';
-  }
-
-  const formCard = document.querySelector('#tab-notice .card');
-  if (formCard) formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  showToast('Edit Mode', `Editing: "${nt.title}"`, 'ti-pencil');
-}
-
-function saveNoticeEdit() {
-  if (_editingNoticeIndex === null) return;
-
-  const titleEl = document.getElementById('nt-title');
-  const bodyEl = document.getElementById('nt-body');
-  const priorityEl = document.getElementById('nt-priority');
-
-  const title = titleEl.value.trim();
-  const body = bodyEl.value.trim();
-  const priority = priorityEl.value;
-
-  if (!title || !body) {
-    showToast('Validation Error', 'Fill notice title and body content.', 'ti-alert-circle');
-    return;
-  }
-
-  State.notices[_editingNoticeIndex].title = title;
-  State.notices[_editingNoticeIndex].body = body;
-  State.notices[_editingNoticeIndex].priority = priority;
-  State.notices[_editingNoticeIndex].editedAt = new Date().toISOString().split('T')[0];
-
-  const actor = State.auth.currentUser ? State.auth.currentUser.name : 'System Admin';
-  logActivity(actor, 'Notice Edited', 'system', `Updated notice: ${title}`);
-  saveState();
-  renderNoticeList();
-  renderPublicNotices();
-
-  // Reset form back to post mode
-  titleEl.value = '';
-  bodyEl.value = '';
-  _editingNoticeIndex = null;
-
-  const submitBtn = document.getElementById('nt-submit-btn');
-  if (submitBtn) {
-    submitBtn.innerHTML = '<i class="ti ti-speakerphone"></i> Publish Announcement';
-    submitBtn.onclick = postNoticeBoardBulletin;
-    submitBtn.style.background = '';
-  }
-
-  showToast('Notice Updated', 'Bulletin notice updated successfully.', 'ti-circle-check');
 }
 
 // -------------------------------------------------------------
@@ -5255,12 +5176,9 @@ function renderPublicNotices() {
   const noticesArray = Array.isArray(State.notices) ? State.notices : [];
   const list = [...noticesArray].reverse().slice(0, 3);
   if (list.length === 0) {
-    container.innerHTML = `
-      <div style="text-align:center; padding: 24px 16px;">
-        <i class="ti ti-bell-off" style="font-size:28px; color:var(--text-tertiary); display:block; margin-bottom:8px;"></i>
-        <p style="font-size:13px; color:var(--text-tertiary);">No notices published yet. Check back soon.</p>
-      </div>`;
-    return;
+    // Keep the static fallback notices if database has no notices, otherwise show empty notice board message
+    // If the database notice array is empty, we can render an empty message or keep the static markup
+    return; // Retain static fallback notices
   }
 
   container.innerHTML = list.map(item => {
