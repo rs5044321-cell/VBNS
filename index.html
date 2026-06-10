@@ -2432,6 +2432,11 @@
               </select>
             </div>
           </div>
+          <div id="tt-admin-edit-panel" style="display:none; padding: 0 16px 10px;">
+            <div style="text-align:right;">
+              <button class="btn btn-primary" onclick="openAddTimetablePeriod()"><i class="ti ti-plus"></i> Add New Period</button>
+            </div>
+          </div>
           <div class="table-wrap">
             <table class="premium-table grid-timetable text-left">
               <thead>
@@ -2443,6 +2448,7 @@
                   <th>Thursday</th>
                   <th>Friday</th>
                   <th>Saturday</th>
+                  <th id="tt-actions-header"></th>
                 </tr>
               </thead>
               <tbody id="tt-body">
@@ -2460,6 +2466,10 @@
             <h2 class="section-title"><i class="ti ti-notebook"></i> Academic Examination Calendars</h2>
             <span class="card-subtitle">Upcoming board tests, timings, and location parameters</span>
           </div>
+          <div id="exam-admin-bar" style="display:none; padding: 0 16px 10px; text-align:right;">
+            <button class="btn btn-primary" onclick="openExamForm(null)"><i class="ti ti-plus"></i> Add Exam</button>
+          </div>
+          <div id="exam-admin-panel" style="display:none; padding: 0 16px;"></div>
           <div class="table-wrap">
             <table class="premium-table text-left">
               <thead>
@@ -2470,6 +2480,7 @@
                   <th>Timing Limit</th>
                   <th>Max Weights</th>
                   <th>Hall Location</th>
+                  <th id="exam-actions-header"></th>
                 </tr>
               </thead>
               <tbody id="exam-body">
