@@ -1897,11 +1897,8 @@ function renderFeeCollectionModule() {
     return;
   }
 
+  renderFeeCollectionLogsTable();
   if (role === 'student') {
-    // Hide fee transaction logs table - students only see their personal receipt/dues card
-    const feeLogSection = document.getElementById('fee-log-section');
-    if (feeLogSection) feeLogSection.style.display = 'none';
-
     const student = State.auth.currentUser;
     const studentLogs = State.feeLog.filter(l => l.studentId === student.id);
     if (studentLogs.length > 0) {
@@ -1909,11 +1906,6 @@ function renderFeeCollectionModule() {
     } else {
       renderStudentDuesCard(student);
     }
-  } else {
-    // Show fee logs for admin/accountant/teacher
-    const feeLogSection = document.getElementById('fee-log-section');
-    if (feeLogSection) feeLogSection.style.display = 'block';
-    renderFeeCollectionLogsTable();
   }
 }
 
@@ -2687,27 +2679,44 @@ function renderNoticeList() {
   if (!container) return;
 
   const currentRole = State.auth.currentRole;
+  const canEdit = currentRole === 'admin' || currentRole === 'teacher';
   const list = [...State.notices].reverse();
+
   if (list.length === 0) {
-    container.innerHTML = `<div class="empty-preview"><p>No notice board postings generated.</p></div>`;
+    container.innerHTML = `
+      <div class="empty-preview" style="padding: 32px; text-align:center;">
+        <i class="ti ti-bell-off" style="font-size:36px; color:var(--text-tertiary); display:block; margin-bottom:10px;"></i>
+        <p style="color:var(--text-tertiary)">No notices published yet. Use the form above to post the first announcement.</p>
+      </div>`;
     return;
   }
 
-  container.innerHTML = list.map((item, index) => {
+  const countBadge = `<div style="padding: 8px 16px 4px; font-size:11px; color:var(--text-tertiary); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">
+    ${list.length} Notice${list.length > 1 ? 's' : ''} Published
+  </div>`;
+
+  const cards = list.map((item, index) => {
+    const realIndex = State.notices.length - 1 - index;
     let pClass = 'normal';
     if (item.priority.includes('Urgent')) pClass = 'urgent';
     else if (item.priority.includes('Important')) pClass = 'important';
 
-    const actionBtns = (currentRole === 'admin' || currentRole === 'teacher') ? `
-      <div style="position: absolute; right: 12px; bottom: 10px; display:flex; gap:6px;">
-        <button class="btn btn-sm" style="font-size:10px; padding:3px 8px; background:var(--accent-light); color:var(--accent);" onclick="editNotice(${State.notices.length - 1 - index})"><i class="ti ti-pencil"></i> Edit</button>
-        <button class="btn btn-sm btn-danger" style="font-size:10px; padding:3px 8px" onclick="removeNotice(${State.notices.length - 1 - index})"><i class="ti ti-trash"></i> Delete</button>
+    const editedTag = item.editedAt ? `<span style="font-size:10px; color:var(--text-tertiary); margin-left:6px;">(edited ${item.editedAt})</span>` : '';
+
+    const actionBtns = canEdit ? `
+      <div style="position:absolute; right:12px; bottom:10px; display:flex; gap:6px;">
+        <button class="btn btn-sm" style="font-size:10px; padding:3px 8px; background:var(--accent-light); color:var(--accent);" onclick="editNotice(${realIndex})">
+          <i class="ti ti-pencil"></i> Edit
+        </button>
+        <button class="btn btn-sm btn-danger" style="font-size:10px; padding:3px 8px" onclick="removeNotice(${realIndex})">
+          <i class="ti ti-trash"></i> Delete
+        </button>
       </div>` : '';
 
     return `
-      <div class="notice-card" style="padding-bottom: 44px;">
+      <div class="notice-card" style="padding-bottom: 44px; position:relative;">
         <div class="notice-title-row">
-          <h4>${item.title}</h4>
+          <h4>${item.title}${editedTag}</h4>
           <span class="badge-priority ${pClass}">${item.priority.split(' ')[0]}</span>
         </div>
         <p>${item.body}</p>
@@ -2719,6 +2728,8 @@ function renderNoticeList() {
       </div>
     `;
   }).join('');
+
+  container.innerHTML = countBadge + cards;
 }
 
 function postNoticeBoardBulletin() {
@@ -2749,6 +2760,7 @@ function postNoticeBoardBulletin() {
   logActivity(user.name || 'System Admin', 'Notice Published', 'system', `Published campus bulletin announcement: ${title}`);
   saveState();
   renderNoticeList();
+  renderPublicNotices();
 
   showToast('Notice Published', 'Bulletin posted on the notice board.', 'ti-speakerphone');
 
@@ -2770,12 +2782,14 @@ function removeNotice(realIndex) {
   showToast('Notice Deleted', 'Announcement bulletin removed.', 'ti-trash');
 }
 
+// -------------------------------------------------------------
+// NOTICE EDIT FUNCTIONS
+// -------------------------------------------------------------
 let _editingNoticeIndex = null;
 
 function editNotice(realIndex) {
   const nt = State.notices[realIndex];
   if (!nt) return;
-
   _editingNoticeIndex = realIndex;
 
   const titleEl = document.getElementById('nt-title');
@@ -2789,12 +2803,12 @@ function editNotice(realIndex) {
   if (submitBtn) {
     submitBtn.innerHTML = '<i class="ti ti-device-floppy"></i> Save Changes';
     submitBtn.onclick = saveNoticeEdit;
+    submitBtn.style.background = 'var(--color-warning)';
   }
 
-  // Scroll to form
   const formCard = document.querySelector('#tab-notice .card');
   if (formCard) formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  showToast('Edit Mode', `Editing notice: "${nt.title}"`, 'ti-pencil');
+  showToast('Edit Mode', `Editing: "${nt.title}"`, 'ti-pencil');
 }
 
 function saveNoticeEdit() {
@@ -2819,19 +2833,21 @@ function saveNoticeEdit() {
   State.notices[_editingNoticeIndex].editedAt = new Date().toISOString().split('T')[0];
 
   const actor = State.auth.currentUser ? State.auth.currentUser.name : 'System Admin';
-  logActivity(actor, 'Notice Edited', 'system', `Updated campus bulletin notice: ${title}`);
+  logActivity(actor, 'Notice Edited', 'system', `Updated notice: ${title}`);
   saveState();
   renderNoticeList();
+  renderPublicNotices();
 
-  // Reset form
+  // Reset form back to post mode
   titleEl.value = '';
   bodyEl.value = '';
   _editingNoticeIndex = null;
 
   const submitBtn = document.getElementById('nt-submit-btn');
   if (submitBtn) {
-    submitBtn.innerHTML = '<i class="ti ti-speakerphone"></i> Post Notice';
+    submitBtn.innerHTML = '<i class="ti ti-speakerphone"></i> Publish Announcement';
     submitBtn.onclick = postNoticeBoardBulletin;
+    submitBtn.style.background = '';
   }
 
   showToast('Notice Updated', 'Bulletin notice updated successfully.', 'ti-circle-check');
@@ -3638,6 +3654,7 @@ function renderTimetableModule() {
   const selectEl = document.getElementById('tt-class-sel');
   let classKey = selectEl ? selectEl.value : 'Class X-A';
 
+  // If page loaded first time, set selector to teacher's class if applicable
   const currentRole = State.auth.currentRole;
   if (currentRole === 'teacher' && !selectEl) {
     const activeTeacher = State.auth.currentUser;
@@ -3646,146 +3663,47 @@ function renderTimetableModule() {
     }
   }
 
+  // Ensure selector value is correct
   if (selectEl && selectEl.value !== classKey) {
     selectEl.value = classKey;
   }
-
-  // Show/hide admin edit panel
-  const ttEditPanel = document.getElementById('tt-admin-edit-panel');
-  if (ttEditPanel) ttEditPanel.style.display = currentRole === 'admin' ? 'block' : 'none';
 
   const list = State.timetable[classKey];
   if (!list || !Array.isArray(list) || list.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="${currentRole === 'admin' ? 8 : 7}" class="center-col" style="color: var(--text-tertiary); padding: 32px 0;">
+        <td colspan="7" class="center-col" style="color: var(--text-tertiary); padding: 32px 0;">
           <i class="ti ti-calendar-off" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
-          No timetable scheduled for ${classKey} yet.
-          ${currentRole === 'admin' ? `<br><button class="btn btn-primary" style="margin-top:12px" onclick="openAddTimetablePeriod()"><i class="ti ti-plus"></i> Add First Period</button>` : ''}
+          No timetable schedules mapped for ${classKey} yet.
         </td>
       </tr>
     `;
     return;
   }
 
-  const days = ['mon','tue','wed','thu','fri','sat'];
-  const dayLabels = { mon:'Mon',tue:'Tue',wed:'Wed',thu:'Thu',fri:'Fri',sat:'Sat' };
-
-  tbody.innerHTML = list.map((item, idx) => {
-    const dayCells = days.map(d => {
-      const cell = item[d];
-      const isRecess = !cell || cell.sub === 'Recess' || cell.sub === '-';
-      return `<td>${isRecess ? `<i style="color:var(--text-tertiary)">Recess</i>` : `<b>${cell.sub}</b><span style="display:block;font-size:11px;color:var(--text-secondary)">${cell.t || ''}</span>`}</td>`;
-    }).join('');
-
-    const editBtn = currentRole === 'admin' ? `
-      <td style="white-space:nowrap">
-        <button class="btn btn-sm" style="background:var(--accent-light);color:var(--accent);padding:3px 7px;font-size:10px" onclick="openEditTimetablePeriod(${idx}, '${classKey}')"><i class="ti ti-pencil"></i></button>
-        <button class="btn btn-sm btn-danger" style="padding:3px 7px;font-size:10px;margin-left:4px" onclick="deleteTimetablePeriod(${idx}, '${classKey}')"><i class="ti ti-trash"></i></button>
-      </td>` : '';
-
-    return `<tr><td><b>${item.time}</b></td>${dayCells}${editBtn}</tr>`;
-  }).join('');
-}
-
-function openAddTimetablePeriod() {
-  const classKey = document.getElementById('tt-class-sel')?.value || 'Class X-A';
-  showTimetablePeriodForm(null, classKey);
-}
-
-function openEditTimetablePeriod(idx, classKey) {
-  showTimetablePeriodForm(idx, classKey);
-}
-
-function showTimetablePeriodForm(idx, classKey) {
-  const list = State.timetable[classKey] || [];
-  const existing = idx !== null ? list[idx] : null;
-  const days = ['mon','tue','wed','thu','fri','sat'];
-  const dayLabels = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-
-  const dayFields = days.map((d, i) => `
-    <div style="margin-bottom:10px">
-      <label style="font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">${dayLabels[i]}</label>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-        <input id="tt-form-${d}-sub" type="text" placeholder="Subject" value="${existing && existing[d] ? existing[d].sub : ''}" style="padding:7px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:12px"/>
-        <input id="tt-form-${d}-t" type="text" placeholder="Teacher" value="${existing && existing[d] ? existing[d].t : ''}" style="padding:7px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:12px"/>
-      </div>
-    </div>
+  tbody.innerHTML = list.map(item => `
+    <tr>
+      <td><b>${item.time}</b></td>
+      <td>
+        ${item.mon && item.mon.sub && item.mon.sub !== 'Recess' ? `<b>${item.mon.sub}</b><span>${item.mon.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+      </td>
+      <td>
+        ${item.tue && item.tue.sub && item.tue.sub !== 'Recess' ? `<b>${item.tue.sub}</b><span>${item.tue.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+      </td>
+      <td>
+        ${item.wed && item.wed.sub && item.wed.sub !== 'Recess' ? `<b>${item.wed.sub}</b><span>${item.wed.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+      </td>
+      <td>
+        ${item.thu && item.thu.sub && item.thu.sub !== 'Recess' ? `<b>${item.thu.sub}</b><span>${item.thu.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+      </td>
+      <td>
+        ${item.fri && item.fri.sub && item.fri.sub !== 'Recess' ? `<b>${item.fri.sub}</b><span>${item.fri.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+      </td>
+      <td>
+        ${item.sat && item.sat.sub && item.sat.sub !== 'Recess' ? `<b>${item.sat.sub}</b><span>${item.sat.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess Interval</i>`}
+      </td>
+    </tr>
   `).join('');
-
-  const panel = document.getElementById('tt-admin-edit-panel');
-  if (!panel) return;
-
-  panel.innerHTML = `
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-header">
-        <h2 class="section-title"><i class="ti ti-calendar-plus"></i> ${idx !== null ? 'Edit' : 'Add'} Period — ${classKey}</h2>
-      </div>
-      <div style="padding:16px">
-        <div style="margin-bottom:12px">
-          <label style="font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Period Time Slot</label>
-          <input id="tt-form-time" type="text" placeholder="e.g. 08:30 AM - 09:15 AM" value="${existing ? existing.time : ''}" style="width:100%;padding:8px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px"/>
-        </div>
-        ${dayFields}
-        <div style="display:flex;gap:10px;margin-top:16px">
-          <button class="btn btn-primary" onclick="saveTimetablePeriod(${idx !== null ? idx : 'null'}, '${classKey}')">
-            <i class="ti ti-device-floppy"></i> ${idx !== null ? 'Save Changes' : 'Add Period'}
-          </button>
-          <button class="btn" onclick="cancelTimetableEdit()"><i class="ti ti-x"></i> Cancel</button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function saveTimetablePeriod(idx, classKey) {
-  if (!State.timetable[classKey]) State.timetable[classKey] = [];
-  const list = State.timetable[classKey];
-  const days = ['mon','tue','wed','thu','fri','sat'];
-
-  const time = document.getElementById('tt-form-time')?.value.trim();
-  if (!time) { showToast('Validation Error', 'Please enter the period time slot.', 'ti-alert-circle'); return; }
-
-  const period = { time };
-  days.forEach(d => {
-    const sub = document.getElementById(`tt-form-${d}-sub`)?.value.trim() || 'Recess';
-    const t = document.getElementById(`tt-form-${d}-t`)?.value.trim() || '-';
-    period[d] = { sub, t };
-  });
-
-  if (idx !== null && idx !== 'null') {
-    list[idx] = period;
-  } else {
-    list.push(period);
-  }
-
-  saveState();
-  showToast('Timetable Saved', `Period "${time}" saved for ${classKey}.`, 'ti-circle-check');
-  cancelTimetableEdit();
-  renderTimetableModule();
-}
-
-function deleteTimetablePeriod(idx, classKey) {
-  if (!confirm('Delete this period from the timetable?')) return;
-  if (State.timetable[classKey]) {
-    State.timetable[classKey].splice(idx, 1);
-    saveState();
-    renderTimetableModule();
-    showToast('Period Deleted', 'Timetable period removed.', 'ti-trash');
-  }
-}
-
-function cancelTimetableEdit() {
-  const panel = document.getElementById('tt-admin-edit-panel');
-  if (panel) {
-    panel.innerHTML = `
-      <div style="text-align:right;margin-bottom:10px">
-        <button class="btn btn-primary" onclick="openAddTimetablePeriod()"><i class="ti ti-plus"></i> Add New Period</button>
-      </div>
-    `;
-  }
 }
 
 // -------------------------------------------------------------
@@ -3795,27 +3713,7 @@ function renderExamCalendar() {
   const tbody = document.getElementById('exam-body');
   if (!tbody) return;
 
-  const currentRole = State.auth.currentRole;
-  const isAdmin = currentRole === 'admin';
-
-  // Show/hide admin add button
-  const examAdminBar = document.getElementById('exam-admin-bar');
-  if (examAdminBar) examAdminBar.style.display = isAdmin ? 'block' : 'none';
-
-  if (!State.exams || State.exams.length === 0) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="${isAdmin ? 7 : 6}" class="center-col" style="color:var(--text-tertiary);padding:32px 0">
-          <i class="ti ti-calendar-off" style="font-size:32px;display:block;margin-bottom:8px"></i>
-          No examination schedules published yet.
-          ${isAdmin ? `<br><button class="btn btn-primary" style="margin-top:12px" onclick="openExamForm(null)"><i class="ti ti-plus"></i> Add First Exam</button>` : ''}
-        </td>
-      </tr>
-    `;
-    return;
-  }
-
-  tbody.innerHTML = State.exams.map((ex, idx) => `
+  tbody.innerHTML = State.exams.map(ex => `
     <tr>
       <td><b>${ex.subject}</b></td>
       <td>${ex.date}</td>
@@ -3825,105 +3723,8 @@ function renderExamCalendar() {
       <td>${ex.duration}</td>
       <td><b>${ex.maxMarks} Marks</b></td>
       <td>${ex.hall}</td>
-      ${isAdmin ? `
-      <td style="white-space:nowrap">
-        <button class="btn btn-sm" style="background:var(--accent-light);color:var(--accent);padding:3px 7px;font-size:10px" onclick="openExamForm(${idx})"><i class="ti ti-pencil"></i></button>
-        <button class="btn btn-sm btn-danger" style="padding:3px 7px;font-size:10px;margin-left:4px" onclick="deleteExamEntry(${idx})"><i class="ti ti-trash"></i></button>
-      </td>` : ''}
     </tr>
   `).join('');
-}
-
-function openExamForm(idx) {
-  const ex = idx !== null ? State.exams[idx] : null;
-  const panel = document.getElementById('exam-admin-panel');
-  if (!panel) return;
-
-  panel.style.display = 'block';
-  panel.innerHTML = `
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-header">
-        <h2 class="section-title"><i class="ti ti-calendar-event"></i> ${ex ? 'Edit' : 'Add'} Exam Schedule</h2>
-      </div>
-      <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div>
-          <label style="font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Subject</label>
-          <input id="ex-form-subject" type="text" placeholder="e.g. Mathematics" value="${ex ? ex.subject : ''}" style="width:100%;padding:8px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px"/>
-        </div>
-        <div>
-          <label style="font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Date</label>
-          <input id="ex-form-date" type="date" value="${ex ? ex.date : ''}" style="width:100%;padding:8px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px"/>
-        </div>
-        <div>
-          <label style="font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Session Slot</label>
-          <select id="ex-form-slot" style="width:100%;padding:8px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px">
-            <option value="Morning" ${ex && ex.slot === 'Morning' ? 'selected' : ''}>Morning Session</option>
-            <option value="Afternoon" ${ex && ex.slot === 'Afternoon' ? 'selected' : ''}>Afternoon Session</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Duration</label>
-          <input id="ex-form-duration" type="text" placeholder="e.g. 3 Hours" value="${ex ? ex.duration : ''}" style="width:100%;padding:8px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px"/>
-        </div>
-        <div>
-          <label style="font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Max Marks</label>
-          <input id="ex-form-marks" type="number" placeholder="e.g. 100" value="${ex ? ex.maxMarks : ''}" style="width:100%;padding:8px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px"/>
-        </div>
-        <div>
-          <label style="font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Exam Hall / Room</label>
-          <input id="ex-form-hall" type="text" placeholder="e.g. Hall A" value="${ex ? ex.hall : ''}" style="width:100%;padding:8px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px"/>
-        </div>
-      </div>
-      <div style="padding:0 16px 16px;display:flex;gap:10px">
-        <button class="btn btn-primary" onclick="saveExamEntry(${idx !== null ? idx : 'null'})">
-          <i class="ti ti-device-floppy"></i> ${ex ? 'Save Changes' : 'Add Exam'}
-        </button>
-        <button class="btn" onclick="closeExamForm()"><i class="ti ti-x"></i> Cancel</button>
-      </div>
-    </div>
-  `;
-  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function saveExamEntry(idx) {
-  const subject = document.getElementById('ex-form-subject')?.value.trim();
-  const date = document.getElementById('ex-form-date')?.value;
-  const slot = document.getElementById('ex-form-slot')?.value;
-  const duration = document.getElementById('ex-form-duration')?.value.trim();
-  const maxMarks = parseInt(document.getElementById('ex-form-marks')?.value) || 0;
-  const hall = document.getElementById('ex-form-hall')?.value.trim();
-
-  if (!subject || !date) {
-    showToast('Validation Error', 'Subject and Date are required.', 'ti-alert-circle');
-    return;
-  }
-
-  const entry = { subject, date, slot, duration, maxMarks, hall };
-
-  if (idx !== null && idx !== 'null') {
-    State.exams[idx] = entry;
-  } else {
-    if (!State.exams) State.exams = [];
-    State.exams.push(entry);
-  }
-
-  saveState();
-  closeExamForm();
-  renderExamCalendar();
-  showToast('Exam Saved', `${subject} exam schedule saved.`, 'ti-circle-check');
-}
-
-function deleteExamEntry(idx) {
-  if (!confirm('Delete this exam entry?')) return;
-  State.exams.splice(idx, 1);
-  saveState();
-  renderExamCalendar();
-  showToast('Exam Deleted', 'Exam entry removed from schedule.', 'ti-trash');
-}
-
-function closeExamForm() {
-  const panel = document.getElementById('exam-admin-panel');
-  if (panel) panel.style.display = 'none';
 }
 
 // -------------------------------------------------------------
@@ -5454,9 +5255,12 @@ function renderPublicNotices() {
   const noticesArray = Array.isArray(State.notices) ? State.notices : [];
   const list = [...noticesArray].reverse().slice(0, 3);
   if (list.length === 0) {
-    // Keep the static fallback notices if database has no notices, otherwise show empty notice board message
-    // If the database notice array is empty, we can render an empty message or keep the static markup
-    return; // Retain static fallback notices
+    container.innerHTML = `
+      <div style="text-align:center; padding: 24px 16px;">
+        <i class="ti ti-bell-off" style="font-size:28px; color:var(--text-tertiary); display:block; margin-bottom:8px;"></i>
+        <p style="font-size:13px; color:var(--text-tertiary);">No notices published yet. Check back soon.</p>
+      </div>`;
+    return;
   }
 
   container.innerHTML = list.map(item => {

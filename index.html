@@ -339,7 +339,7 @@
                 <img src="gallery_lab.jpg" alt="Science Laboratory" class="gallery-photo" />
               </div>
               <h5>Science Laboratory</h5>
-              <p>Advanced experimental set-ups matching primary CBSE/Board educational criteria.</p>
+              <p>Advanced experimental set-ups matching primary Board educational criteria.</p>
             </div>
             <div class="gallery-item-card">
               <div class="gallery-img-wrapper">
@@ -426,39 +426,7 @@
                 <span class="card-subtitle">Latest postings for Parents & Students</span>
               </div>
               <div id="public-notices-feed" class="public-notices-feed-container">
-                <div class="notice-item public-feed-card priority-important" style="margin-bottom: 12px; padding: 14px 16px;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <h4 style="font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin: 0;">Mandatory Parent-Teacher Meeting (PTM)</h4>
-                    <span class="badge" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-secondary); background: var(--bg-tertiary); color: var(--text-primary);">Important</span>
-                  </div>
-                  <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 6px 0;">Critical academic discussion regarding final board test timetables for Classes VI-X on 10th June 2026, 10:00 AM.</p>
-                  <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-tertiary); margin-top: 8px;">
-                    <span>By: <b>Principal Office</b></span>
-                    <span>Date: 2026-05-22</span>
-                  </div>
-                </div>
-                <div class="notice-item public-feed-card priority-normal" style="margin-bottom: 12px; padding: 14px 16px;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <h4 style="font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin: 0;">Annual Sports Day Board Assembly</h4>
-                    <span class="badge" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-secondary); background: var(--bg-tertiary); color: var(--text-primary);">Normal</span>
-                  </div>
-                  <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 6px 0;">The Annual Sports Meet is scheduled for 15th December 2026. Grade athletic selections begin Monday.</p>
-                  <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-tertiary); margin-top: 8px;">
-                    <span>By: <b>Sports Admin Board</b></span>
-                    <span>Date: 2026-05-24</span>
-                  </div>
-                </div>
-                <div class="notice-item public-feed-card priority-urgent" style="margin-bottom: 12px; padding: 14px 16px;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <h4 style="font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin: 0;">Urgent: CBSE Registration Compliance</h4>
-                    <span class="badge" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-secondary); background: var(--bg-tertiary); color: var(--text-primary);">Urgent</span>
-                  </div>
-                  <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 6px 0;">All Grade X students must submit three verified photographs and duplicate board forms by 30th May without fail.</p>
-                  <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-tertiary); margin-top: 8px;">
-                    <span>By: <b>Academic Director</b></span>
-                    <span>Date: 2026-05-20</span>
-                  </div>
-                </div>
+                <!-- Notices rendered dynamically from ERP admin panel -->
               </div>
             </div>
           </div>
@@ -2202,43 +2170,43 @@
 
       <!-- NOTICE BOARD TAB -->
       <section class="tab" id="tab-notice">
-        <div class="two-col">
-          <div class="card glass" data-roles="admin teacher">
-            <div class="card-header">
-              <h2 class="section-title"><i class="ti ti-speakerphone"></i> Author New Campus Announcement</h2>
-              <span class="card-subtitle">Announcements populate notice boards across all profiles</span>
-            </div>
-            <div class="form-container">
-              <div class="form-row">
-                <label for="nt-title">Bulletin Title *</label>
-                <input id="nt-title" type="text" placeholder="E.g., Winter Holiday Break" required />
-              </div>
-              <div class="form-row">
-                <label for="nt-body">Notice Description / Content *</label>
-                <textarea id="nt-body" rows="5" placeholder="Write bulletin notes here..." required></textarea>
-              </div>
-              <div class="form-row">
-                <label for="nt-priority">Announcement Classification</label>
-                <select id="nt-priority">
-                  <option selected>Normal Broadcast</option>
-                  <option>Important Bulletin</option>
-                  <option>Urgent Announcement</option>
-                </select>
-              </div>
-              <button class="btn btn-primary btn-block" onclick="postNoticeBoardBulletin()">
-                <i class="ti ti-upload"></i> Publish Announcement
-              </button>
-            </div>
+        <!-- Post / Edit Notice Form (Admin & Teacher only) -->
+        <div class="card glass" data-roles="admin teacher" style="margin-bottom: 16px;">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-speakerphone"></i> Author New Campus Announcement</h2>
+            <span class="card-subtitle">Announcements populate notice boards across all profiles</span>
           </div>
-          
-          <div class="card glass">
-            <div class="card-header">
-              <h2 class="section-title"><i class="ti ti-news"></i> Digital Notice Board Panel</h2>
-              <span class="card-subtitle">Active administrative posts &amp; bulletins</span>
+          <div class="form-container">
+            <div class="form-row">
+              <label for="nt-title">Bulletin Title *</label>
+              <input id="nt-title" type="text" placeholder="E.g., Winter Holiday Break" required />
             </div>
-            <div id="notice-list" class="notice-list-scrollable">
-              <!-- Rendered dynamically -->
+            <div class="form-row">
+              <label for="nt-body">Notice Description / Content *</label>
+              <textarea id="nt-body" rows="4" placeholder="Write bulletin notes here..." required></textarea>
             </div>
+            <div class="form-row">
+              <label for="nt-priority">Announcement Classification</label>
+              <select id="nt-priority">
+                <option selected>Normal Broadcast</option>
+                <option>Important Bulletin</option>
+                <option>Urgent Announcement</option>
+              </select>
+            </div>
+            <button id="nt-submit-btn" class="btn btn-primary btn-block" onclick="postNoticeBoardBulletin()">
+              <i class="ti ti-speakerphone"></i> Publish Announcement
+            </button>
+          </div>
+        </div>
+
+        <!-- Posted Notices History (visible to all roles) -->
+        <div class="card glass">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-news"></i> Posted Notices History</h2>
+            <span class="card-subtitle">All published bulletins — admin &amp; teacher can edit or delete</span>
+          </div>
+          <div id="notice-list" class="notice-list-scrollable">
+            <!-- Rendered dynamically -->
           </div>
         </div>
       </section>
@@ -2432,11 +2400,6 @@
               </select>
             </div>
           </div>
-          <div id="tt-admin-edit-panel" style="display:none; padding: 0 16px 10px;">
-            <div style="text-align:right;">
-              <button class="btn btn-primary" onclick="openAddTimetablePeriod()"><i class="ti ti-plus"></i> Add New Period</button>
-            </div>
-          </div>
           <div class="table-wrap">
             <table class="premium-table grid-timetable text-left">
               <thead>
@@ -2448,7 +2411,6 @@
                   <th>Thursday</th>
                   <th>Friday</th>
                   <th>Saturday</th>
-                  <th id="tt-actions-header"></th>
                 </tr>
               </thead>
               <tbody id="tt-body">
@@ -2466,10 +2428,6 @@
             <h2 class="section-title"><i class="ti ti-notebook"></i> Academic Examination Calendars</h2>
             <span class="card-subtitle">Upcoming board tests, timings, and location parameters</span>
           </div>
-          <div id="exam-admin-bar" style="display:none; padding: 0 16px 10px; text-align:right;">
-            <button class="btn btn-primary" onclick="openExamForm(null)"><i class="ti ti-plus"></i> Add Exam</button>
-          </div>
-          <div id="exam-admin-panel" style="display:none; padding: 0 16px;"></div>
           <div class="table-wrap">
             <table class="premium-table text-left">
               <thead>
@@ -2480,7 +2438,6 @@
                   <th>Timing Limit</th>
                   <th>Max Weights</th>
                   <th>Hall Location</th>
-                  <th id="exam-actions-header"></th>
                 </tr>
               </thead>
               <tbody id="exam-body">
