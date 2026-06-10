@@ -421,7 +421,7 @@ function saveState() {
   // Debounce the Firestore sync: wait 800ms after last saveState() call
   // This collapses bursts of rapid changes (e.g. bulk attendance) into one write
   clearTimeout(_saveDebounceTimer);
-  _saveDebounceTimer = setTimeout(() => _syncToFirestore(), 800);
+  _saveDebounceTimer = setTimeout(() => _syncToFirestore(), 1500);
 }
 
 function _syncToFirestore() {
@@ -521,9 +521,15 @@ function migrateOldClassNames() {
 window.addEventListener('DOMContentLoaded', async () => {
   // Initialize Firebase and load data from Firestore
   try {
-    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const { getFirestore, doc, setDoc, getDoc, getDocs, collection } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const [
+      { initializeApp, getApps },
+      { getFirestore, doc, setDoc, getDoc, getDocs, collection },
+      { getAuth }
+    ] = await Promise.all([
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js')
+    ]);
     const firebaseConfig = {
       apiKey: "AIzaSyAO8dHzpF-mWhr6sY0LSOxdPs5RQEj9gKU",
       authDomain: "vbns-school.firebaseapp.com",
@@ -1177,21 +1183,6 @@ function nav(tabId, sidebarElement) {
       break;
     case 'idcards':
       lockStudentDropdownToRole('id-student-sel', 'id-student-sel-wrapper');
-      // Lock Academic Session field for students
-      const idYearField = document.getElementById('id-year');
-      if (idYearField) {
-        if (State.auth.currentRole === 'student') {
-          idYearField.readOnly = true;
-          idYearField.style.opacity = '0.6';
-          idYearField.style.cursor = 'not-allowed';
-          idYearField.title = 'Locked to current academic session';
-        } else {
-          idYearField.readOnly = false;
-          idYearField.style.opacity = '';
-          idYearField.style.cursor = '';
-          idYearField.title = '';
-        }
-      }
       renderIDCard();
       break;
     case 'admit':
@@ -1298,13 +1289,15 @@ function lockStudentDropdownToRole(selectId, wrapperId) {
 // Lock Student Fees Tab to hide Collection forms
 function lockStudentFeesCollectTab() {
   const collectCard = document.getElementById('fees-collect-card');
+  const feeLogSection = document.getElementById('fee-log-section');
   const role = State.auth.currentRole;
-  if (!collectCard) return;
 
   if (role === 'student') {
-    collectCard.style.display = 'none';
+    if (collectCard) collectCard.style.display = 'none';
+    if (feeLogSection) feeLogSection.style.display = 'none';
   } else {
-    collectCard.style.display = 'block';
+    if (collectCard) collectCard.style.display = 'block';
+    if (feeLogSection) feeLogSection.style.display = 'block';
   }
 }
 
@@ -1912,8 +1905,11 @@ function renderFeeCollectionModule() {
     return;
   }
 
-  renderFeeCollectionLogsTable();
   if (role === 'student') {
+    // Students: show only their dues card, never the fee log table
+    const feeLogSection = document.getElementById('fee-log-section');
+    if (feeLogSection) feeLogSection.style.display = 'none';
+
     const student = State.auth.currentUser;
     const studentLogs = State.feeLog.filter(l => l.studentId === student.id);
     if (studentLogs.length > 0) {
@@ -1921,6 +1917,11 @@ function renderFeeCollectionModule() {
     } else {
       renderStudentDuesCard(student);
     }
+  } else {
+    // Admin/Accountant: show fee log table
+    const feeLogSection = document.getElementById('fee-log-section');
+    if (feeLogSection) feeLogSection.style.display = 'block';
+    renderFeeCollectionLogsTable();
   }
 }
 
