@@ -3605,49 +3605,58 @@ function renderTimetableModule() {
 
   const isAdmin = State.auth.currentRole === 'admin';
 
-  tbody.innerHTML = list.map((item, rowIndex) => `
-    <tr>
-      <td><b>${item.time}</b></td>
-      <td>${item.mon && item.mon.sub && item.mon.sub !== 'Recess' ? `<b>${item.mon.sub}</b><span>${item.mon.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess</i>`}</td>
-      <td>${item.tue && item.tue.sub && item.tue.sub !== 'Recess' ? `<b>${item.tue.sub}</b><span>${item.tue.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess</i>`}</td>
-      <td>${item.wed && item.wed.sub && item.wed.sub !== 'Recess' ? `<b>${item.wed.sub}</b><span>${item.wed.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess</i>`}</td>
-      <td>${item.thu && item.thu.sub && item.thu.sub !== 'Recess' ? `<b>${item.thu.sub}</b><span>${item.thu.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess</i>`}</td>
-      <td>${item.fri && item.fri.sub && item.fri.sub !== 'Recess' ? `<b>${item.fri.sub}</b><span>${item.fri.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess</i>`}</td>
-      <td>${item.sat && item.sat.sub && item.sat.sub !== 'Recess' ? `<b>${item.sat.sub}</b><span>${item.sat.t || ''}</span>` : `<i style="color:var(--text-tertiary)">Recess</i>`}</td>
-      ${isAdmin ? `<td><button class="btn btn-sm" style="font-size:10px;padding:3px 8px;" onclick="openTimetableEditModal('${classKey}',${rowIndex})"><i class="ti ti-pencil"></i> Edit</button></td>` : ''}
-    </tr>
-  `).join('');
+  tbody.innerHTML = list.map((item, rowIndex) => {
+    const days = ['mon','tue','wed','thu','fri','sat'];
+    const dayCells = days.map(d =>
+      `<td>${item[d] && item[d].sub && item[d].sub !== 'Recess'
+        ? `<b>${item[d].sub}</b><span>${item[d].t || ''}</span>`
+        : `<i style="color:var(--text-tertiary)">Recess</i>`}</td>`
+    ).join('');
+    const editBtn = isAdmin
+      ? `<td><button class="btn btn-sm" style="font-size:10px;padding:3px 8px;white-space:nowrap;" onclick="openTimetableEditModal('${classKey}',${rowIndex})"><i class="ti ti-pencil"></i> Edit</button></td>`
+      : '';
+    return `<tr><td><b>${item.time}</b></td>${dayCells}${editBtn}</tr>`;
+  }).join('');
 }
 
+// ---- TIMETABLE EDIT MODAL (Admin only) ----
 function openTimetableEditModal(classKey, rowIndex) {
   if (State.auth.currentRole !== 'admin') return;
-  const item = State.timetable[classKey][rowIndex];
-  if (!item) return;
-  const existing = document.getElementById('tt-edit-modal');
-  if (existing) existing.remove();
-  const days = ['mon','tue','wed','thu','fri','sat'];
+  const list = State.timetable[classKey];
+  if (!list || !list[rowIndex]) return;
+  const item = list[rowIndex];
+  const ex = document.getElementById('tt-edit-modal');
+  if (ex) ex.remove();
+  const days   = ['mon','tue','wed','thu','fri','sat'];
   const labels = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const fields = days.map((d,i) => `
-    <div style="margin-bottom:10px;">
-      <label style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;display:block;margin-bottom:4px;">${labels[i]}</label>
+  const fields = days.map((d,i) => {
+    const curSub = (item[d] && item[d].sub !== 'Recess') ? (item[d].sub || '') : '';
+    const curT   = (item[d] && item[d].t) ? item[d].t : '';
+    return `<div style="margin-bottom:12px;">
+      <label style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;display:block;margin-bottom:5px;">${labels[i]}</label>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <input id="tt-edit-${d}-sub" type="text" placeholder="Subject" value="${item[d]?.sub === 'Recess' ? '' : (item[d]?.sub || '')}" style="padding:7px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;" />
-        <input id="tt-edit-${d}-t" type="text" placeholder="Teacher" value="${item[d]?.t || ''}" style="padding:7px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;" />
+        <input id="tt-edit-${d}-sub" type="text" placeholder="Subject (blank=Recess)" value="${curSub}"
+          style="padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;width:100%;box-sizing:border-box;" />
+        <input id="tt-edit-${d}-t" type="text" placeholder="Teacher" value="${curT}"
+          style="padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;width:100%;box-sizing:border-box;" />
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   const modal = document.createElement('div');
   modal.id = 'tt-edit-modal';
-  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
   modal.innerHTML = `
-    <div style="background:var(--bg-primary);border-radius:var(--border-radius-lg);padding:24px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:700;margin:0;color:var(--text-primary);"><i class="ti ti-pencil" style="color:var(--accent)"></i> Edit Period — ${item.time}</h3>
-        <button onclick="document.getElementById('tt-edit-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text-secondary);">✕</button>
+    <div style="background:var(--bg-primary);border-radius:var(--border-radius-lg);padding:24px;max-width:540px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.35);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <h3 style="font-size:16px;font-weight:700;margin:0;color:var(--text-primary);font-family:var(--font-display);">
+          <i class="ti ti-pencil" style="color:var(--accent);margin-right:6px;"></i>Edit Period — ${item.time}
+        </h3>
+        <button onclick="document.getElementById('tt-edit-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--text-secondary);line-height:1;">&#x2715;</button>
       </div>
-      <p style="font-size:12px;color:var(--text-tertiary);margin:0 0 14px;">Leave Subject blank to mark as Recess.</p>
+      <p style="font-size:12px;color:var(--text-tertiary);margin:0 0 16px;">${classKey} &nbsp;&bull;&nbsp; Leave Subject blank to mark as Recess.</p>
       ${fields}
-      <div style="display:flex;gap:10px;margin-top:20px;">
-        <button class="btn btn-primary" onclick="saveTimetableRow('${classKey}',${rowIndex})" style="flex:1;"><i class="ti ti-device-floppy"></i> Save</button>
+      <div style="display:flex;gap:10px;margin-top:18px;">
+        <button class="btn btn-primary" onclick="saveTimetableRow('${classKey}',${rowIndex})" style="flex:1;"><i class="ti ti-device-floppy"></i> Save Changes</button>
         <button class="btn" onclick="document.getElementById('tt-edit-modal').remove()" style="flex:1;">Cancel</button>
       </div>
     </div>`;
@@ -3659,15 +3668,15 @@ function saveTimetableRow(classKey, rowIndex) {
   const days = ['mon','tue','wed','thu','fri','sat'];
   const item = State.timetable[classKey][rowIndex];
   days.forEach(d => {
-    const sub = document.getElementById(`tt-edit-${d}-sub`)?.value.trim();
-    const t = document.getElementById(`tt-edit-${d}-t`)?.value.trim() || '';
+    const sub = (document.getElementById('tt-edit-' + d + '-sub')?.value || '').trim();
+    const t   = (document.getElementById('tt-edit-' + d + '-t')?.value   || '').trim();
     item[d] = { sub: sub || 'Recess', t };
   });
   saveState();
   document.getElementById('tt-edit-modal')?.remove();
   renderTimetableModule();
-  logActivity(State.auth.currentUser?.name || 'Admin', 'Timetable Edited', 'academic', `Updated period row for ${classKey} — ${item.time}`);
-  showToast('Timetable Updated', `Period saved for ${classKey}.`, 'ti-calendar-check');
+  logActivity(State.auth.currentUser?.name || 'Admin', 'Timetable Edited', 'academic', 'Updated period ' + item.time + ' for ' + classKey);
+  showToast('Timetable Updated', 'Period saved for ' + classKey + '.', 'ti-calendar-check');
 }
 
 // -------------------------------------------------------------
@@ -3687,21 +3696,20 @@ function renderExamCalendar() {
       <td><b>${ex.maxMarks} Marks</b></td>
       <td>${ex.hall}</td>
       ${isAdmin ? `<td style="white-space:nowrap;">
-        <button class="btn btn-sm" style="font-size:10px;padding:3px 7px;margin-right:4px;" onclick="openExamEditModal(${idx})"><i class="ti ti-pencil"></i> Edit</button>
-        <button class="btn btn-sm btn-danger" style="font-size:10px;padding:3px 7px;" onclick="deleteExamEntry(${idx})"><i class="ti ti-trash"></i></button>
+        <button class="btn btn-sm" style="font-size:10px;padding:3px 8px;margin-right:4px;" onclick="openExamEditModal(${idx})"><i class="ti ti-pencil"></i> Edit</button>
+        <button class="btn btn-sm btn-danger" style="font-size:10px;padding:3px 8px;" onclick="deleteExamEntry(${idx})"><i class="ti ti-trash"></i></button>
       </td>` : ''}
     </tr>
   `).join('');
 
-  // Add "Add Exam" button below table for admin
-  const existingBtn = document.getElementById('exam-add-btn-wrapper');
-  if (isAdmin && !existingBtn) {
-    const tableWrap = tbody.closest('.table-wrap') || tbody.closest('table')?.parentElement;
+  // Add Exam button for admin (only inject once)
+  if (isAdmin && !document.getElementById('exam-add-btn-wrapper')) {
+    const tableWrap = tbody.closest('.table-wrap') || tbody.parentElement;
     if (tableWrap) {
       const wrapper = document.createElement('div');
       wrapper.id = 'exam-add-btn-wrapper';
       wrapper.style.cssText = 'padding:14px 0 4px;';
-      wrapper.innerHTML = `<button class="btn btn-primary" onclick="openExamEditModal(-1)"><i class="ti ti-plus"></i> Add New Exam</button>`;
+      wrapper.innerHTML = '<button class="btn btn-primary" onclick="openExamEditModal(-1)"><i class="ti ti-plus"></i> Add New Exam</button>';
       tableWrap.after(wrapper);
     }
   }
@@ -3710,37 +3718,42 @@ function renderExamCalendar() {
 function openExamEditModal(idx) {
   if (State.auth.currentRole !== 'admin') return;
   const isNew = idx === -1;
-  const ex = isNew ? { subject:'', date:'', slot:'Morning', duration:'3 Hours', maxMarks:100, hall:'' } : { ...State.exams[idx] };
+  const ex = isNew
+    ? { subject:'', date:'', slot:'Morning', duration:'3 Hours', maxMarks:100, hall:'' }
+    : Object.assign({}, State.exams[idx]);
   const existing = document.getElementById('exam-edit-modal');
   if (existing) existing.remove();
+
+  const inputStyle = 'width:100%;padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;box-sizing:border-box;';
+  const labelStyle = 'font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;display:block;margin-bottom:5px;';
+
   const modal = document.createElement('div');
   modal.id = 'exam-edit-modal';
-  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
   modal.innerHTML = `
-    <div style="background:var(--bg-primary);border-radius:var(--border-radius-lg);padding:24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <div style="background:var(--bg-primary);border-radius:var(--border-radius-lg);padding:24px;max-width:460px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.35);">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:700;margin:0;color:var(--text-primary);"><i class="ti ti-calendar-event" style="color:var(--accent)"></i> ${isNew ? 'Add New Exam' : 'Edit Exam Entry'}</h3>
-        <button onclick="document.getElementById('exam-edit-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text-secondary);">✕</button>
+        <h3 style="font-size:16px;font-weight:700;margin:0;color:var(--text-primary);font-family:var(--font-display);">
+          <i class="ti ti-calendar-event" style="color:var(--accent);margin-right:6px;"></i>${isNew ? 'Add New Exam' : 'Edit Exam Entry'}
+        </h3>
+        <button onclick="document.getElementById('exam-edit-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--text-secondary);line-height:1;">&#x2715;</button>
       </div>
-      <div style="display:flex;flex-direction:column;gap:11px;">
-        ${[
-          ['Subject','exam-edit-subject','text',ex.subject,'e.g. Mathematics'],
-          ['Date','exam-edit-date','date',ex.date,''],
-          ['Duration','exam-edit-duration','text',ex.duration,'e.g. 3 Hours'],
-          ['Max Marks','exam-edit-marks','number',ex.maxMarks,''],
-          ['Exam Hall','exam-edit-hall','text',ex.hall,'e.g. Examination Hall A']
-        ].map(([label,id,type,val,ph]) => `
-          <div>
-            <label style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;display:block;margin-bottom:4px;">${label}</label>
-            <input id="${id}" type="${type}" value="${val}" placeholder="${ph}" style="width:100%;padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;box-sizing:border-box;" />
-          </div>`).join('')}
-        <div>
-          <label style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;display:block;margin-bottom:4px;">Session Slot</label>
-          <select id="exam-edit-slot" style="width:100%;padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;">
-            <option value="Morning" ${ex.slot==='Morning'?'selected':''}>Morning Session</option>
-            <option value="Afternoon" ${ex.slot==='Afternoon'?'selected':''}>Afternoon Session</option>
-          </select>
-        </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div><label style="${labelStyle}">Subject</label>
+          <input id="exam-edit-subject" type="text" value="${ex.subject}" placeholder="e.g. Mathematics" style="${inputStyle}" /></div>
+        <div><label style="${labelStyle}">Date</label>
+          <input id="exam-edit-date" type="date" value="${ex.date}" style="${inputStyle}" /></div>
+        <div><label style="${labelStyle}">Session Slot</label>
+          <select id="exam-edit-slot" style="${inputStyle}">
+            <option value="Morning" ${ex.slot === 'Morning' ? 'selected' : ''}>Morning Session</option>
+            <option value="Afternoon" ${ex.slot === 'Afternoon' ? 'selected' : ''}>Afternoon Session</option>
+          </select></div>
+        <div><label style="${labelStyle}">Duration</label>
+          <input id="exam-edit-duration" type="text" value="${ex.duration}" placeholder="e.g. 3 Hours" style="${inputStyle}" /></div>
+        <div><label style="${labelStyle}">Max Marks</label>
+          <input id="exam-edit-marks" type="number" value="${ex.maxMarks}" min="1" style="${inputStyle}" /></div>
+        <div><label style="${labelStyle}">Exam Hall</label>
+          <input id="exam-edit-hall" type="text" value="${ex.hall}" placeholder="e.g. Examination Hall A" style="${inputStyle}" /></div>
       </div>
       <div style="display:flex;gap:10px;margin-top:20px;">
         <button class="btn btn-primary" onclick="saveExamEntry(${idx})" style="flex:1;"><i class="ti ti-device-floppy"></i> ${isNew ? 'Add Exam' : 'Save Changes'}</button>
@@ -3752,32 +3765,41 @@ function openExamEditModal(idx) {
 
 function saveExamEntry(idx) {
   if (State.auth.currentRole !== 'admin') return;
-  const subject = document.getElementById('exam-edit-subject')?.value.trim();
-  const date    = document.getElementById('exam-edit-date')?.value;
-  const slot    = document.getElementById('exam-edit-slot')?.value;
-  const duration = document.getElementById('exam-edit-duration')?.value.trim() || '3 Hours';
+  const subject  = (document.getElementById('exam-edit-subject')?.value  || '').trim();
+  const date     = (document.getElementById('exam-edit-date')?.value     || '').trim();
+  const slot     = (document.getElementById('exam-edit-slot')?.value     || 'Morning');
+  const duration = (document.getElementById('exam-edit-duration')?.value || '3 Hours').trim();
   const maxMarks = parseInt(document.getElementById('exam-edit-marks')?.value) || 100;
-  const hall    = document.getElementById('exam-edit-hall')?.value.trim();
-  if (!subject || !date) { showToast('Validation Error', 'Subject and Date are required.', 'ti-alert-circle'); return; }
+  const hall     = (document.getElementById('exam-edit-hall')?.value     || '').trim();
+
+  if (!subject || !date) {
+    showToast('Validation Error', 'Subject and Date are required.', 'ti-alert-circle');
+    return;
+  }
   const entry = { subject, date, slot, duration, maxMarks, hall };
   const isNew = idx === -1;
   if (isNew) { State.exams.push(entry); } else { State.exams[idx] = entry; }
   saveState();
   document.getElementById('exam-edit-modal')?.remove();
+  // Remove add-button wrapper so it re-injects fresh after render
+  const w = document.getElementById('exam-add-btn-wrapper');
+  if (w) w.remove();
   renderExamCalendar();
-  logActivity(State.auth.currentUser?.name || 'Admin', isNew ? 'Exam Added' : 'Exam Updated', 'academic', `${isNew?'Added':'Updated'} exam: ${subject} on ${date}`);
-  showToast(isNew ? 'Exam Added' : 'Exam Updated', `${subject} exam ${isNew?'scheduled':'updated'} for ${date}.`, 'ti-calendar-check');
+  logActivity(State.auth.currentUser?.name || 'Admin', isNew ? 'Exam Added' : 'Exam Updated', 'academic', (isNew ? 'Added' : 'Updated') + ' exam: ' + subject + ' on ' + date);
+  showToast(isNew ? 'Exam Added' : 'Exam Updated', subject + ' exam ' + (isNew ? 'scheduled' : 'updated') + ' for ' + date + '.', 'ti-calendar-check');
 }
 
 function deleteExamEntry(idx) {
   if (State.auth.currentRole !== 'admin') return;
   const ex = State.exams[idx];
-  if (!ex || !confirm(`Delete exam entry for "${ex.subject}" on ${ex.date}?`)) return;
+  if (!ex || !confirm('Delete exam entry for "' + ex.subject + '" on ' + ex.date + '?')) return;
   State.exams.splice(idx, 1);
   saveState();
+  const w = document.getElementById('exam-add-btn-wrapper');
+  if (w) w.remove();
   renderExamCalendar();
-  logActivity(State.auth.currentUser?.name || 'Admin', 'Exam Deleted', 'academic', `Deleted exam: ${ex.subject} on ${ex.date}`);
-  showToast('Exam Deleted', `${ex.subject} entry removed.`, 'ti-trash');
+  logActivity(State.auth.currentUser?.name || 'Admin', 'Exam Deleted', 'academic', 'Deleted exam: ' + ex.subject + ' on ' + ex.date);
+  showToast('Exam Deleted', ex.subject + ' entry removed.', 'ti-trash');
 }
 
 // -------------------------------------------------------------
