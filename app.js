@@ -513,6 +513,7 @@ function migrateOldClassNames() {
 
   if (changed) {
     saveState();
+
   }
 }
 
@@ -542,6 +543,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     window.firebaseAuth = getAuth(window.app);
     // FIX: expose Firestore helpers so saveState() can write to Firebase
     window.fsLib = { doc, setDoc, getDoc, getDocs, collection };
+
     // Load state from Firestore
     try {
       // Load each student from their own document
@@ -618,13 +620,16 @@ window.addEventListener('DOMContentLoaded', async () => {
           State.auditLog = data.auditLog || State.auditLog;
           if (data.staff && data.staff.length > 0) State.staff = data.staff;
           if (data.config) State.config = { ...State.config, ...data.config };
+
         }
       }
 
       const hasData = !studentSnaps.empty || configSnap.exists() || financeSnap.exists() || academicSnap.exists();
       if (!hasData) {
+
         seedDatabase();
       } else {
+
       migrateOldClassNames();
         renderDashboard();
       }
@@ -4819,6 +4824,7 @@ function checkAutoAbsentTeachers() {
 
   if (changed) {
     saveState();
+
   }
 }
 
@@ -5417,8 +5423,7 @@ function submitPublicEnquiry(event) {
       const { doc, setDoc, collection } = window.fsLib;
       const enqId = 'ENQ-' + Date.now();
       setDoc(doc(window.db, 'enquiries', enqId), { ...newEnquiry, id: enqId })
-        .then(() =>
-)
+        .then(() => console.log('✅ Enquiry saved to Firebase:', enqId))
         .catch(e => console.warn('Enquiry Firebase write failed:', e));
     } catch(e) {
       console.warn('Enquiry direct write error:', e);
