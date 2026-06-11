@@ -513,7 +513,6 @@ function migrateOldClassNames() {
 
   if (changed) {
     saveState();
-    console.log('✅ Class names migrated to new format');
   }
 }
 
@@ -543,7 +542,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     window.firebaseAuth = getAuth(window.app);
     // FIX: expose Firestore helpers so saveState() can write to Firebase
     window.fsLib = { doc, setDoc, getDoc, getDocs, collection };
-    console.log('✅ Firebase connected and fsLib registered!');
     // Load state from Firestore
     try {
       // Load each student from their own document
@@ -620,16 +618,13 @@ window.addEventListener('DOMContentLoaded', async () => {
           State.auditLog = data.auditLog || State.auditLog;
           if (data.staff && data.staff.length > 0) State.staff = data.staff;
           if (data.config) State.config = { ...State.config, ...data.config };
-          console.log('⚠️ Loaded from old meta structure — will migrate on next save.');
         }
       }
 
       const hasData = !studentSnaps.empty || configSnap.exists() || financeSnap.exists() || academicSnap.exists();
       if (!hasData) {
-        console.log('No Firestore data found — seeding and pushing to Firebase...');
         seedDatabase();
       } else {
-        console.log('✅ Data loaded from Firestore!');
       migrateOldClassNames();
         renderDashboard();
       }
@@ -4824,7 +4819,6 @@ function checkAutoAbsentTeachers() {
 
   if (changed) {
     saveState();
-    console.log('Auto-marked absent for unmarked staff at 2PM');
   }
 }
 
@@ -5423,7 +5417,8 @@ function submitPublicEnquiry(event) {
       const { doc, setDoc, collection } = window.fsLib;
       const enqId = 'ENQ-' + Date.now();
       setDoc(doc(window.db, 'enquiries', enqId), { ...newEnquiry, id: enqId })
-        .then(() => console.log('✅ Enquiry saved to Firebase:', enqId))
+        .then(() =>
+)
         .catch(e => console.warn('Enquiry Firebase write failed:', e));
     } catch(e) {
       console.warn('Enquiry direct write error:', e);
