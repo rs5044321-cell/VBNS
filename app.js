@@ -1358,18 +1358,42 @@ function renderDashboard() {
     }).join('');
   }
 
-  // 3. Mini Bulletin Bulletin notice board
+  // 3. Mini Bulletin notice board (dashboard widget)
   const bulletNoticeBoard = document.getElementById('notice-board');
   if (bulletNoticeBoard) {
-    bulletNoticeBoard.innerHTML = State.notices.slice(0, 3).map(nt => {
-      const cls = nt.priority.includes('Urgent') ? 'priority-urgent' : nt.priority.includes('Important') ? 'priority-important' : '';
-      return `
-        <div class="notice-item ${cls}">
-          <p>${nt.body}</p>
-          <small>Posted: ${nt.date} · ${nt.by}</small>
-        </div>
-      `;
-    }).join('');
+    const recentNotices = [...State.notices].reverse().slice(0, 3);
+    bulletNoticeBoard.innerHTML = recentNotices.length === 0
+      ? `<div style="padding:12px;text-align:center;color:var(--text-tertiary);font-size:12px;">No notices published yet.</div>`
+      : recentNotices.map(nt => {
+          const cls = nt.priority.includes('Urgent') ? 'priority-urgent' : nt.priority.includes('Important') ? 'priority-important' : '';
+          return `<div class="notice-item ${cls}"><p>${nt.body}</p><small>Posted: ${nt.date} · ${nt.by}</small></div>`;
+        }).join('');
+  }
+
+  // 3b. Public homepage notices feed
+  const publicFeed = document.getElementById('public-notices-feed');
+  if (publicFeed) {
+    const allNotices = [...State.notices].reverse();
+    if (allNotices.length === 0) {
+      publicFeed.innerHTML = `<div class="empty-preview" style="padding:20px 0;text-align:center;color:var(--text-tertiary);font-size:13px;"><i class="ti ti-speakerphone" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.4;"></i>No notices published yet.</div>`;
+    } else {
+      publicFeed.innerHTML = allNotices.map(nt => {
+        const pClass = nt.priority.includes('Urgent') ? 'priority-urgent' : nt.priority.includes('Important') ? 'priority-important' : 'priority-normal';
+        const badge  = nt.priority.split(' ')[0];
+        return `
+          <div class="notice-item public-feed-card ${pClass}" style="margin-bottom:12px;padding:14px 16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <h4 style="font-size:13.5px;font-weight:600;color:var(--text-primary);margin:0;">${nt.title}</h4>
+              <span class="badge" style="font-size:9px;padding:2px 6px;border-radius:4px;border:1px solid var(--border-secondary);background:var(--bg-tertiary);color:var(--text-primary);">${badge}</span>
+            </div>
+            <p style="font-size:12px;color:var(--text-secondary);line-height:1.5;margin:6px 0;">${nt.body}</p>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-tertiary);margin-top:8px;">
+              <span>By: <b>${nt.by}</b></span>
+              <span>Date: ${nt.date}</span>
+            </div>
+          </div>`;
+      }).join('');
+    }
   }
 
   // 4. Custom Collection Mini Bar Chart
@@ -2705,12 +2729,20 @@ function renderNoticeList() {
     let pClass = 'normal';
     if (item.priority.includes('Urgent')) pClass = 'urgent';
     else if (item.priority.includes('Important')) pClass = 'important';
+    const realIdx = State.notices.length - 1 - index;
 
-    const deleteBtn = (currentRole === 'admin' || currentRole === 'teacher') ? 
-      `<button class="btn btn-sm btn-danger" style="position: absolute; right: 16px; bottom: 12px; font-size:10px; padding:3px 8px" onclick="removeNotice(${State.notices.length - 1 - index})"><i class="ti ti-trash"></i> Delete</button>` : '';
+    const adminBtns = (currentRole === 'admin') ? `
+      <div style="position:absolute;right:12px;bottom:10px;display:flex;gap:6px;">
+        <button class="btn btn-sm" style="font-size:10px;padding:3px 8px;" onclick="openNoticeEditModal(${realIdx})">
+          <i class="ti ti-pencil"></i> Edit
+        </button>
+        <button class="btn btn-sm btn-danger" style="font-size:10px;padding:3px 8px;" onclick="removeNotice(${realIdx})">
+          <i class="ti ti-trash"></i> Delete
+        </button>
+      </div>` : '';
 
     return `
-      <div class="notice-card" style="padding-bottom: 40px;">
+      <div class="notice-card" style="padding-bottom: ${currentRole === 'admin' ? '44px' : '16px'}; position:relative;">
         <div class="notice-title-row">
           <h4>${item.title}</h4>
           <span class="badge-priority ${pClass}">${item.priority.split(' ')[0]}</span>
@@ -2720,7 +2752,7 @@ function renderNoticeList() {
           <span>Author: <b>${item.by}</b></span>
           <span>Date: ${item.date}</span>
         </div>
-        ${deleteBtn}
+        ${adminBtns}
       </div>
     `;
   }).join('');
@@ -2754,17 +2786,96 @@ function postNoticeBoardBulletin() {
   logActivity(user.name || 'System Admin', 'Notice Published', 'system', `Published campus bulletin announcement: ${title}`);
   saveState();
   renderNoticeList();
-
+  renderPublicNoticeFeed();
   showToast('Notice Published', 'Bulletin posted on the notice board.', 'ti-speakerphone');
 
   titleEl.value = '';
   bodyEl.value = '';
 }
 
+function openNoticeEditModal(idx) {
+  if (State.auth.currentRole !== 'admin') return;
+  const nt = State.notices[idx];
+  if (!nt) return;
+  const ex = document.getElementById('notice-edit-modal');
+  if (ex) ex.remove();
+  const inputStyle = 'width:100%;padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;box-sizing:border-box;';
+  const labelStyle = 'font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;display:block;margin-bottom:5px;';
+  const modal = document.createElement('div');
+  modal.id = 'notice-edit-modal';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
+  modal.innerHTML = `
+    <div style="background:var(--bg-primary);border-radius:var(--border-radius-lg);padding:24px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.35);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+        <h3 style="font-size:16px;font-weight:700;margin:0;color:var(--text-primary);font-family:var(--font-display);">
+          <i class="ti ti-pencil" style="color:var(--accent);margin-right:6px;"></i>Edit Notice
+        </h3>
+        <button onclick="document.getElementById('notice-edit-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--text-secondary);line-height:1;">&#x2715;</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div><label style="${labelStyle}">Title</label>
+          <input id="ne-title" type="text" value="${nt.title.replace(/"/g,'&quot;')}" style="${inputStyle}" /></div>
+        <div><label style="${labelStyle}">Content</label>
+          <textarea id="ne-body" rows="4" style="${inputStyle}resize:vertical;">${nt.body}</textarea></div>
+        <div><label style="${labelStyle}">Priority</label>
+          <select id="ne-priority" style="${inputStyle}">
+            <option value="Normal Broadcast" ${nt.priority==='Normal Broadcast'?'selected':''}>Normal Broadcast</option>
+            <option value="Important Notice" ${nt.priority==='Important Notice'?'selected':''}>Important Notice</option>
+            <option value="Urgent Alert" ${nt.priority==='Urgent Alert'?'selected':''}>Urgent Alert</option>
+          </select></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button class="btn btn-primary" onclick="saveNoticeEdit(${idx})" style="flex:1;"><i class="ti ti-device-floppy"></i> Save Changes</button>
+        <button class="btn" onclick="document.getElementById('notice-edit-modal').remove()" style="flex:1;">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function saveNoticeEdit(idx) {
+  if (State.auth.currentRole !== 'admin') return;
+  const title    = (document.getElementById('ne-title')?.value    || '').trim();
+  const body     = (document.getElementById('ne-body')?.value     || '').trim();
+  const priority = (document.getElementById('ne-priority')?.value || 'Normal Broadcast');
+  if (!title || !body) { showToast('Validation Error', 'Title and content are required.', 'ti-alert-circle'); return; }
+  State.notices[idx] = { ...State.notices[idx], title, body, priority };
+  saveState();
+  document.getElementById('notice-edit-modal')?.remove();
+  renderNoticeList();
+  renderPublicNoticeFeed();
+  logActivity(State.auth.currentUser?.name || 'Admin', 'Notice Edited', 'system', 'Edited notice: ' + title);
+  showToast('Notice Updated', 'Bulletin notice saved.', 'ti-speakerphone');
+}
+
+function renderPublicNoticeFeed() {
+  const publicFeed = document.getElementById('public-notices-feed');
+  if (!publicFeed) return;
+  const allNotices = [...State.notices].reverse();
+  if (allNotices.length === 0) {
+    publicFeed.innerHTML = `<div class="empty-preview" style="padding:20px 0;text-align:center;color:var(--text-tertiary);font-size:13px;"><i class="ti ti-speakerphone" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.4;"></i>No notices published yet.</div>`;
+    return;
+  }
+  publicFeed.innerHTML = allNotices.map(nt => {
+    const pClass = nt.priority.includes('Urgent') ? 'priority-urgent' : nt.priority.includes('Important') ? 'priority-important' : 'priority-normal';
+    const badge  = nt.priority.split(' ')[0];
+    return `
+      <div class="notice-item public-feed-card ${pClass}" style="margin-bottom:12px;padding:14px 16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <h4 style="font-size:13.5px;font-weight:600;color:var(--text-primary);margin:0;">${nt.title}</h4>
+          <span class="badge" style="font-size:9px;padding:2px 6px;border-radius:4px;border:1px solid var(--border-secondary);background:var(--bg-tertiary);color:var(--text-primary);">${badge}</span>
+        </div>
+        <p style="font-size:12px;color:var(--text-secondary);line-height:1.5;margin:6px 0;">${nt.body}</p>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-tertiary);margin-top:8px;">
+          <span>By: <b>${nt.by}</b></span><span>Date: ${nt.date}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
 function removeNotice(realIndex) {
+  if (State.auth.currentRole !== 'admin') { showToast('Access Denied', 'Only administrators can delete notices.', 'ti-lock'); return; }
   const nt = State.notices[realIndex];
   if (!nt) return;
-  
   if (!confirm('Are you absolutely sure you want to delete this bulletin notice?')) return;
 
   const actor = State.auth.currentUser ? State.auth.currentUser.name : 'System Admin';
@@ -2772,6 +2883,7 @@ function removeNotice(realIndex) {
   State.notices.splice(realIndex, 1);
   saveState();
   renderNoticeList();
+  renderPublicNoticeFeed();
   showToast('Notice Deleted', 'Announcement bulletin removed.', 'ti-trash');
 }
 
@@ -3591,56 +3703,79 @@ function renderTimetableModule() {
   }
 
   const list = State.timetable[classKey];
+  const isAdmin = State.auth.currentRole === 'admin';
+
   if (!list || !Array.isArray(list) || list.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" class="center-col" style="color: var(--text-tertiary); padding: 32px 0;">
+        <td colspan="${isAdmin ? 8 : 7}" class="center-col" style="color: var(--text-tertiary); padding: 32px 0;">
           <i class="ti ti-calendar-off" style="font-size: 32px; display: block; margin-bottom: 8px;"></i>
           No timetable schedules mapped for ${classKey} yet.
+          ${isAdmin ? `<br><button class="btn btn-primary" style="margin-top:12px;" onclick="openAddPeriodModal('${classKey}')"><i class="ti ti-plus"></i> Add Period</button>` : ''}
         </td>
       </tr>
     `;
     return;
   }
 
-  const isAdmin = State.auth.currentRole === 'admin';
+  const days = ['mon','tue','wed','thu','fri','sat'];
 
   tbody.innerHTML = list.map((item, rowIndex) => {
-    const days = ['mon','tue','wed','thu','fri','sat'];
     const dayCells = days.map(d =>
       `<td>${item[d] && item[d].sub && item[d].sub !== 'Recess'
-        ? `<b>${item[d].sub}</b><span>${item[d].t || ''}</span>`
-        : `<i style="color:var(--text-tertiary)">Recess</i>`}</td>`
+        ? `<b>${item[d].sub}</b><span style="font-size:11px;color:var(--text-tertiary);display:block;">${item[d].t || ''}</span>`
+        : `<i style="color:var(--text-tertiary);font-size:11px;">Recess</i>`}</td>`
     ).join('');
     const editBtn = isAdmin
       ? `<td><button class="btn btn-sm" style="font-size:10px;padding:3px 8px;white-space:nowrap;" onclick="openTimetableEditModal('${classKey}',${rowIndex})"><i class="ti ti-pencil"></i> Edit</button></td>`
       : '';
     return `<tr><td><b>${item.time}</b></td>${dayCells}${editBtn}</tr>`;
   }).join('');
+
+  // Add Period button below table for admin
+  if (isAdmin) {
+    const existWrap = document.getElementById('tt-add-btn-wrapper');
+    if (existWrap) existWrap.remove();
+    const tableWrap = tbody.closest('.table-wrap') || tbody.parentElement;
+    if (tableWrap) {
+      const wrap = document.createElement('div');
+      wrap.id = 'tt-add-btn-wrapper';
+      wrap.style.cssText = 'padding:14px 0 4px;';
+      wrap.innerHTML = `<button class="btn btn-primary" onclick="openAddPeriodModal('${classKey}')"><i class="ti ti-plus"></i> Add New Period</button>`;
+      tableWrap.after(wrap);
+    }
+  }
 }
 
 // ---- TIMETABLE EDIT MODAL (Admin only) ----
+function openAddPeriodModal(classKey) {
+  if (State.auth.currentRole !== 'admin') return;
+  if (!State.timetable[classKey]) State.timetable[classKey] = [];
+  // Use openTimetableEditModal with a special "new" flag
+  openTimetableEditModal(classKey, -1);
+}
+
 function openTimetableEditModal(classKey, rowIndex) {
   if (State.auth.currentRole !== 'admin') return;
-  const list = State.timetable[classKey];
-  if (!list || !list[rowIndex]) return;
-  const item = list[rowIndex];
+  const isNew = rowIndex === -1;
+  const item = isNew
+    ? { time: '', mon:{sub:'',t:''}, tue:{sub:'',t:''}, wed:{sub:'',t:''}, thu:{sub:'',t:''}, fri:{sub:'',t:''}, sat:{sub:'',t:''} }
+    : (State.timetable[classKey] && State.timetable[classKey][rowIndex]);
+  if (!item) return;
   const ex = document.getElementById('tt-edit-modal');
   if (ex) ex.remove();
   const days   = ['mon','tue','wed','thu','fri','sat'];
   const labels = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const inputStyle = 'padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;width:100%;box-sizing:border-box;';
   const fields = days.map((d,i) => {
-    const curSub = (item[d] && item[d].sub !== 'Recess') ? (item[d].sub || '') : '';
-    const curT   = (item[d] && item[d].t) ? item[d].t : '';
+    const curSub = (!isNew && item[d] && item[d].sub !== 'Recess') ? (item[d].sub||'') : '';
+    const curT   = (!isNew && item[d] && item[d].t) ? item[d].t : '';
     return `<div style="margin-bottom:12px;">
       <label style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;display:block;margin-bottom:5px;">${labels[i]}</label>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <input id="tt-edit-${d}-sub" type="text" placeholder="Subject (blank=Recess)" value="${curSub}"
-          style="padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;width:100%;box-sizing:border-box;" />
-        <input id="tt-edit-${d}-t" type="text" placeholder="Teacher" value="${curT}"
-          style="padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;width:100%;box-sizing:border-box;" />
-      </div>
-    </div>`;
+        <input id="tt-edit-${d}-sub" type="text" placeholder="Subject (blank=Recess)" value="${curSub}" style="${inputStyle}" />
+        <input id="tt-edit-${d}-t"   type="text" placeholder="Teacher" value="${curT}" style="${inputStyle}" />
+      </div></div>`;
   }).join('');
   const modal = document.createElement('div');
   modal.id = 'tt-edit-modal';
@@ -3649,15 +3784,18 @@ function openTimetableEditModal(classKey, rowIndex) {
     <div style="background:var(--bg-primary);border-radius:var(--border-radius-lg);padding:24px;max-width:540px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.35);">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
         <h3 style="font-size:16px;font-weight:700;margin:0;color:var(--text-primary);font-family:var(--font-display);">
-          <i class="ti ti-pencil" style="color:var(--accent);margin-right:6px;"></i>Edit Period — ${item.time}
+          <i class="ti ti-pencil" style="color:var(--accent);margin-right:6px;"></i>${isNew ? 'Add New Period' : 'Edit Period — ' + item.time}
         </h3>
         <button onclick="document.getElementById('tt-edit-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--text-secondary);line-height:1;">&#x2715;</button>
       </div>
-      <p style="font-size:12px;color:var(--text-tertiary);margin:0 0 16px;">${classKey} &nbsp;&bull;&nbsp; Leave Subject blank to mark as Recess.</p>
+      <p style="font-size:12px;color:var(--text-tertiary);margin:0 0 14px;">${classKey} &bull; Leave Subject blank to mark as Recess.</p>
+      ${isNew ? `<div style="margin-bottom:14px;"><label style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;display:block;margin-bottom:5px;">Period Time (e.g. 8:00 AM – 8:45 AM)</label>
+        <input id="tt-edit-time" type="text" placeholder="8:00 AM – 8:45 AM" style="${inputStyle}" /></div>` : ''}
       ${fields}
       <div style="display:flex;gap:10px;margin-top:18px;">
-        <button class="btn btn-primary" onclick="saveTimetableRow('${classKey}',${rowIndex})" style="flex:1;"><i class="ti ti-device-floppy"></i> Save Changes</button>
+        <button class="btn btn-primary" onclick="saveTimetableRow('${classKey}',${rowIndex})" style="flex:1;"><i class="ti ti-device-floppy"></i> ${isNew ? 'Add Period' : 'Save Changes'}</button>
         <button class="btn" onclick="document.getElementById('tt-edit-modal').remove()" style="flex:1;">Cancel</button>
+        ${!isNew ? `<button class="btn btn-danger" onclick="deleteTimetableRow('${classKey}',${rowIndex})" style="flex:0 0 auto;"><i class="ti ti-trash"></i></button>` : ''}
       </div>
     </div>`;
   document.body.appendChild(modal);
@@ -3665,18 +3803,38 @@ function openTimetableEditModal(classKey, rowIndex) {
 
 function saveTimetableRow(classKey, rowIndex) {
   if (State.auth.currentRole !== 'admin') return;
+  const isNew = rowIndex === -1;
   const days = ['mon','tue','wed','thu','fri','sat'];
-  const item = State.timetable[classKey][rowIndex];
+  const entry = {};
+  if (isNew) {
+    entry.time = (document.getElementById('tt-edit-time')?.value || '').trim();
+    if (!entry.time) { showToast('Validation Error', 'Period time is required.', 'ti-alert-circle'); return; }
+  } else {
+    entry.time = State.timetable[classKey][rowIndex].time;
+  }
   days.forEach(d => {
     const sub = (document.getElementById('tt-edit-' + d + '-sub')?.value || '').trim();
     const t   = (document.getElementById('tt-edit-' + d + '-t')?.value   || '').trim();
-    item[d] = { sub: sub || 'Recess', t };
+    entry[d] = { sub: sub || 'Recess', t };
   });
+  if (isNew) { State.timetable[classKey].push(entry); } else { State.timetable[classKey][rowIndex] = entry; }
   saveState();
   document.getElementById('tt-edit-modal')?.remove();
   renderTimetableModule();
-  logActivity(State.auth.currentUser?.name || 'Admin', 'Timetable Edited', 'academic', 'Updated period ' + item.time + ' for ' + classKey);
-  showToast('Timetable Updated', 'Period saved for ' + classKey + '.', 'ti-calendar-check');
+  logActivity(State.auth.currentUser?.name || 'Admin', isNew ? 'Period Added' : 'Timetable Edited', 'academic', (isNew ? 'Added' : 'Updated') + ' period ' + entry.time + ' for ' + classKey);
+  showToast(isNew ? 'Period Added' : 'Timetable Updated', 'Period saved for ' + classKey + '.', 'ti-calendar-check');
+}
+
+function deleteTimetableRow(classKey, rowIndex) {
+  if (State.auth.currentRole !== 'admin') return;
+  const item = State.timetable[classKey][rowIndex];
+  if (!item || !confirm('Delete period "' + item.time + '" from ' + classKey + '?')) return;
+  State.timetable[classKey].splice(rowIndex, 1);
+  saveState();
+  document.getElementById('tt-edit-modal')?.remove();
+  renderTimetableModule();
+  logActivity(State.auth.currentUser?.name || 'Admin', 'Period Deleted', 'academic', 'Deleted period ' + item.time + ' from ' + classKey);
+  showToast('Period Deleted', item.time + ' removed from ' + classKey + '.', 'ti-trash');
 }
 
 // -------------------------------------------------------------
@@ -3687,30 +3845,36 @@ function renderExamCalendar() {
   if (!tbody) return;
   const isAdmin = State.auth.currentRole === 'admin';
 
-  tbody.innerHTML = State.exams.map((ex, idx) => `
-    <tr>
-      <td><b>${ex.subject}</b></td>
-      <td>${ex.date}</td>
-      <td><span class="pill ${ex.slot === 'Morning' ? 'pill-blue' : 'pill-amber'}">${ex.slot} Session</span></td>
-      <td>${ex.duration}</td>
-      <td><b>${ex.maxMarks} Marks</b></td>
-      <td>${ex.hall}</td>
-      ${isAdmin ? `<td style="white-space:nowrap;">
-        <button class="btn btn-sm" style="font-size:10px;padding:3px 8px;margin-right:4px;" onclick="openExamEditModal(${idx})"><i class="ti ti-pencil"></i> Edit</button>
-        <button class="btn btn-sm btn-danger" style="font-size:10px;padding:3px 8px;" onclick="deleteExamEntry(${idx})"><i class="ti ti-trash"></i></button>
-      </td>` : ''}
-    </tr>
-  `).join('');
+  if (State.exams.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="${isAdmin ? 7 : 6}" class="center-col" style="color:var(--text-tertiary);padding:32px 0;">
+      <i class="ti ti-calendar-off" style="font-size:32px;display:block;margin-bottom:8px;"></i>No exams scheduled yet.</td></tr>`;
+  } else {
+    tbody.innerHTML = State.exams.map((ex, idx) => `
+      <tr>
+        <td><b>${ex.subject}</b></td>
+        <td>${ex.date}</td>
+        <td><span class="pill ${ex.slot === 'Morning' ? 'pill-blue' : 'pill-amber'}">${ex.slot} Session</span></td>
+        <td>${ex.duration}</td>
+        <td><b>${ex.maxMarks} Marks</b></td>
+        <td>${ex.hall}</td>
+        ${isAdmin ? `<td style="white-space:nowrap;">
+          <button class="btn btn-sm" style="font-size:10px;padding:3px 8px;margin-right:4px;" onclick="openExamEditModal(${idx})"><i class="ti ti-pencil"></i> Edit</button>
+          <button class="btn btn-sm btn-danger" style="font-size:10px;padding:3px 8px;" onclick="deleteExamEntry(${idx})"><i class="ti ti-trash"></i></button>
+        </td>` : ''}
+      </tr>`).join('');
+  }
 
-  // Add Exam button for admin (only inject once)
-  if (isAdmin && !document.getElementById('exam-add-btn-wrapper')) {
+  // Add Exam button — admin only, inject once
+  const existBtn = document.getElementById('exam-add-btn-wrapper');
+  if (existBtn) existBtn.remove();
+  if (isAdmin) {
     const tableWrap = tbody.closest('.table-wrap') || tbody.parentElement;
     if (tableWrap) {
-      const wrapper = document.createElement('div');
-      wrapper.id = 'exam-add-btn-wrapper';
-      wrapper.style.cssText = 'padding:14px 0 4px;';
-      wrapper.innerHTML = '<button class="btn btn-primary" onclick="openExamEditModal(-1)"><i class="ti ti-plus"></i> Add New Exam</button>';
-      tableWrap.after(wrapper);
+      const wrap = document.createElement('div');
+      wrap.id = 'exam-add-btn-wrapper';
+      wrap.style.cssText = 'padding:14px 0 4px;';
+      wrap.innerHTML = '<button class="btn btn-primary" onclick="openExamEditModal(-1)"><i class="ti ti-plus"></i> Add New Exam</button>';
+      tableWrap.after(wrap);
     }
   }
 }
@@ -3723,10 +3887,8 @@ function openExamEditModal(idx) {
     : Object.assign({}, State.exams[idx]);
   const existing = document.getElementById('exam-edit-modal');
   if (existing) existing.remove();
-
   const inputStyle = 'width:100%;padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;box-sizing:border-box;';
   const labelStyle = 'font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;display:block;margin-bottom:5px;';
-
   const modal = document.createElement('div');
   modal.id = 'exam-edit-modal';
   modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
@@ -3745,8 +3907,8 @@ function openExamEditModal(idx) {
           <input id="exam-edit-date" type="date" value="${ex.date}" style="${inputStyle}" /></div>
         <div><label style="${labelStyle}">Session Slot</label>
           <select id="exam-edit-slot" style="${inputStyle}">
-            <option value="Morning" ${ex.slot === 'Morning' ? 'selected' : ''}>Morning Session</option>
-            <option value="Afternoon" ${ex.slot === 'Afternoon' ? 'selected' : ''}>Afternoon Session</option>
+            <option value="Morning" ${ex.slot==='Morning'?'selected':''}>Morning Session</option>
+            <option value="Afternoon" ${ex.slot==='Afternoon'?'selected':''}>Afternoon Session</option>
           </select></div>
         <div><label style="${labelStyle}">Duration</label>
           <input id="exam-edit-duration" type="text" value="${ex.duration}" placeholder="e.g. 3 Hours" style="${inputStyle}" /></div>
@@ -3771,22 +3933,15 @@ function saveExamEntry(idx) {
   const duration = (document.getElementById('exam-edit-duration')?.value || '3 Hours').trim();
   const maxMarks = parseInt(document.getElementById('exam-edit-marks')?.value) || 100;
   const hall     = (document.getElementById('exam-edit-hall')?.value     || '').trim();
-
-  if (!subject || !date) {
-    showToast('Validation Error', 'Subject and Date are required.', 'ti-alert-circle');
-    return;
-  }
+  if (!subject || !date) { showToast('Validation Error', 'Subject and Date are required.', 'ti-alert-circle'); return; }
   const entry = { subject, date, slot, duration, maxMarks, hall };
   const isNew = idx === -1;
   if (isNew) { State.exams.push(entry); } else { State.exams[idx] = entry; }
   saveState();
   document.getElementById('exam-edit-modal')?.remove();
-  // Remove add-button wrapper so it re-injects fresh after render
-  const w = document.getElementById('exam-add-btn-wrapper');
-  if (w) w.remove();
   renderExamCalendar();
-  logActivity(State.auth.currentUser?.name || 'Admin', isNew ? 'Exam Added' : 'Exam Updated', 'academic', (isNew ? 'Added' : 'Updated') + ' exam: ' + subject + ' on ' + date);
-  showToast(isNew ? 'Exam Added' : 'Exam Updated', subject + ' exam ' + (isNew ? 'scheduled' : 'updated') + ' for ' + date + '.', 'ti-calendar-check');
+  logActivity(State.auth.currentUser?.name || 'Admin', isNew ? 'Exam Added' : 'Exam Updated', 'academic', (isNew?'Added':'Updated') + ' exam: ' + subject + ' on ' + date);
+  showToast(isNew ? 'Exam Added' : 'Exam Updated', subject + ' ' + (isNew?'scheduled':'updated') + ' for ' + date + '.', 'ti-calendar-check');
 }
 
 function deleteExamEntry(idx) {
@@ -3795,8 +3950,6 @@ function deleteExamEntry(idx) {
   if (!ex || !confirm('Delete exam entry for "' + ex.subject + '" on ' + ex.date + '?')) return;
   State.exams.splice(idx, 1);
   saveState();
-  const w = document.getElementById('exam-add-btn-wrapper');
-  if (w) w.remove();
   renderExamCalendar();
   logActivity(State.auth.currentUser?.name || 'Admin', 'Exam Deleted', 'academic', 'Deleted exam: ' + ex.subject + ' on ' + ex.date);
   showToast('Exam Deleted', ex.subject + ' entry removed.', 'ti-trash');
