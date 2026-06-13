@@ -632,35 +632,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       migrateOldClassNames();
         renderDashboard();
-        // Refresh public notice feed on homepage with latest Firestore notices
-        if (typeof renderPublicNoticeFeed === 'function') renderPublicNoticeFeed();
       }
     } catch(e) {
-      // Firestore failed (network issue) — use localStorage fallback, never wipe data
-      try {
-        const saved = localStorage.getItem('apex_school_crm_state');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.notices && parsed.notices.length > 0) State.notices = parsed.notices;
-          if (parsed.students && parsed.students.length > 0) State.students = parsed.students;
-          if (parsed.feeLog) State.feeLog = parsed.feeLog;
-          if (parsed.ledger) State.ledger = parsed.ledger;
-          if (parsed.attendance) State.attendance = parsed.attendance;
-          if (parsed.staffAttendance) State.staffAttendance = parsed.staffAttendance;
-          if (parsed.homework) State.homework = parsed.homework;
-          if (parsed.staff && parsed.staff.length > 0) State.staff = parsed.staff;
-          if (parsed.config) State.config = { ...State.config, ...parsed.config };
-          if (parsed.auditLog) State.auditLog = parsed.auditLog;
-          if (parsed.enquiries) State.enquiries = parsed.enquiries;
-          if (parsed.timetable) State.timetable = parsed.timetable;
-          if (parsed.exams) State.exams = parsed.exams;
-          renderDashboard();
-        } else {
-          seedDatabase();
-        }
-      } catch(lsErr) {
-        seedDatabase();
-      }
+      console.warn('Firestore load failed, using localStorage:', e);
+      seedDatabase();
     }
   } catch(e) {
     console.warn('Firebase init failed, using localStorage:', e);
@@ -5107,14 +5082,32 @@ function renderHomeworkBoard() {
   const currentRole = State.auth.currentRole;
   const currentUser = State.auth.currentUser;
 
+  // Fix hw-class dropdown — ensure all classes including Playway/LKG/UKG are present
+  const hwClassEl = document.getElementById('hw-class');
+  if (hwClassEl && hwClassEl.options.length < 13) {
+    const allClasses = ['Playway','L.KG.','U.KG.','Class 1','Class 2','Class 3','Class 4','Class 5','Class 6','Class 7','Class 8','Class 9','Class 10'];
+    hwClassEl.innerHTML = allClasses.map(c => `<option value="${c}">${c}</option>`).join('');
+  }
+
+  // Pre-select teacher's assigned class in the dropdown
+  if (currentRole === 'teacher' && currentUser && currentUser.assignedClass && hwClassEl) {
+    hwClassEl.value = currentUser.assignedClass;
+  }
+
   let list = State.homework || [];
 
   if (currentRole === 'student') {
     list = list.filter(hw => hw.cls === currentUser.cls);
-    
     const subtitle = document.getElementById('homework-list-subtitle');
     if (subtitle) {
       subtitle.innerHTML = `<i class="ti ti-id"></i> Private Homework Board for <b>${currentUser.name} (${currentUser.cls})</b>`;
+    }
+  } else if (currentRole === 'teacher' && currentUser && currentUser.assignedClass) {
+    // Teacher sees only their class homework by default
+    list = list.filter(hw => hw.cls === currentUser.assignedClass);
+    const subtitle = document.getElementById('homework-list-subtitle');
+    if (subtitle) {
+      subtitle.innerHTML = `<i class="ti ti-id"></i> Homework Board for <b>${currentUser.assignedClass}</b>`;
     }
   } else {
     const subtitle = document.getElementById('homework-list-subtitle');
