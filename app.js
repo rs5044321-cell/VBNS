@@ -632,10 +632,35 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       migrateOldClassNames();
         renderDashboard();
+        // Refresh public notice feed on homepage with latest Firestore notices
+        if (typeof renderPublicNoticeFeed === 'function') renderPublicNoticeFeed();
       }
     } catch(e) {
-      console.warn('Firestore load failed, using localStorage:', e);
-      seedDatabase();
+      // Firestore failed (network issue) — use localStorage fallback, never wipe data
+      try {
+        const saved = localStorage.getItem('apex_school_crm_state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.notices && parsed.notices.length > 0) State.notices = parsed.notices;
+          if (parsed.students && parsed.students.length > 0) State.students = parsed.students;
+          if (parsed.feeLog) State.feeLog = parsed.feeLog;
+          if (parsed.ledger) State.ledger = parsed.ledger;
+          if (parsed.attendance) State.attendance = parsed.attendance;
+          if (parsed.staffAttendance) State.staffAttendance = parsed.staffAttendance;
+          if (parsed.homework) State.homework = parsed.homework;
+          if (parsed.staff && parsed.staff.length > 0) State.staff = parsed.staff;
+          if (parsed.config) State.config = { ...State.config, ...parsed.config };
+          if (parsed.auditLog) State.auditLog = parsed.auditLog;
+          if (parsed.enquiries) State.enquiries = parsed.enquiries;
+          if (parsed.timetable) State.timetable = parsed.timetable;
+          if (parsed.exams) State.exams = parsed.exams;
+          renderDashboard();
+        } else {
+          seedDatabase();
+        }
+      } catch(lsErr) {
+        seedDatabase();
+      }
     }
   } catch(e) {
     console.warn('Firebase init failed, using localStorage:', e);
