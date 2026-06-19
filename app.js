@@ -1770,11 +1770,14 @@ function renderIDCard() {
 
   const sessionYear = document.getElementById('id-year').value || '2026-27';
   const initials = student.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const photoHtml = student.photo
+    ? `<img src="${student.photo}" alt="${student.name}" class="id-avatar-photo" style="width:64px;height:64px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 8px;" />`
+    : `<div class="id-avatar">${initials}</div>`;
 
   previewDiv.innerHTML = `
     <div class="id-card">
       <div class="school-name-banner">${State.config.schoolName}</div>
-      <div class="id-avatar">${initials}</div>
+      ${photoHtml}
       <div class="id-name">${student.name}</div>
       <div class="id-detail">Enrollment ID: <b>${student.id}</b></div>
       <div class="id-detail">Class: <b>${student.cls} — Section ${student.sec}</b></div>
@@ -1787,6 +1790,35 @@ function renderIDCard() {
       <div class="barcode">||||| ${student.id} |||||</div>
     </div>
   `;
+}
+
+// Download a card preview container as a PNG image
+function downloadCardAsImage(containerId, filenamePrefix) {
+  const target = document.getElementById(containerId);
+  if (!target) { showToast('Error', 'Card preview not found.', 'ti-alert-circle'); return; }
+
+  if (typeof html2canvas === 'undefined') {
+    // Load html2canvas dynamically if not already present
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    script.onload = () => captureAndDownload(target, filenamePrefix);
+    script.onerror = () => showToast('Download Failed', 'Could not load image export library. Check your internet connection.', 'ti-alert-circle');
+    document.head.appendChild(script);
+  } else {
+    captureAndDownload(target, filenamePrefix);
+  }
+}
+
+function captureAndDownload(target, filenamePrefix) {
+  html2canvas(target, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `${filenamePrefix}_${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('Download Started', 'Card image saved to your downloads.', 'ti-download');
+  }).catch(() => {
+    showToast('Download Failed', 'Could not generate the card image.', 'ti-alert-circle');
+  });
 }
 
 // -------------------------------------------------------------
