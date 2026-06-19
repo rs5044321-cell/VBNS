@@ -1638,6 +1638,30 @@
 
       <!-- ADMISSION TAB -->
       <section class="tab" id="tab-admission">
+        <div class="card glass" style="margin-bottom:20px;">
+          <div class="card-header">
+            <h2 class="section-title"><i class="ti ti-file-spreadsheet"></i> Bulk Student Upload (Excel)</h2>
+            <span class="card-subtitle">Upload an .xlsx file to enroll multiple students at once</span>
+          </div>
+          <div class="form-container">
+            <div class="alert-box-info">
+              <i class="ti ti-info-circle"></i> Excel file must have these exact column headers in row 1: <b>Name, Class, Fee, DOB</b>.
+              DOB format: YYYY-MM-DD (e.g. 2015-08-21). Class must match one of: Playway, L.KG., U.KG., Class 1–10.
+            </div>
+            <div class="form-row">
+              <label for="bulk-upload-input">Select Excel File (.xlsx)</label>
+              <input id="bulk-upload-input" type="file" accept=".xlsx,.xls" style="padding:10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);width:100%;box-sizing:border-box;" />
+            </div>
+            <button class="btn btn-primary btn-block" onclick="downloadExcelTemplate()" style="margin-bottom:8px;">
+              <i class="ti ti-download"></i> Download Sample Template
+            </button>
+            <button class="btn btn-block" onclick="processBulkStudentUpload()">
+              <i class="ti ti-upload"></i> Upload &amp; Enroll Students
+            </button>
+            <div id="bulk-upload-result" style="margin-top:12px;"></div>
+          </div>
+        </div>
+
         <div class="two-col">
           <div class="card glass">
             <div class="card-header">
@@ -1731,6 +1755,9 @@
                 <option>Class 7</option><option>Class 8</option><option>Class 9</option>
                 <option>Class 10</option>
               </select>
+              <button class="btn btn-sm btn-primary" onclick="exportStudentAccountsToExcel()" style="white-space:nowrap;">
+                <i class="ti ti-file-export"></i> Export to Excel
+              </button>
             </div>
           </div>
           <div class="table-wrap">
@@ -3107,7 +3134,8 @@
 <div id="toast-wrapper"></div>
 
 <!-- Local Script File -->
-<script src="app.js?v=12.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="app.js?v=12.2"></script>
 </body>
 </html>
 

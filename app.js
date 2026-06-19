@@ -1496,6 +1496,205 @@ function renderQuickActionsPanel() {
 }
 
 // -------------------------------------------------------------
+// MODULE 2A: BULK STUDENT UPLOAD VIA EXCEL
+// -------------------------------------------------------------
+const VALID_CLASSES = ['Playway','L.KG.','U.KG.','Class 1','Class 2','Class 3','Class 4','Class 5','Class 6','Class 7','Class 8','Class 9','Class 10'];
+
+function downloadExcelTemplate() {
+  if (typeof XLSX === 'undefined') {
+    showToast('Library Loading', 'Excel library still loading, please try again in a moment.', 'ti-alert-circle');
+    return;
+  }
+  const sampleData = [
+    { Name: 'Aman Kumar', Class: 'Class 5', Fee: 18000, DOB: '2015-08-21' },
+    { Name: 'Priya Sharma', Class: 'Class 3', Fee: 15000, DOB: '2017-03-10' }
+  ];
+  const ws = XLSX.utils.json_to_sheet(sampleData);
+  ws['!cols'] = [{ wch: 22 }, { wch: 14 }, { wch: 10 }, { wch: 14 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Students');
+  XLSX.writeFile(wb, 'Student_Upload_Template.xlsx');
+  showToast('Template Downloaded', 'Sample Excel template saved to your downloads.', 'ti-download');
+}
+
+function processBulkStudentUpload() {
+  const fileInput = document.getElementById('bulk-upload-input');
+  const resultDiv = document.getElementById('bulk-upload-result');
+  if (!fileInput.files || fileInput.files.length === 0) {
+    showToast('No File Selected', 'Please choose an Excel file first.', 'ti-alert-circle');
+    return;
+  }
+  if (typeof XLSX === 'undefined') {
+    showToast('Library Loading', 'Excel library still loading, please try again in a moment.', 'ti-alert-circle');
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[firstSheetName];
+      const rows = XLSX.utils.sheet_to_json(sheet, { raw: false, defval: '' });
+
+      if (rows.length === 0) {
+        resultDiv.innerHTML = `<div class="alert-box-info" style="border-color:var(--color-danger);"><i class="ti ti-alert-circle"></i> The Excel file is empty.</div>`;
+        return;
+      }
+
+      let successCount = 0;
+      const errors = [];
+      const currentDateStr = new Date().toISOString().split('T')[0];
+
+      rows.forEach((row, idx) => {
+        const rowNum = idx + 2; // Excel row (1 = header)
+        const name = String(row.Name || '').trim();
+        const cls = String(row.Class || '').trim();
+        const fee = parseFloat(row.Fee);
+        const dobRaw = row.DOB;
+        let dob = '';
+
+        // Normalize DOB — handle both string dates and Excel serial dates
+        if (dobRaw) {
+          if (typeof dobRaw === 'number') {
+            const parsed = XLSX.SSF.parse_date_code(dobRaw);
+            if (parsed) dob = `${parsed.y}-${String(parsed.m).padStart(2,'0')}-${String(parsed.d).padStart(2,'0')}`;
+          } else {
+            dob = String(dobRaw).trim();
+          }
+        }
+
+        if (!name) { errors.push(`Row ${rowNum}: Missing student Name.`); return; }
+        if (!VALID_CLASSES.includes(cls)) { errors.push(`Row ${rowNum}: Invalid Class "${cls}". Must be one of: ${VALID_CLASSES.join(', ')}.`); return; }
+        if (isNaN(fee) || fee <= 0) { errors.push(`Row ${rowNum}: Invalid Fee value.`); return; }
+        if (!dob || !/^\d{4}-\d{2}-\d{2}$/.test(dob)) { errors.push(`Row ${rowNum}: Invalid DOB format "${dobRaw}". Use YYYY-MM-DD.`); return; }
+
+        const nextIdNum = State.students.length + 1;
+        const nextId = `${State.config.prefix}-${String(nextIdNum).padStart(3, '0')}`;
+
+        const newStudent = {
+          id: nextId,
+          name,
+          cls,
+          sec: 'A',
+          parent: 'N/A',
+          phone: 'N/A',
+          dob,
+          address: 'N/A',
+          fee,
+          balance: fee,
+          status: 'Pending',
+          enrolledDate: currentDateStr,
+          password: (name.replace(/\s+/g, '').substring(0, 3).toLowerCase()) + dob.split('-').reverse().join('')
+        };
+
+        State.students.push(newStudent);
+
+        const ledgerVou = `VOU-${State.ledger.length + 1002}`;
+        State.ledger.push({
+          voucher: ledgerVou,
+          date: currentDateStr,
+          desc: `Bulk Excel Enrollment: ${name} (${nextId})`,
+          credit: 0,
+          debit: 0,
+          balance: calculateActiveCashBalance()
+        });
+
+        successCount++;
+      });
+
+      if (successCount > 0) {
+        const actor = State.auth.currentUser ? State.auth.currentUser.name : 'System Admin';
+        logActivity(actor, 'Bulk Student Upload', 'enrollment', `Bulk-enrolled ${successCount} student(s) via Excel upload.`);
+        saveState();
+        renderDirectoryList();
+      }
+
+      let resultHtml = `<div class="alert-box-info" style="${errors.length > 0 ? 'border-color:var(--color-warning);' : 'border-color:var(--color-success);'}">`;
+      resultHtml += `<i class="ti ti-circle-check"></i> <b>${successCount}</b> student(s) enrolled successfully.`;
+      if (errors.length > 0) {
+        resultHtml += `<br><br><b>${errors.length} row(s) skipped:</b><ul style="margin:6px 0 0 18px;font-size:12px;">`;
+        errors.slice(0, 15).forEach(err => { resultHtml += `<li>${err}</li>`; });
+        if (errors.length > 15) resultHtml += `<li>...and ${errors.length - 15} more.</li>`;
+        resultHtml += `</ul>`;
+      }
+      resultHtml += `</div>`;
+      resultDiv.innerHTML = resultHtml;
+
+      showToast(
+        successCount > 0 ? 'Bulk Upload Complete' : 'Upload Failed',
+        `${successCount} enrolled, ${errors.length} skipped.`,
+        successCount > 0 ? 'ti-circle-check' : 'ti-alert-circle'
+      );
+
+      fileInput.value = '';
+    } catch (err) {
+      resultDiv.innerHTML = `<div class="alert-box-info" style="border-color:var(--color-danger);"><i class="ti ti-alert-circle"></i> Failed to read Excel file: ${err.message}</div>`;
+      showToast('Upload Error', 'Could not process the Excel file. Check the format matches the template.', 'ti-alert-circle');
+    }
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
+// -------------------------------------------------------------
+// MODULE 2B: EXPORT STUDENT ACCOUNTS TO EXCEL
+// -------------------------------------------------------------
+function exportStudentAccountsToExcel() {
+  if (typeof XLSX === 'undefined') {
+    showToast('Library Loading', 'Excel library still loading, please try again in a moment.', 'ti-alert-circle');
+    return;
+  }
+  if (!State.students || State.students.length === 0) {
+    showToast('No Data', 'There are no students to export yet.', 'ti-alert-circle');
+    return;
+  }
+
+  const exportData = State.students.map(s => {
+    const totalFee = s.fee || 0;
+    const due = s.balance != null ? s.balance : totalFee;
+    const paid = totalFee - due;
+    return {
+      'Student ID': s.id,
+      'Name': s.name,
+      'Class': s.cls,
+      'Section': s.sec || '',
+      'Parent Name': s.parent || '',
+      'Phone': s.phone || '',
+      'DOB': s.dob || '',
+      'Total Fee (₹)': totalFee,
+      'Amount Paid (₹)': paid,
+      'Due Balance (₹)': due,
+      'Status': due <= 0 ? 'Paid' : (paid > 0 ? 'Partial' : 'Pending')
+    };
+  });
+
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  ws['!cols'] = [
+    { wch: 12 }, { wch: 22 }, { wch: 10 }, { wch: 8 }, { wch: 20 },
+    { wch: 14 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 10 }
+  ];
+
+  // Add a totals row at the bottom
+  const totalFeeSum = exportData.reduce((sum, r) => sum + r['Total Fee (₹)'], 0);
+  const totalPaidSum = exportData.reduce((sum, r) => sum + r['Amount Paid (₹)'], 0);
+  const totalDueSum = exportData.reduce((sum, r) => sum + r['Due Balance (₹)'], 0);
+  XLSX.utils.sheet_add_aoa(ws, [
+    ['', '', '', '', '', '', 'TOTALS', totalFeeSum, totalPaidSum, totalDueSum, '']
+  ], { origin: -1 });
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Student Accounts');
+  const dateStr = new Date().toISOString().split('T')[0];
+  XLSX.writeFile(wb, `Student_Accounts_${dateStr}.xlsx`);
+
+  showToast('Export Complete', `Exported ${State.students.length} student records to Excel.`, 'ti-file-export');
+}
+
+// -------------------------------------------------------------
 // MODULE 2: NEW ENROLLMENT ADMISSION
 // -------------------------------------------------------------
 async function admitStudent() {
