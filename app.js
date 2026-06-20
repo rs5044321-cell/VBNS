@@ -523,7 +523,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   try {
     const [
       { initializeApp, getApps },
-      { getFirestore, doc, setDoc, getDoc, getDocs, collection, enableIndexedDbPersistence },
+      { getFirestore, initializeFirestore, persistentLocalCache, doc, setDoc, getDoc, getDocs, collection },
       { getAuth }
     ] = await Promise.all([
       import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
@@ -539,18 +539,16 @@ window.addEventListener('DOMContentLoaded', async () => {
       appId: "1:690235835836:web:3a562a5801051b190297b9"
     };
     window.app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-    window.db = getFirestore(window.app);
+    // Use modern persistent local cache (replaces deprecated enableIndexedDbPersistence)
+    try {
+      window.db = initializeFirestore(window.app, { localCache: persistentLocalCache() });
+    } catch (cacheErr) {
+      // Firestore instance may already exist (e.g. multiple tabs) — fall back to default
+      window.db = getFirestore(window.app);
+    }
     window.firebaseAuth = getAuth(window.app);
     // FIX: expose Firestore helpers so saveState() can write to Firebase
     window.fsLib = { doc, setDoc, getDoc, getDocs, collection };
-
-    // Enable offline persistence — caches Firestore data locally so brief
-    // network hiccups or slow connections don't wipe data on reload.
-    try {
-      await enableIndexedDbPersistence(window.db);
-    } catch (persistErr) {
-      // Fails silently if multiple tabs open or unsupported browser — not critical
-    }
 
     // Helper: retry a Firestore read a few times before giving up (handles transient network errors)
     async function withRetry(fn, retries = 2, delayMs = 800) {
@@ -1108,6 +1106,9 @@ function applySessionAccessLayout() {
 // SPA View Routing & Dynamic Clearances (With Settings Controls Mapped!)
 // -------------------------------------------------------------
 function nav(tabId, sidebarElement) {
+  // Safety net: if called before login (e.g. stray event on public homepage), do nothing silently
+  if (!State.auth || !State.auth.currentUser) return;
+
   const currentRole = State.auth.currentRole || 'student';
   
   // Student view limits
