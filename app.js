@@ -523,7 +523,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   try {
     const [
       { initializeApp, getApps },
-      { getFirestore, doc, setDoc, getDoc, getDocs, collection },
+      { getFirestore, doc, setDoc, getDoc, getDocs, collection, enableIndexedDbPersistence },
       { getAuth }
     ] = await Promise.all([
       import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
@@ -544,21 +544,41 @@ window.addEventListener('DOMContentLoaded', async () => {
     // FIX: expose Firestore helpers so saveState() can write to Firebase
     window.fsLib = { doc, setDoc, getDoc, getDocs, collection };
 
+    // Enable offline persistence — caches Firestore data locally so brief
+    // network hiccups or slow connections don't wipe data on reload.
+    try {
+      await enableIndexedDbPersistence(window.db);
+    } catch (persistErr) {
+      // Fails silently if multiple tabs open or unsupported browser — not critical
+    }
+
+    // Helper: retry a Firestore read a few times before giving up (handles transient network errors)
+    async function withRetry(fn, retries = 2, delayMs = 800) {
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+          return await fn();
+        } catch (err) {
+          if (attempt === retries) throw err;
+          await new Promise(r => setTimeout(r, delayMs));
+        }
+      }
+    }
+
     // Load state from Firestore
     try {
       // Load each student from their own document
-      const studentSnaps = await getDocs(collection(window.db, 'students'));
+      const studentSnaps = await withRetry(() => getDocs(collection(window.db, 'students')));
       if (!studentSnaps.empty) {
         State.students = [];
         studentSnaps.forEach(d => State.students.push(d.data()));
       }
 
       // Load split meta collections (new structure)
-      const [configSnap, financeSnap, academicSnap] = await Promise.all([
+      const [configSnap, financeSnap, academicSnap] = await withRetry(() => Promise.all([
         getDoc(doc(window.db, 'schoolMeta', 'config')),
         getDoc(doc(window.db, 'schoolMeta', 'finance')),
         getDoc(doc(window.db, 'schoolMeta', 'academic'))
-      ]);
+      ]));
 
       if (configSnap.exists()) {
         const d = configSnap.data();
