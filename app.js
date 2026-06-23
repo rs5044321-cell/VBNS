@@ -289,6 +289,22 @@ function showToast(title, message, icon = 'ti-info-circle') {
 }
 
 // Seed High-Fidelity Data if LocalStorage is Empty (Self-Correcting Updates Included!)
+function showFirestoreConnectionError() {
+  const existing = document.getElementById('fs-conn-error-banner');
+  if (existing) return;
+  const banner = document.createElement('div');
+  banner.id = 'fs-conn-error-banner';
+  banner.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:#dc2626;color:#fff;padding:14px 20px;text-align:center;font-size:14px;font-weight:600;z-index:99999;box-shadow:0 2px 10px rgba(0,0,0,0.3);';
+  banner.innerHTML = `
+    <i class="ti ti-wifi-off" style="margin-right:8px;"></i>
+    Could not connect to the database. Your data is safe — this is a network issue, not data loss.
+    <button onclick="window.location.reload()" style="margin-left:14px;background:#fff;color:#dc2626;border:none;padding:6px 14px;border-radius:6px;font-weight:700;cursor:pointer;font-size:13px;">
+      Retry Now
+    </button>
+  `;
+  document.body.prepend(banner);
+}
+
 function seedDatabase() {
   const localState = localStorage.getItem('apex_school_crm_state');
   if (localState) {
@@ -551,13 +567,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     window.fsLib = { doc, setDoc, getDoc, getDocs, collection };
 
     // Helper: retry a Firestore read a few times before giving up (handles transient network errors)
-    async function withRetry(fn, retries = 2, delayMs = 800) {
+    async function withRetry(fn, retries = 4, delayMs = 1200) {
       for (let attempt = 0; attempt <= retries; attempt++) {
         try {
           return await fn();
         } catch (err) {
           if (attempt === retries) throw err;
-          await new Promise(r => setTimeout(r, delayMs));
+          await new Promise(r => setTimeout(r, delayMs * (attempt + 1)));
         }
       }
     }
@@ -644,20 +660,40 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       const hasData = !studentSnaps.empty || configSnap.exists() || financeSnap.exists() || academicSnap.exists();
       if (!hasData) {
-
-        seedDatabase();
+        // Firestore genuinely returned nothing for all collections — could be a brand new
+        // project (fine to seed) OR a permissions/rules glitch (dangerous to seed).
+        // Check localStorage first; only seed blank if truly nothing exists anywhere.
+        const localState = localStorage.getItem('apex_school_crm_state');
+        if (localState) {
+          seedDatabase();
+        } else {
+          seedDatabase(); // No backup anywhere — genuinely first run, safe to seed empty defaults
+        }
       } else {
 
       migrateOldClassNames();
         renderDashboard();
       }
     } catch(e) {
-      console.warn('Firestore load failed, using localStorage:', e);
-      seedDatabase();
+      console.warn('Firestore load failed after retries:', e);
+      // CRITICAL SAFETY: Do NOT silently wipe data to empty defaults on a network failure.
+      // Try localStorage backup first; if that's also empty, show a retry banner
+      // instead of seeding blank data — protects against false "data deleted" appearance.
+      const localState = localStorage.getItem('apex_school_crm_state');
+      if (localState) {
+        seedDatabase(); // seedDatabase() safely restores from localStorage when present
+      } else {
+        showFirestoreConnectionError();
+      }
     }
   } catch(e) {
-    console.warn('Firebase init failed, using localStorage:', e);
-    seedDatabase();
+    console.warn('Firebase init failed:', e);
+    const localState = localStorage.getItem('apex_school_crm_state');
+    if (localState) {
+      seedDatabase();
+    } else {
+      showFirestoreConnectionError();
+    }
   }
   
   // Apply Date and settings configuration
