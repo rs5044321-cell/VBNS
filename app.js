@@ -1967,6 +1967,9 @@ function renderDirectoryList() {
           <button class="btn btn-sm" onclick="inspectStudentProfile('${s.id}')" title="Inspect Record">
             <i class="ti ti-external-link"></i> Inspect
           </button>
+          ${currentRole === 'admin' ? `<button class="btn btn-sm btn-primary" onclick="openEditStudentModal('${s.id}')" title="Edit Student Details">
+            <i class="ti ti-pencil"></i> Edit
+          </button>` : ''}
           ${deleteBtn}
         </td>
       </tr>
@@ -1984,6 +1987,143 @@ function filterFeeLog() {
   renderFeeCollectionLogsTable(search, cls);
 }
 
+
+function openEditStudentModal(studentId) {
+  if (State.auth.currentRole !== 'admin') {
+    showToast('Access Denied', 'Only administrators can edit student records.', 'ti-lock');
+    return;
+  }
+  const s = State.students.find(x => x.id === studentId);
+  if (!s) return;
+
+  const existing = document.getElementById('edit-student-modal');
+  if (existing) existing.remove();
+
+  const inputStyle = 'width:100%;padding:8px 10px;border:1px solid var(--border-primary);border-radius:var(--border-radius-sm);background:var(--bg-secondary);color:var(--text-primary);font-size:13px;box-sizing:border-box;';
+  const labelStyle = 'font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;display:block;margin-bottom:5px;';
+
+  const classOptions = VALID_CLASSES.map(c => `<option value="${c}" ${s.cls === c ? 'selected' : ''}>${c}</option>`).join('');
+
+  const modal = document.createElement('div');
+  modal.id = 'edit-student-modal';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;overflow-y:auto;';
+  modal.innerHTML = `
+    <div style="background:var(--bg-primary);border-radius:var(--border-radius-lg);padding:24px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.35);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+        <h3 style="font-size:16px;font-weight:700;margin:0;color:var(--text-primary);font-family:var(--font-display);">
+          <i class="ti ti-user-edit" style="color:var(--accent);margin-right:6px;"></i>Edit Student — ${s.id}
+        </h3>
+        <button onclick="document.getElementById('edit-student-modal').remove()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--text-secondary);line-height:1;">&#x2715;</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="grid-column:1/-1;">
+          <label style="${labelStyle}">Full Name</label>
+          <input id="es-name" type="text" value="${(s.name||'').replace(/"/g,'&quot;')}" style="${inputStyle}" />
+        </div>
+        <div>
+          <label style="${labelStyle}">Class</label>
+          <select id="es-cls" style="${inputStyle}">${classOptions}</select>
+        </div>
+        <div>
+          <label style="${labelStyle}">Section</label>
+          <input id="es-sec" type="text" value="${s.sec||''}" maxlength="2" style="${inputStyle}" />
+        </div>
+        <div>
+          <label style="${labelStyle}">Parent / Guardian Name</label>
+          <input id="es-parent" type="text" value="${(s.parent||'').replace(/"/g,'&quot;')}" style="${inputStyle}" />
+        </div>
+        <div>
+          <label style="${labelStyle}">Phone Number</label>
+          <input id="es-phone" type="text" value="${s.phone||''}" style="${inputStyle}" />
+        </div>
+        <div>
+          <label style="${labelStyle}">Date of Birth</label>
+          <input id="es-dob" type="date" value="${s.dob||''}" style="${inputStyle}" />
+        </div>
+        <div>
+          <label style="${labelStyle}">Annual Fee (₹)</label>
+          <input id="es-fee" type="number" value="${s.fee||0}" min="0" style="${inputStyle}" />
+        </div>
+        <div style="grid-column:1/-1;">
+          <label style="${labelStyle}">Address</label>
+          <input id="es-address" type="text" value="${(s.address||'').replace(/"/g,'&quot;')}" style="${inputStyle}" />
+        </div>
+        <div>
+          <label style="${labelStyle}">Due Balance (₹)</label>
+          <input id="es-balance" type="number" value="${s.balance != null ? s.balance : s.fee}" min="0" style="${inputStyle}" />
+        </div>
+        <div>
+          <label style="${labelStyle}">Fee Status</label>
+          <select id="es-status" style="${inputStyle}">
+            <option value="Paid" ${s.status==='Paid'?'selected':''}>Paid</option>
+            <option value="Partial" ${s.status==='Partial'?'selected':''}>Partial</option>
+            <option value="Pending" ${s.status==='Pending'?'selected':''}>Pending</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label style="${labelStyle}">Login Password (Student Portal)</label>
+          <input id="es-password" type="text" value="${s.password||''}" style="${inputStyle}" />
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button class="btn btn-primary" onclick="saveStudentEdit('${s.id}')" style="flex:1;">
+          <i class="ti ti-device-floppy"></i> Save Changes
+        </button>
+        <button class="btn" onclick="document.getElementById('edit-student-modal').remove()" style="flex:1;">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function saveStudentEdit(studentId) {
+  if (State.auth.currentRole !== 'admin') return;
+  const s = State.students.find(x => x.id === studentId);
+  if (!s) return;
+
+  const name = (document.getElementById('es-name')?.value || '').trim();
+  const cls = document.getElementById('es-cls')?.value || s.cls;
+  const sec = (document.getElementById('es-sec')?.value || '').trim() || 'A';
+  const parent = (document.getElementById('es-parent')?.value || '').trim();
+  const phone = (document.getElementById('es-phone')?.value || '').trim();
+  const dob = document.getElementById('es-dob')?.value || s.dob;
+  const fee = parseFloat(document.getElementById('es-fee')?.value);
+  const address = (document.getElementById('es-address')?.value || '').trim();
+  const balance = parseFloat(document.getElementById('es-balance')?.value);
+  const status = document.getElementById('es-status')?.value || s.status;
+  const password = (document.getElementById('es-password')?.value || '').trim();
+
+  if (!name) { showToast('Validation Error', 'Student name is required.', 'ti-alert-circle'); return; }
+  if (isNaN(fee) || fee < 0) { showToast('Validation Error', 'Enter a valid Annual Fee.', 'ti-alert-circle'); return; }
+  if (isNaN(balance) || balance < 0) { showToast('Validation Error', 'Enter a valid Due Balance.', 'ti-alert-circle'); return; }
+
+  const changes = [];
+  if (s.name !== name) changes.push(`Name: "${s.name}" → "${name}"`);
+  if (s.cls !== cls) changes.push(`Class: "${s.cls}" → "${cls}"`);
+  if (s.fee !== fee) changes.push(`Fee: ₹${s.fee} → ₹${fee}`);
+  if ((s.balance != null ? s.balance : s.fee) !== balance) changes.push(`Due Balance updated`);
+
+  s.name = name;
+  s.cls = cls;
+  s.sec = sec;
+  s.parent = parent || 'N/A';
+  s.phone = phone || 'N/A';
+  s.dob = dob;
+  s.fee = fee;
+  s.address = address || 'N/A';
+  s.balance = balance;
+  s.status = status;
+  if (password) s.password = password;
+
+  saveState();
+  document.getElementById('edit-student-modal')?.remove();
+  renderDirectoryList();
+
+  const actor = State.auth.currentUser ? State.auth.currentUser.name : 'Admin';
+  logActivity(actor, 'Student Record Edited', 'enrollment', `Updated details for ${name} (${studentId}). ${changes.join('; ')}`);
+  showToast('Student Updated', `${name}'s record has been saved.`, 'ti-circle-check');
+}
 
 function inspectStudentProfile(studentId) {
   const s = State.students.find(x => x.id === studentId);
