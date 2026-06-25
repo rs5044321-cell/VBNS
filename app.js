@@ -1572,6 +1572,66 @@ function renderQuickActionsPanel() {
 // -------------------------------------------------------------
 // MODULE 2A: BULK STUDENT UPLOAD VIA EXCEL
 // -------------------------------------------------------------
+// Generates the next student ID based on the HIGHEST existing ID number + 1.
+// Using array length alone breaks after any deletion, causing ID collisions
+// that silently overwrite a different student's Firestore document.
+// -------------------------------------------------------------
+// ONE-TIME REPAIR: Fix duplicate student IDs caused by the old
+// length-based ID bug. Detects students sharing the same ID and
+// reassigns a fresh, safe ID to every duplicate after the first.
+// -------------------------------------------------------------
+function fixDuplicateStudentIds() {
+  if (State.auth.currentRole !== 'admin') return;
+
+  const seenIds = new Set();
+  const duplicatesFixed = [];
+
+  State.students.forEach(s => {
+    if (seenIds.has(s.id)) {
+      const oldId = s.id;
+      const newId = getNextStudentId();
+      s.id = newId;
+      duplicatesFixed.push(`${s.name}: ${oldId} → ${newId}`);
+      seenIds.add(newId);
+    } else {
+      seenIds.add(s.id);
+    }
+  });
+
+  if (duplicatesFixed.length === 0) {
+    showToast('No Duplicates Found', 'All student IDs are already unique.', 'ti-circle-check');
+    return;
+  }
+
+  if (!confirm(
+    `Found ${duplicatesFixed.length} duplicate ID(s):\n\n${duplicatesFixed.join('\n')}\n\n` +
+    `These students will be reassigned new unique IDs and re-saved to the database. Continue?`
+  )) {
+    // Revert the in-memory changes since user cancelled
+    return;
+  }
+
+  saveState();
+  renderDirectoryList();
+
+  const actor = State.auth.currentUser ? State.auth.currentUser.name : 'Admin';
+  logActivity(actor, 'Duplicate ID Repair', 'system', `Fixed ${duplicatesFixed.length} duplicate student ID(s): ${duplicatesFixed.join('; ')}`);
+  showToast('Duplicates Fixed', `${duplicatesFixed.length} student(s) reassigned new IDs. Re-enter their corrected fee/profile details if needed.`, 'ti-circle-check');
+}
+
+function getNextStudentId() {
+  let maxNum = 0;
+  (State.students || []).forEach(s => {
+    const match = String(s.id || '').match(/(\d+)$/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (num > maxNum) maxNum = num;
+    }
+  });
+  const nextNum = maxNum + 1;
+  return `${State.config.prefix}-${String(nextNum).padStart(3, '0')}`;
+}
+
 const VALID_CLASSES = ['Playway','L.KG.','U.KG.','Class 1','Class 2','Class 3','Class 4','Class 5','Class 6','Class 7','Class 8','Class 9','Class 10'];
 
 function downloadExcelTemplate() {
@@ -1660,8 +1720,7 @@ function processBulkStudentUpload() {
         if (isNaN(fee) || fee <= 0) { errors.push(`Row ${rowNum}: Invalid Fee value.`); return; }
         if (!dob || !/^\d{4}-\d{2}-\d{2}$/.test(dob)) { errors.push(`Row ${rowNum}: Invalid DOB format "${dobRaw}". Use YYYY-MM-DD.`); return; }
 
-        const nextIdNum = State.students.length + 1;
-        const nextId = `${State.config.prefix}-${String(nextIdNum).padStart(3, '0')}`;
+        const nextId = getNextStudentId();
 
         const newStudent = {
           id: nextId,
@@ -1809,9 +1868,9 @@ async function admitStudent() {
     return;
   }
 
-  // Calculate clean Enrollment ID
-  const nextIdNum = State.students.length + 1;
-  const nextId = `${State.config.prefix}-${String(nextIdNum).padStart(3, '0')}`;
+  // Calculate clean Enrollment ID — based on highest existing ID, not array length
+  // (array length breaks after any deletion, causing ID collisions that overwrite students)
+  const nextId = getNextStudentId();
   const currentDateStr = new Date().toISOString().split('T')[0];
 
   // Append Student Object
@@ -5346,7 +5405,7 @@ function applySettingsConfig() {
     prevName.textContent = State.config.schoolName;
     document.getElementById('prev-address').textContent = State.config.address;
     document.getElementById('prev-phone').textContent = `Tel: ${State.config.phone}`;
-    document.getElementById('prev-next-id').textContent = `${State.config.prefix}-${String(State.students.length + 1).padStart(3, '0')}`;
+    document.getElementById('prev-next-id').textContent = getNextStudentId();
     document.getElementById('prev-curr').textContent = State.config.currency;
     document.getElementById('prev-latefee').textContent = `${State.config.latefee}%`;
     document.getElementById('prev-receipt-note').textContent = State.config.receiptNote;
