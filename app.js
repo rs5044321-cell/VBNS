@@ -149,6 +149,8 @@ let State = {
   staffAttendance: {}, // { "2026-05-24": [ {id, name, status: 'Present'/'Absent'/'Leave'}, ... ] }
   payrollConfig: {}, // { "TCH-001": { base: 40000, allowance: 3000, deductions: 0, status: 'Unpaid' } }
   staffPasswords: {}, // { "TCH-001": "teacher123", ... }
+  staffDevices: {}, // { "TCH-001": [{fingerprint, label, firstSeen}, ...] }
+  pendingDeviceAlerts: [], // [{staffName, staffId, device, timestamp}]
   
   // Static Academic Databases
   timetable: {
@@ -322,6 +324,8 @@ function seedDatabase() {
         State.staffAttendance = parsed.staffAttendance || State.staffAttendance;
         State.payrollConfig = parsed.payrollConfig || State.payrollConfig;
         State.staffPasswords = parsed.staffPasswords || State.staffPasswords;
+        State.staffDevices = parsed.staffDevices || State.staffDevices;
+        State.pendingDeviceAlerts = parsed.pendingDeviceAlerts || State.pendingDeviceAlerts;
         State.timetable = parsed.timetable || State.timetable;
         State.homework = parsed.homework || State.homework;
         State.auditLog = parsed.auditLog || State.auditLog;
@@ -460,6 +464,8 @@ function _syncToFirestore() {
       staff: State.staff || [],
       staffPasswords: State.staffPasswords || {},
       payrollConfig: State.payrollConfig || {},
+      staffDevices: State.staffDevices || {},
+      pendingDeviceAlerts: State.pendingDeviceAlerts || [],
       updatedAt: new Date().toISOString()
     }).catch(e => console.warn('Config save failed:', e));
 
@@ -600,6 +606,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         if (d.staff && d.staff.length > 0) State.staff = d.staff;
         if (d.staffPasswords) State.staffPasswords = d.staffPasswords;
         if (d.payrollConfig) State.payrollConfig = d.payrollConfig;
+        if (d.staffDevices) State.staffDevices = d.staffDevices;
+        if (d.pendingDeviceAlerts) State.pendingDeviceAlerts = d.pendingDeviceAlerts;
       }
       if (financeSnap.exists()) {
         const d = financeSnap.data();
@@ -966,6 +974,12 @@ async function executeLogin() {
       sessionStorage.setItem('apex_auth_user', JSON.stringify(authenticatedUser));
 
       logActivity(authenticatedUser.name, 'User Login', 'security', `Successfully authorized as ${effectiveRole2.toUpperCase()}`);
+
+      // Device fingerprint check — staff (teacher) accounts only, warn-only (never blocks login)
+      if (localRole === 'teacher') {
+        checkAndRecordStaffDevice(authenticatedUser);
+        saveState();
+      }
 
       applySessionAccessLayout();
       
@@ -1363,6 +1377,9 @@ function lockStudentFeesCollectTab() {
 // -------------------------------------------------------------
 function renderDashboard() {
   const currentRole = State.auth.currentRole || 'student';
+
+  // Show any pending new-device login alerts (admin only, non-blocking)
+  showPendingDeviceAlertsIfAny();
 
   // 1. Core KPIs
   const totalStudents = State.students.length;
@@ -5619,6 +5636,116 @@ function removeHomeworkAssignment(hwId) {
 // -------------------------------------------------------------
 // CHRONOLOGICAL AUDIT LOGGER ENGINE
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// DEVICE FINGERPRINTING — detect logins from a new/unrecognized device
+// -------------------------------------------------------------
+function getDeviceFingerprint() {
+  // Build a stable-ish fingerprint from browser/device characteristics.
+  // Not foolproof (client-side), but reliably flags a genuinely different device/browser.
+  const parts = [
+    navigator.userAgent || '',
+    navigator.platform || '',
+    navigator.language || '',
+    String(screen.width) + 'x' + String(screen.height),
+    String(navigator.hardwareConcurrency || ''),
+    String(new Date().getTimezoneOffset())
+  ];
+  const raw = parts.join('|');
+  // Simple hash (not cryptographic — just for fingerprint comparison)
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+    hash |= 0;
+  }
+  return 'DEV-' + Math.abs(hash).toString(36).toUpperCase();
+}
+
+function getDeviceLabel() {
+  const ua = navigator.userAgent || '';
+  let device = 'Unknown Device';
+  if (/Android/i.test(ua)) device = 'Android Phone';
+  else if (/iPhone/i.test(ua)) device = 'iPhone';
+  else if (/iPad/i.test(ua)) device = 'iPad';
+  else if (/Windows/i.test(ua)) device = 'Windows PC';
+  else if (/Macintosh/i.test(ua)) device = 'Mac';
+  else if (/Linux/i.test(ua)) device = 'Linux PC';
+  let browser = '';
+  if (/Chrome/i.test(ua) && !/Edg/i.test(ua)) browser = 'Chrome';
+  else if (/Firefox/i.test(ua)) browser = 'Firefox';
+  else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = 'Safari';
+  else if (/Edg/i.test(ua)) browser = 'Edge';
+  return browser ? `${device} (${browser})` : device;
+}
+
+// Checks if this staff member's device is recognized; if not, logs a flagged
+// audit entry and records the new device. Never blocks login — informational only.
+function checkAndRecordStaffDevice(staffMember) {
+  if (!State.staffDevices) State.staffDevices = {};
+  const fp = getDeviceFingerprint();
+  const label = getDeviceLabel();
+  const knownDevices = State.staffDevices[staffMember.id] || [];
+
+  const isKnown = knownDevices.some(d => d.fingerprint === fp);
+
+  if (!isKnown) {
+    const isFirstDeviceEver = knownDevices.length === 0;
+    knownDevices.push({
+      fingerprint: fp,
+      label,
+      firstSeen: new Date().toLocaleString('en-IN')
+    });
+    State.staffDevices[staffMember.id] = knownDevices;
+
+    if (!isFirstDeviceEver) {
+      // This is a genuinely NEW device for a staff member who already had one on record
+      logActivity(
+        staffMember.name,
+        '⚠️ New Device Login',
+        'security',
+        `${staffMember.name} (${staffMember.id}) logged in from an unrecognized device: ${label}. Previously seen on ${knownDevices.length - 1} other device(s). If this wasn't expected, verify with the staff member.`
+      );
+      State.pendingDeviceAlerts = State.pendingDeviceAlerts || [];
+      State.pendingDeviceAlerts.push({
+        staffName: staffMember.name,
+        staffId: staffMember.id,
+        device: label,
+        timestamp: new Date().toLocaleString('en-IN')
+      });
+    } else {
+      // First-ever login for this staff member — just record silently, no alert needed
+      logActivity(staffMember.name, 'Device Registered', 'security', `${staffMember.name} (${staffMember.id}) registered initial device: ${label}.`);
+    }
+  }
+}
+
+// Shows a banner to admin if any staff logged in from a new device since last admin visit
+function showPendingDeviceAlertsIfAny() {
+  if (State.auth.currentRole !== 'admin') return;
+  const alerts = State.pendingDeviceAlerts || [];
+  if (alerts.length === 0) return;
+
+  const existing = document.getElementById('device-alert-banner');
+  if (existing) existing.remove();
+
+  const banner = document.createElement('div');
+  banner.id = 'device-alert-banner';
+  banner.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:#d97706;color:#fff;padding:14px 20px;text-align:center;font-size:13px;font-weight:600;z-index:99999;box-shadow:0 2px 10px rgba(0,0,0,0.3);';
+  const summary = alerts.map(a => `${a.staffName} from ${a.device}`).join(', ');
+  banner.innerHTML = `
+    <i class="ti ti-device-mobile-message" style="margin-right:8px;"></i>
+    New device login detected: ${summary}.
+    <button onclick="document.getElementById('device-alert-banner').remove(); window.__dismissDeviceAlerts && window.__dismissDeviceAlerts();" style="margin-left:14px;background:#fff;color:#d97706;border:none;padding:5px 14px;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px;">
+      Dismiss
+    </button>
+  `;
+  document.body.prepend(banner);
+
+  window.__dismissDeviceAlerts = function() {
+    State.pendingDeviceAlerts = [];
+    saveState();
+  };
+}
+
 function logActivity(actor, action, category, details) {
   if (!State.auditLog) State.auditLog = [];
   
