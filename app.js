@@ -1595,7 +1595,7 @@ function processBulkStudentUpload() {
       const workbook = XLSX.read(data, { type: 'array' });
       const firstSheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[firstSheetName];
-      const rows = XLSX.utils.sheet_to_json(sheet, { raw: false, defval: '' });
+      const rows = XLSX.utils.sheet_to_json(sheet, { raw: true, defval: '' });
 
       if (rows.length === 0) {
         resultDiv.innerHTML = `<div class="alert-box-info" style="border-color:var(--color-danger);"><i class="ti ti-alert-circle"></i> The Excel file is empty.</div>`;
@@ -1614,13 +1614,27 @@ function processBulkStudentUpload() {
         const dobRaw = row.DOB;
         let dob = '';
 
-        // Normalize DOB — handle both string dates and Excel serial dates
-        if (dobRaw) {
+        // Normalize DOB — handle Excel serial dates, JS Date objects, and text dates
+        if (dobRaw !== '' && dobRaw != null) {
           if (typeof dobRaw === 'number') {
+            // Excel serial date number (e.g. 41309)
             const parsed = XLSX.SSF.parse_date_code(dobRaw);
             if (parsed) dob = `${parsed.y}-${String(parsed.m).padStart(2,'0')}-${String(parsed.d).padStart(2,'0')}`;
+          } else if (dobRaw instanceof Date) {
+            // Already a JS Date object
+            dob = `${dobRaw.getFullYear()}-${String(dobRaw.getMonth()+1).padStart(2,'0')}-${String(dobRaw.getDate()).padStart(2,'0')}`;
           } else {
-            dob = String(dobRaw).trim();
+            const text = String(dobRaw).trim();
+            if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+              // Already correct format
+              dob = text;
+            } else {
+              // Try parsing any other text date format (e.g. "Saturday, February 05, 2011", "05/02/2011")
+              const parsedDate = new Date(text);
+              if (!isNaN(parsedDate.getTime())) {
+                dob = `${parsedDate.getFullYear()}-${String(parsedDate.getMonth()+1).padStart(2,'0')}-${String(parsedDate.getDate()).padStart(2,'0')}`;
+              }
+            }
           }
         }
 
