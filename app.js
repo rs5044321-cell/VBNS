@@ -3564,15 +3564,82 @@ function removeEnquiry(realIndex) {
   showToast('Enquiry Deleted', 'Lead prospect removed from CRM pipelines.', 'ti-trash');
 }
 // -------------------------------------------------------------
+// SCHOOL CALENDAR — HOLIDAYS & WORKING DAYS (August onwards 2025)
+// -------------------------------------------------------------
+const SCHOOL_HOLIDAYS_2025 = [
+  { date: '2025-08-04', name: 'Chehlum' },
+  { date: '2025-08-15', name: 'Independence Day' },
+  { date: '2025-08-26', name: 'Eid-e-Milad (Barawafat)' },
+  { date: '2025-08-28', name: 'Raksha Bandhan' },
+  { date: '2025-09-04', name: 'Janmashtami' },
+  { date: '2025-09-17', name: 'Vishwakarma Puja' },
+  { date: '2025-10-02', name: 'Mahatma Gandhi Jayanti' },
+  { date: '2025-10-20', name: 'Dussehra / Vijayadashami' },
+  { date: '2025-11-08', name: 'Narak Chaturdashi / Diwali' },
+  { date: '2025-11-09', name: 'Govardhan Puja' },
+  { date: '2025-11-11', name: 'Bhai Dooj / Chitragupta Jayanti' },
+  { date: '2025-11-24', name: 'Guru Nanak Jayanti' },
+  { date: '2025-12-25', name: 'Christmas Day' },
+];
+
+// Check if a given date string (YYYY-MM-DD) is a Sunday
+function isSunday(dateStr) {
+  return new Date(dateStr).getDay() === 0;
+}
+
+// Check if a given date is a school holiday
+function isSchoolHoliday(dateStr) {
+  return SCHOOL_HOLIDAYS_2025.some(h => h.date === dateStr);
+}
+
+// Get holiday name for a date (or null)
+function getHolidayName(dateStr) {
+  const h = SCHOOL_HOLIDAYS_2025.find(h => h.date === dateStr);
+  return h ? h.name : null;
+}
+
+// Check if date is a working day (not Sunday, not a holiday)
+function isWorkingDay(dateStr) {
+  return !isSunday(dateStr) && !isSchoolHoliday(dateStr);
+}
+
+// Count total working days between two dates (inclusive), excluding Sundays & holidays
+function countWorkingDays(fromDateStr, toDateStr) {
+  const from = new Date(fromDateStr);
+  const to = new Date(toDateStr);
+  let count = 0;
+  const cur = new Date(from);
+  while (cur <= to) {
+    const d = cur.toISOString().split('T')[0];
+    if (isWorkingDay(d)) count++;
+    cur.setDate(cur.getDate() + 1);
+  }
+  return count;
+}
+
+// -------------------------------------------------------------
 // ATTENDANCE STATS CALCULATION UTILITIES
 // -------------------------------------------------------------
-function getStudentAttendanceStats(studentId) {
+function getStudentAttendanceStats(studentId, fromDate, toDate) {
   let present = 0;
   let absent = 0;
   let leave = 0;
+  let holiday = 0;
+  let sunday = 0;
 
   Object.keys(State.attendance).forEach(key => {
     const records = State.attendance[key];
+    // Key format: "Class 8_2025-08-05"
+    const parts = key.split('_');
+    const dateStr = parts[parts.length - 1];
+
+    // Filter by date range if provided
+    if (fromDate && dateStr < fromDate) return;
+    if (toDate && dateStr > toDate) return;
+
+    if (isSunday(dateStr)) { sunday++; return; }
+    if (isSchoolHoliday(dateStr)) { holiday++; return; }
+
     if (Array.isArray(records)) {
       const rec = records.find(r => r.id === studentId);
       if (rec) {
@@ -3583,20 +3650,26 @@ function getStudentAttendanceStats(studentId) {
     }
   });
 
-  return {
-    present,
-    absent,
-    leave,
-    total: present + absent + leave
-  };
+  const totalMarked = present + absent + leave;
+  const pct = totalMarked > 0 ? Math.round(present / totalMarked * 100) : 0;
+
+  return { present, absent, leave, holiday, sunday, total: totalMarked, pct };
 }
 
-function getStaffAttendanceStats(staffId) {
+function getStaffAttendanceStats(staffId, fromDate, toDate) {
   let present = 0;
   let absent = 0;
   let leave = 0;
+  let holiday = 0;
+  let sunday = 0;
 
   Object.keys(State.staffAttendance).forEach(dateStr => {
+    if (fromDate && dateStr < fromDate) return;
+    if (toDate && dateStr > toDate) return;
+
+    if (isSunday(dateStr)) { sunday++; return; }
+    if (isSchoolHoliday(dateStr)) { holiday++; return; }
+
     const records = State.staffAttendance[dateStr];
     if (Array.isArray(records)) {
       const rec = records.find(r => r.id === staffId);
@@ -3608,12 +3681,10 @@ function getStaffAttendanceStats(staffId) {
     }
   });
 
-  return {
-    present,
-    absent,
-    leave,
-    total: present + absent + leave
-  };
+  const totalMarked = present + absent + leave;
+  const pct = totalMarked > 0 ? Math.round(present / totalMarked * 100) : 0;
+
+  return { present, absent, leave, holiday, sunday, total: totalMarked, pct };
 }
 
 // -------------------------------------------------------------
@@ -3641,25 +3712,29 @@ function loadAttendanceRegister() {
     const statsContainer = document.getElementById('student-att-stats-summary');
     if (statsContainer) {
       statsContainer.style.display = 'grid';
-      statsContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(180px, 1fr))';
+      statsContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(160px, 1fr))';
       statsContainer.style.gap = '16px';
       statsContainer.style.padding = '0 0 16px';
       statsContainer.innerHTML = `
-        <div class="stat-card" style="padding: 14px 16px; background: rgba(99, 102, 241, 0.04); border: 1px solid rgba(99, 102, 241, 0.12); border-radius: var(--border-radius-md);">
-          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Working Days</div>
-          <div style="font-size: 22px; font-weight: 700; color: var(--accent); margin-top: 4px;">${stats.total} <span style="font-size: 11px; font-weight:500;">Days</span></div>
+        <div class="stat-card" style="padding:14px 16px;background:rgba(99,102,241,0.04);border:1px solid rgba(99,102,241,0.12);border-radius:var(--border-radius-md);">
+          <div style="font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.5px;">Working Days Marked</div>
+          <div style="font-size:22px;font-weight:700;color:var(--accent);margin-top:4px;">${stats.total} <span style="font-size:11px;font-weight:500;">Days</span></div>
         </div>
-        <div class="stat-card" style="padding: 14px 16px; background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.12); border-radius: var(--border-radius-md);">
-          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Days Attended</div>
-          <div style="font-size: 22px; font-weight: 700; color: var(--color-success); margin-top: 4px;">${stats.present} <span style="font-size: 11px; font-weight:500; color:var(--text-secondary);">(${stats.total > 0 ? Math.round(stats.present / stats.total * 100) : 0}%)</span></div>
+        <div class="stat-card" style="padding:14px 16px;background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.12);border-radius:var(--border-radius-md);">
+          <div style="font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.5px;">Present</div>
+          <div style="font-size:22px;font-weight:700;color:var(--color-success);margin-top:4px;">${stats.present} <span style="font-size:11px;font-weight:500;color:var(--text-secondary);">(${stats.pct}%)</span></div>
         </div>
-        <div class="stat-card" style="padding: 14px 16px; background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.12); border-radius: var(--border-radius-md);">
-          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Leaves / Holidays</div>
-          <div style="font-size: 22px; font-weight: 700; color: var(--color-warning); margin-top: 4px;">${stats.leave} <span style="font-size: 11px; font-weight:500;">Days</span></div>
+        <div class="stat-card" style="padding:14px 16px;background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.12);border-radius:var(--border-radius-md);">
+          <div style="font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.5px;">Absent</div>
+          <div style="font-size:22px;font-weight:700;color:var(--color-danger);margin-top:4px;">${stats.absent} <span style="font-size:11px;font-weight:500;">Days</span></div>
         </div>
-        <div class="stat-card" style="padding: 14px 16px; background: rgba(239, 68, 68, 0.04); border: 1px solid rgba(239, 68, 68, 0.12); border-radius: var(--border-radius-md);">
-          <div style="font-size: 10px; font-weight:600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">Days Absent</div>
-          <div style="font-size: 22px; font-weight: 700; color: var(--color-danger); margin-top: 4px;">${stats.absent} <span style="font-size: 11px; font-weight:500;">Days</span></div>
+        <div class="stat-card" style="padding:14px 16px;background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.12);border-radius:var(--border-radius-md);">
+          <div style="font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.5px;">Leave</div>
+          <div style="font-size:22px;font-weight:700;color:var(--color-warning);margin-top:4px;">${stats.leave} <span style="font-size:11px;font-weight:500;">Days</span></div>
+        </div>
+        <div class="stat-card" style="padding:14px 16px;background:rgba(99,102,241,0.04);border:1px solid rgba(99,102,241,0.12);border-radius:var(--border-radius-md);">
+          <div style="font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.5px;">Holidays / Sundays</div>
+          <div style="font-size:22px;font-weight:700;color:var(--text-secondary);margin-top:4px;">${stats.holiday + stats.sunday} <span style="font-size:11px;font-weight:500;">Days</span></div>
         </div>
       `;
     }
@@ -3773,6 +3848,28 @@ function loadAttendanceRegister() {
 
   const listKey = `${grade}_${dateStr}`;
   let records = State.attendance[listKey];
+
+  // Block attendance marking on Sundays and school holidays
+  if (isSunday(dateStr)) {
+    if (statsContainer) statsContainer.style.display = 'none';
+    tbody.innerHTML = `<tr><td colspan="5" class="center-col" style="padding:32px 0; color:var(--text-tertiary);">
+      <i class="ti ti-calendar-off" style="font-size:28px;display:block;margin-bottom:8px;"></i>
+      <b>Sunday — School Closed</b><br>
+      <small>No attendance can be marked on Sundays.</small>
+    </td></tr>`;
+    return;
+  }
+
+  const holidayName = getHolidayName(dateStr);
+  if (holidayName) {
+    if (statsContainer) statsContainer.style.display = 'none';
+    tbody.innerHTML = `<tr><td colspan="5" class="center-col" style="padding:32px 0; color:var(--text-tertiary);">
+      <i class="ti ti-calendar-event" style="font-size:28px;display:block;margin-bottom:8px;color:var(--color-warning);"></i>
+      <b style="color:var(--color-warning);">Public Holiday — ${holidayName}</b><br>
+      <small>No attendance can be marked on this day.</small>
+    </td></tr>`;
+    return;
+  }
 
   if (studentsInClass.length === 0) {
     if (statsContainer) statsContainer.style.display = 'none';
@@ -3989,6 +4086,27 @@ function loadStaffAttendanceRegister() {
   const dateStr = dateInput ? dateInput.value : today;
   const tbody = document.getElementById('staff-att-body');
   if (!tbody || !dateStr) return;
+
+  // Block attendance marking on Sundays and school holidays
+  if (isSunday(dateStr)) {
+    const statsContainer = document.getElementById('staff-att-stats-summary');
+    if (statsContainer) statsContainer.style.display = 'none';
+    tbody.innerHTML = `<tr><td colspan="6" class="center-col" style="padding:32px 0; color:var(--text-tertiary);">
+      <i class="ti ti-calendar-off" style="font-size:28px;display:block;margin-bottom:8px;"></i>
+      <b>Sunday — School Closed</b><br><small>No attendance can be marked on Sundays.</small>
+    </td></tr>`;
+    return;
+  }
+  const staffHolidayName = getHolidayName(dateStr);
+  if (staffHolidayName) {
+    const statsContainer = document.getElementById('staff-att-stats-summary');
+    if (statsContainer) statsContainer.style.display = 'none';
+    tbody.innerHTML = `<tr><td colspan="6" class="center-col" style="padding:32px 0; color:var(--text-tertiary);">
+      <i class="ti ti-calendar-event" style="font-size:28px;display:block;margin-bottom:8px;color:var(--color-warning);"></i>
+      <b style="color:var(--color-warning);">Public Holiday — ${staffHolidayName}</b><br><small>No attendance can be marked on this day.</small>
+    </td></tr>`;
+    return;
+  }
 
   // Same-day rule: if the selected date is before today and no records exist, auto-mark all Absent
   let records = State.staffAttendance[dateStr];
