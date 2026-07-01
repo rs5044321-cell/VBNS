@@ -1640,15 +1640,38 @@ function downloadExcelTemplate() {
     return;
   }
   const sampleData = [
-    { Name: 'Aman Kumar', Class: 'Class 5', Fee: 18000, DOB: '2015-08-21' },
-    { Name: 'Priya Sharma', Class: 'Class 3', Fee: 15000, DOB: '2017-03-10' }
+    {
+      Name: 'Aman Kumar',
+      Class: 'Class 5',
+      Section: 'A',
+      Fee: 18000,
+      DOB: '2015-08-21',
+      FatherName: 'Suresh Kumar',
+      MotherName: 'Sunita Devi',
+      Contact: '9876543210',
+      Address: 'Village Rampur, Maharajganj'
+    },
+    {
+      Name: 'Priya Sharma',
+      Class: 'Class 3',
+      Section: 'B',
+      Fee: 15000,
+      DOB: '2017-03-10',
+      FatherName: 'Ramesh Sharma',
+      MotherName: 'Geeta Sharma',
+      Contact: '9812345678',
+      Address: 'Ward No. 5, Shyamdeurwa'
+    }
   ];
   const ws = XLSX.utils.json_to_sheet(sampleData);
-  ws['!cols'] = [{ wch: 22 }, { wch: 14 }, { wch: 10 }, { wch: 14 }];
+  ws['!cols'] = [
+    { wch: 22 }, { wch: 12 }, { wch: 10 }, { wch: 10 },
+    { wch: 14 }, { wch: 20 }, { wch: 20 }, { wch: 14 }, { wch: 30 }
+  ];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Students');
   XLSX.writeFile(wb, 'Student_Upload_Template.xlsx');
-  showToast('Template Downloaded', 'Sample Excel template saved to your downloads.', 'ti-download');
+  showToast('Template Downloaded', 'Full student template with all fields saved to your downloads.', 'ti-download');
 }
 
 function processBulkStudentUpload() {
@@ -1670,8 +1693,7 @@ function processBulkStudentUpload() {
     try {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: 'array' });
-      const firstSheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[firstSheetName];
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json(sheet, { raw: true, defval: '' });
 
       if (rows.length === 0) {
@@ -1680,62 +1702,96 @@ function processBulkStudentUpload() {
       }
 
       let successCount = 0;
+      let updatedCount = 0;
       const errors = [];
       const currentDateStr = new Date().toISOString().split('T')[0];
 
       rows.forEach((row, idx) => {
-        const rowNum = idx + 2; // Excel row (1 = header)
+        const rowNum = idx + 2;
+
+        // --- Required fields ---
         const name = String(row.Name || '').trim();
-        const cls = String(row.Class || '').trim();
-        const fee = parseFloat(row.Fee);
+        const cls  = String(row.Class || '').trim();
+        const fee  = parseFloat(row.Fee);
+
+        // --- Optional fields ---
+        const section    = String(row.Section    || 'A').trim();
+        const fatherName = String(row.FatherName || '').trim();
+        const motherName = String(row.MotherName || '').trim();
+        const contact    = String(row.Contact    || '').trim();
+        const address    = String(row.Address    || '').trim();
+
+        // --- DOB — fully optional, handles all formats ---
         const dobRaw = row.DOB;
         let dob = '';
-
-        // Normalize DOB — handle Excel serial dates, JS Date objects, and text dates
         if (dobRaw !== '' && dobRaw != null) {
           if (typeof dobRaw === 'number') {
-            // Excel serial date number (e.g. 41309)
             const parsed = XLSX.SSF.parse_date_code(dobRaw);
             if (parsed) dob = `${parsed.y}-${String(parsed.m).padStart(2,'0')}-${String(parsed.d).padStart(2,'0')}`;
           } else if (dobRaw instanceof Date) {
-            // Already a JS Date object
             dob = `${dobRaw.getFullYear()}-${String(dobRaw.getMonth()+1).padStart(2,'0')}-${String(dobRaw.getDate()).padStart(2,'0')}`;
           } else {
             const text = String(dobRaw).trim();
             if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
-              // Already correct format
               dob = text;
             } else {
-              // Try parsing any other text date format (e.g. "Saturday, February 05, 2011", "05/02/2011")
-              const parsedDate = new Date(text);
-              if (!isNaN(parsedDate.getTime())) {
-                dob = `${parsedDate.getFullYear()}-${String(parsedDate.getMonth()+1).padStart(2,'0')}-${String(parsedDate.getDate()).padStart(2,'0')}`;
+              const pd = new Date(text);
+              if (!isNaN(pd.getTime())) {
+                dob = `${pd.getFullYear()}-${String(pd.getMonth()+1).padStart(2,'0')}-${String(pd.getDate()).padStart(2,'0')}`;
               }
             }
           }
         }
 
+        // --- Validation (only Name, Class, Fee required) ---
         if (!name) { errors.push(`Row ${rowNum}: Missing student Name.`); return; }
         if (!VALID_CLASSES.includes(cls)) { errors.push(`Row ${rowNum}: Invalid Class "${cls}". Must be one of: ${VALID_CLASSES.join(', ')}.`); return; }
         if (isNaN(fee) || fee <= 0) { errors.push(`Row ${rowNum}: Invalid Fee value.`); return; }
-        if (!dob || !/^\d{4}-\d{2}-\d{2}$/.test(dob)) { errors.push(`Row ${rowNum}: Invalid DOB format "${dobRaw}". Use YYYY-MM-DD.`); return; }
 
+        // --- Password generation ---
+        const namePart = name.replace(/\s+/g, '').substring(0, 3).toLowerCase();
+        let password;
+        if (dob) {
+          password = namePart + dob.split('-').reverse().join('');
+        } else {
+          // No DOB — use name + last 4 digits of contact, or just namePart
+          password = contact ? namePart + contact.slice(-4) : namePart;
+        }
+
+        // --- SAFETY: Check if student already exists by name + class (prevent duplicate upload) ---
+        const alreadyExists = State.students.find(s =>
+          s.name.toLowerCase() === name.toLowerCase() && s.cls === cls
+        );
+
+        if (alreadyExists) {
+          // UPDATE existing student's details without changing their ID or wiping other data
+          if (fatherName) alreadyExists.parent = fatherName;
+          if (motherName) alreadyExists.mother = motherName;
+          if (contact)    alreadyExists.phone  = contact;
+          if (address)    alreadyExists.address = address;
+          if (section)    alreadyExists.sec    = section;
+          if (dob && !alreadyExists.dob) alreadyExists.dob = dob;
+          updatedCount++;
+          return;
+        }
+
+        // --- NEW student ---
         const nextId = getNextStudentId();
-
         const newStudent = {
           id: nextId,
           name,
           cls,
-          sec: 'A',
-          parent: 'N/A',
-          phone: 'N/A',
-          dob,
-          address: 'N/A',
+          sec:          section || 'A',
+          parent:       fatherName || 'N/A',
+          mother:       motherName || 'N/A',
+          phone:        contact   || 'N/A',
+          dob:          dob       || '',
+          address:      address   || 'N/A',
           fee,
-          balance: fee,
-          status: 'Pending',
+          balance:      fee,
+          status:       'Pending',
           enrolledDate: currentDateStr,
-          password: (name.replace(/\s+/g, '').substring(0, 3).toLowerCase()) + dob.split('-').reverse().join('')
+          password
         };
 
         State.students.push(newStudent);
@@ -1743,25 +1799,26 @@ function processBulkStudentUpload() {
         const ledgerVou = `VOU-${State.ledger.length + 1002}`;
         State.ledger.push({
           voucher: ledgerVou,
-          date: currentDateStr,
-          desc: `Bulk Excel Enrollment: ${name} (${nextId})`,
-          credit: 0,
-          debit: 0,
+          date:    currentDateStr,
+          desc:    `Bulk Excel Enrollment: ${name} (${nextId})`,
+          credit:  0,
+          debit:   0,
           balance: calculateActiveCashBalance()
         });
 
         successCount++;
       });
 
-      if (successCount > 0) {
+      if (successCount > 0 || updatedCount > 0) {
         const actor = State.auth.currentUser ? State.auth.currentUser.name : 'System Admin';
-        logActivity(actor, 'Bulk Student Upload', 'enrollment', `Bulk-enrolled ${successCount} student(s) via Excel upload.`);
+        logActivity(actor, 'Bulk Student Upload', 'enrollment',
+          `Bulk-enrolled ${successCount} new student(s), updated ${updatedCount} existing student(s) via Excel.`);
         saveState();
         renderDirectoryList();
       }
 
-      let resultHtml = `<div class="alert-box-info" style="${errors.length > 0 ? 'border-color:var(--color-warning);' : 'border-color:var(--color-success);'}">`;
-      resultHtml += `<i class="ti ti-circle-check"></i> <b>${successCount}</b> student(s) enrolled successfully.`;
+      let resultHtml = `<div class="alert-box-info" style="border-color:${errors.length > 0 ? 'var(--color-warning)' : 'var(--color-success)'};">`;
+      resultHtml += `<i class="ti ti-circle-check"></i> <b>${successCount}</b> new student(s) enrolled. <b>${updatedCount}</b> existing student(s) updated.`;
       if (errors.length > 0) {
         resultHtml += `<br><br><b>${errors.length} row(s) skipped:</b><ul style="margin:6px 0 0 18px;font-size:12px;">`;
         errors.slice(0, 15).forEach(err => { resultHtml += `<li>${err}</li>`; });
@@ -1772,15 +1829,15 @@ function processBulkStudentUpload() {
       resultDiv.innerHTML = resultHtml;
 
       showToast(
-        successCount > 0 ? 'Bulk Upload Complete' : 'Upload Failed',
-        `${successCount} enrolled, ${errors.length} skipped.`,
+        successCount > 0 || updatedCount > 0 ? 'Upload Complete' : 'Nothing Changed',
+        `${successCount} new, ${updatedCount} updated, ${errors.length} skipped.`,
         successCount > 0 ? 'ti-circle-check' : 'ti-alert-circle'
       );
 
       fileInput.value = '';
     } catch (err) {
       resultDiv.innerHTML = `<div class="alert-box-info" style="border-color:var(--color-danger);"><i class="ti ti-alert-circle"></i> Failed to read Excel file: ${err.message}</div>`;
-      showToast('Upload Error', 'Could not process the Excel file. Check the format matches the template.', 'ti-alert-circle');
+      showToast('Upload Error', 'Could not process the Excel file.', 'ti-alert-circle');
     }
   };
 

@@ -1645,8 +1645,9 @@
           </div>
           <div class="form-container">
             <div class="alert-box-info">
-              <i class="ti ti-info-circle"></i> Excel file must have these exact column headers in row 1: <b>Name, Class, Fee, DOB</b>.
-              DOB format: YYYY-MM-DD (e.g. 2015-08-21). Class must match one of: Playway, L.KG., U.KG., Class 1–10.
+              <i class="ti ti-info-circle"></i> Excel columns: <b>Name</b>, <b>Class</b>, <b>Fee</b> are required. Optional: <b>Section</b>, <b>DOB</b>, <b>FatherName</b>, <b>MotherName</b>, <b>Contact</b>, <b>Address</b>.
+              Class must match: Playway, L.KG., U.KG., Class 1–10. DOB format: YYYY-MM-DD.
+              If a student with the same Name + Class already exists, their details will be <b>updated</b> (not duplicated).
             </div>
             <div class="form-row">
               <label for="bulk-upload-input">Select Excel File (.xlsx)</label>
