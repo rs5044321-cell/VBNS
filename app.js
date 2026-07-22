@@ -3112,24 +3112,26 @@ function renderStaffPayroll() {
       State.payrollConfig[st.id] = conf;
     }
 
-    // Dynamic Attendance Deduction
+    // Dynamic Attendance Deduction — count Absent and Late separately
     let absencesCount = 0;
     let lateCount = 0;
-    const dailySalary = conf.base / 26; // 26 working days
+    let presentCount = 0;
+    const dailySalary = conf.base / 26; // 26 working days per month
     const halfDaySalary = dailySalary / 2;
 
-    // Count absences and late arrivals
     Object.values(State.staffAttendance).forEach(dayList => {
+      if (!Array.isArray(dayList)) return;
       const rec = dayList.find(r => r.id === st.id);
       if (rec) {
         if (rec.status === 'Absent') absencesCount++;
-        if (rec.status === 'Late' || rec.lateDeduction) lateCount++;
+        else if (rec.status === 'Late' || rec.lateDeduction === true) lateCount++;
+        else if (rec.status === 'Present') presentCount++;
       }
     });
 
     const stats = getStaffAttendanceStats(st.id);
     const absenceDeduct = Math.round(absencesCount * dailySalary);
-    const lateDeduct = Math.round(lateCount * halfDaySalary); // Half day for late
+    const lateDeduct    = Math.round(lateCount * halfDaySalary); // Half day deduction per Late
     const attendanceDeduct = absenceDeduct + lateDeduct;
     const netPayout = Math.max(conf.base + conf.allowance - attendanceDeduct - conf.deductions, 0);
 
@@ -3151,7 +3153,10 @@ function renderStaffPayroll() {
           -${formatCurrency(attendanceDeduct)}
           <br>
           <small style="color: var(--text-tertiary); font-size: 10px;">
-            ${stats.present}P / ${stats.absent}A / ${lateCount}Late / ${stats.leave}L
+            ${presentCount}P &nbsp;|&nbsp;
+            <span style="color:var(--color-warning);">${lateCount} Late (½ day ea.)</span> &nbsp;|&nbsp;
+            <span style="color:var(--color-danger);">${absencesCount}A</span> &nbsp;|&nbsp;
+            ${stats.leave}L
           </small>
         </td>
         <td class="text-right" style="color: var(--color-danger)">-${formatCurrency(conf.deductions)}</td>
@@ -3193,9 +3198,110 @@ function processPayrollPayout(staffId, netAmount) {
   showToast('Salary Disbursed', `Payment details generated. Voucher ID: ${voucherNum}.`, 'ti-cash-banknote');
 }
 
-// -------------------------------------------------------------
-// MODULE 10: SMS PORTAL & CONSOLE
-// -------------------------------------------------------------
+function downloadPayrollExcel() {
+  if (typeof XLSX === 'undefined') {
+    showToast('Library Loading', 'Excel library still loading, please try again in a moment.', 'ti-alert-circle');
+    return;
+  }
+  if (!State.staff || State.staff.length === 0) {
+    showToast('No Staff', 'No staff records found to export.', 'ti-alert-circle');
+    return;
+  }
+
+  const dateStr = new Date().toISOString().split('T')[0];
+  const monthName = new Date().toLocaleString('en-IN', { month: 'long', year: 'numeric' });
+
+  const rows = State.staff.map(st => {
+    const conf = State.payrollConfig[st.id] || { base: 35000, allowance: 3000, deductions: 0, status: 'Unpaid' };
+    const dailySalary = conf.base / 26;
+    const halfDaySalary = dailySalary / 2;
+
+    let presentCount = 0;
+    let lateCount = 0;
+    let absencesCount = 0;
+    let leaveCount = 0;
+
+    Object.values(State.staffAttendance).forEach(dayList => {
+      if (!Array.isArray(dayList)) return;
+      const rec = dayList.find(r => r.id === st.id);
+      if (rec) {
+        if (rec.status === 'Present') presentCount++;
+        else if (rec.status === 'Late' || rec.lateDeduction === true) lateCount++;
+        else if (rec.status === 'Absent') absencesCount++;
+        else if (rec.status === 'Leave') leaveCount++;
+      }
+    });
+
+    const absenceDeduct = Math.round(absencesCount * dailySalary);
+    const lateDeduct = Math.round(lateCount * halfDaySalary);
+    const attendanceDeduct = absenceDeduct + lateDeduct;
+    const netPayout = Math.max(conf.base + conf.allowance - attendanceDeduct - conf.deductions, 0);
+
+    return {
+      'Staff ID': st.id,
+      'Name': st.name,
+      'Role / Designation': st.role || '',
+      'Department': st.subject || '',
+      'Assigned Class': st.assignedClass || '',
+      'Base Salary (₹)': conf.base,
+      'Allowances (₹)': conf.allowance,
+      'Days Present': presentCount,
+      'Days Late': lateCount,
+      'Days Absent': absencesCount,
+      'Days on Leave': leaveCount,
+      'Absence Deduction (₹)': absenceDeduct,
+      'Late Deduction (₹)': lateDeduct,
+      'Other Deductions (₹)': conf.deductions,
+      'Total Deductions (₹)': attendanceDeduct + conf.deductions,
+      'Net Payout (₹)': netPayout,
+      'Payment Status': conf.status || 'Unpaid',
+      'Month': monthName,
+      'Generated On': dateStr
+    };
+  });
+
+  // Totals row
+  const totalNet = rows.reduce((sum, r) => sum + r['Net Payout (₹)'], 0);
+  const totalBase = rows.reduce((sum, r) => sum + r['Base Salary (₹)'], 0);
+  const totalDeduct = rows.reduce((sum, r) => sum + r['Total Deductions (₹)'], 0);
+  rows.push({
+    'Staff ID': '',
+    'Name': 'TOTAL',
+    'Role / Designation': '',
+    'Department': '',
+    'Assigned Class': '',
+    'Base Salary (₹)': totalBase,
+    'Allowances (₹)': '',
+    'Days Present': '',
+    'Days Late': '',
+    'Days Absent': '',
+    'Days on Leave': '',
+    'Absence Deduction (₹)': '',
+    'Late Deduction (₹)': '',
+    'Other Deductions (₹)': '',
+    'Total Deductions (₹)': totalDeduct,
+    'Net Payout (₹)': totalNet,
+    'Payment Status': '',
+    'Month': monthName,
+    'Generated On': dateStr
+  });
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [
+    { wch: 10 }, { wch: 22 }, { wch: 18 }, { wch: 16 }, { wch: 14 },
+    { wch: 14 }, { wch: 14 }, { wch: 12 }, { wch: 10 }, { wch: 12 },
+    { wch: 12 }, { wch: 18 }, { wch: 16 }, { wch: 18 }, { wch: 16 },
+    { wch: 14 }, { wch: 14 }, { wch: 16 }, { wch: 14 }
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Staff Payroll');
+  XLSX.writeFile(wb, `Staff_Payroll_${monthName.replace(' ', '_')}_${dateStr}.xlsx`);
+
+  const actor = State.auth.currentUser ? State.auth.currentUser.name : 'Admin';
+  logActivity(actor, 'Payroll Downloaded', 'finance', `Exported payroll sheet for ${monthName} — ${rows.length - 1} staff members`);
+  showToast('Payroll Downloaded', `${monthName} payroll sheet saved to your downloads.`, 'ti-file-export');
+}
 function updateSMSCreditsPreview() {
   const recipientTarget = document.getElementById('sms-to').value;
   const countSpan = document.getElementById('sms-credits');
@@ -3675,6 +3781,7 @@ function getStaffAttendanceStats(staffId, fromDate, toDate) {
       const rec = records.find(r => r.id === staffId);
       if (rec) {
         if (rec.status === 'Present') present++;
+        else if (rec.status === 'Late') { present++; leave++; } // Late = came but late; count as present + flag
         else if (rec.status === 'Absent') absent++;
         else if (rec.status === 'Leave') leave++;
       }
