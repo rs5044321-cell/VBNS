@@ -809,8 +809,8 @@ function setLoginRole(role) {
   } else if (role === 'student') {
     userRow.style.display = 'block';
     passRow.style.display = 'block';
-    userLbl.textContent = 'Registered Student ID';
-    document.getElementById('login-username').placeholder = 'E.g., SAC-001';
+    userLbl.textContent = 'Your Name / Student ID';
+    document.getElementById('login-username').placeholder = 'Enter your name or SAC ID (e.g. Sanjana or SAC-008)';
     document.getElementById('login-password').placeholder = '••••••••';
   }
 }
@@ -946,11 +946,18 @@ async function executeLogin() {
         if (passVal.trim() === storedPass) authenticatedUser = staffMember;
       }
     } else if (localRole === 'student') {
+      const inputLower = username.toLowerCase().trim();
       const studentMember = State.students.find(s => {
-        const namePart = s.name.replace(/\s+/g, '').substring(0, 3).toLowerCase();
-        const idNum = s.id.replace(/[^0-9]/g, '').padStart(3, '0');
+        const namePart = (s.name || '').replace(/\s+/g, '').substring(0, 3).toLowerCase();
+        const idNum = (s.id || '').replace(/[^0-9]/g, '').padStart(3, '0');
         const generatedId = namePart + 'vbns' + idNum;
-        return generatedId === username.toLowerCase();
+
+        return (
+          generatedId === inputLower ||                                    // generated username: sanvbns008
+          (s.id || '').toLowerCase() === inputLower ||                    // SAC ID: sac-008
+          (s.name || '').toLowerCase() === inputLower ||                  // full name: sanjana
+          (s.name || '').replace(/\s+/g,'').toLowerCase() === inputLower  // name no spaces: sanjana
+        );
       });
       if (studentMember) {
         const namePart = studentMember.name.replace(/\s+/g, '').substring(0, 3).toLowerCase();
